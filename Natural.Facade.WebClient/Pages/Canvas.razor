@@ -2,7 +2,8 @@
 @using Blazor.Extensions
 @using Blazor.Extensions.Canvas
 @using Blazor.Extensions.Canvas.Canvas2D
-@inject HttpClient Http
+@inject HttpClient Http;
+@inject IJSRuntime JsRuntime;
 
 <PageTitle>Canvas</PageTitle>
 
@@ -31,5 +32,21 @@
 
         // Render
         await m_renderer.RenderAsync();
+
+        // Traverse resources
+        if (layoutRootNode.ResNodeArray != null)
+        {
+            foreach (LayoutNodes.LayoutResourceNode resNode in layoutRootNode.ResNodeArray)
+            {
+                var imageValueTask = await JsRuntime.InvokeAsync<object>("createImageFromUrl", resNode.Json.url, this);
+                string classfullName = imageValueTask.GetType().FullName;
+                ;
+            }
+        }
+    }
+
+    public void OnResourceLoaded()
+    {
+        _ = m_renderer.RenderAsync();
     }
 }
