@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 
+import { LoadLayoutService } from '../services/load-layout.service';
+import { RenderLayoutService } from '../services/render-layout.service';
+import { LayoutData } from '../layout-data';
+
 @Component({
   selector: 'layout-canvas',
   templateUrl: './layout-canvas.component.html',
@@ -7,31 +11,29 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LayoutCanvasComponent implements OnInit {
 
-  canvas: HTMLCanvasElement | undefined;
-  context: CanvasRenderingContext2D | undefined;
+  layourRender: RenderLayoutService | undefined;
+
+  layoutData: LayoutData | undefined;
 
   constructor() { }
 
   ngOnInit(): void {
-    this.canvas = document.getElementById('overlayCanvas') as HTMLCanvasElement;
-    this.context = this.canvas!.getContext("2d")!;
+    var canvas: HTMLCanvasElement = document.getElementById('overlayCanvas') as HTMLCanvasElement;
+    var context: CanvasRenderingContext2D = canvas!.getContext("2d")!;
+    this.layourRender = new RenderLayoutService(context);
 
     this.drawScreen();
   }
 
   drawScreen()
   {
-    this.drawLoading();
+    this.layourRender?.render(this.layoutData);
   }
 
-  drawLoading()
+  loadFromString(jsonString: string)
   {
-    var canvasWidth = 1920;
-    var canvasHeight = 1080;
-    this.context!.fillStyle = '#003366';
-    this.context!.fillRect(0, 0, canvasWidth, canvasHeight);
-    this.context!.fillStyle = '#FFFFFF';
-    this.context!.font = '28px Helvetica';
-    this.context!.fillText('Loading...', 20, 50);
+    var loadLayoutService : LoadLayoutService = new LoadLayoutService();
+    this.layoutData = loadLayoutService.fromString(jsonString);
+    this.drawScreen();
   }
 }
