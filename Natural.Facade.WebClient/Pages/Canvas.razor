@@ -1,0 +1,35 @@
+﻿@page "/canvas"
+@using Blazor.Extensions
+@using Blazor.Extensions.Canvas
+@using Blazor.Extensions.Canvas.Canvas2D
+@inject HttpClient Http
+
+<PageTitle>Canvas</PageTitle>
+
+@if (m_renderer == null)
+{
+    <p><em>Loading...</em></p>
+}
+<BECanvas @ref="m_canvas" Width="1920" Height="1080"></BECanvas>
+
+@code {
+    Blazor.Extensions.BECanvasComponent m_canvas;
+
+    private LayoutRenderer m_renderer = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load resources
+        LayoutJson.LayoutJson layoutJson = await Http.GetFromJsonAsync<LayoutJson.LayoutJson>("sample-data/overlay.json");
+        LayoutNodes.LayoutRootNode layoutRootNode = LayoutNodes.LayoutNodeLoader.LoadRootNode(layoutJson);
+
+        // Get context
+        Canvas2DContext context = await m_canvas.CreateCanvas2DAsync();
+
+        // Create renderer
+        m_renderer = new LayoutRenderer(context, layoutRootNode, 1920, 1080);
+
+        // Render
+        await m_renderer.RenderAsync();
+    }
+}

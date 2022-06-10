@@ -1,0 +1,18 @@
+{
+  "resources": {
+    "StaticBacking": {
+      "type": "image",
+      "url": "https://https.naturalgateways.com/Overlay/StaticBacking.webp"
+    }
+  },
+  "rootElement": {
+    "elTyp": "stack",
+    "children": [
+      {
+        "elTyp": "image",
+        "res": "StaticBacking",
+        "fit": "none"
+      }
+    ]
+  }
+}
