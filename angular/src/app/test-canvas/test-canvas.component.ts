@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 import { LayoutCanvasComponent } from '../layout/layout-canvas/layout-canvas.component';
 
@@ -11,11 +12,11 @@ export class TestCanvasComponent implements OnInit {
 
   @ViewChild("layoutCanvas") layoutCanvasRef: LayoutCanvasComponent | undefined;
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
   ngOnInit(): void { }
 
   ngAfterViewInit(): void {
-    this.layoutCanvasRef!.loadFromString("{\"resources\":[],\"fonts\":[],\"rootElement\":{\"elTyp\":\"stack\",\"children\":[{\"elTyp\":\"colour\",\"colour\":\"#FF00FF\"},{\"elTyp\":\"colour\",\"colour\":\"#00FF00\"}]}}");
+    this.layoutCanvasRef!.loadFromUrl("/assets/testLayout.json");
   }
 }

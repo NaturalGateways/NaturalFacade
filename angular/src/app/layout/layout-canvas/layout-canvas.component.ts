@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 import { LoadLayoutService } from '../services/load-layout.service';
 import { RenderLayoutService } from '../services/render-layout.service';
@@ -15,7 +16,7 @@ export class LayoutCanvasComponent implements OnInit {
 
   layoutData: LayoutData | undefined;
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
     var canvas: HTMLCanvasElement = document.getElementById('overlayCanvas') as HTMLCanvasElement;
@@ -25,15 +26,46 @@ export class LayoutCanvasComponent implements OnInit {
     this.drawScreen();
   }
 
+  isFullyLoaded(): boolean
+  {
+    for (const imageRes of this.layoutData!.imageResources.values()) {
+      if (imageRes.imageElement === undefined || imageRes.imageElement.complete === false) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  drawScreenIfFullyLoaded()
+  {
+    if (this.isFullyLoaded()) {
+      this.drawScreen();
+    }
+  }
+
   drawScreen()
   {
     this.layourRender?.render(this.layoutData);
   }
 
-  loadFromString(jsonString: string)
+  loadFromUrl(url: string)
   {
-    var loadLayoutService : LoadLayoutService = new LoadLayoutService();
-    this.layoutData = loadLayoutService.fromString(jsonString);
-    this.drawScreen();
+    this.http.get<any>(url).subscribe(data => {
+      // Load data
+      var loadLayoutService : LoadLayoutService = new LoadLayoutService();
+      this.layoutData = loadLayoutService.fromJson(data);
+
+      // Draw if there are no resources
+      this.drawScreenIfFullyLoaded();
+
+      // Run http fetches in parallel
+      for (const imageRes of this.layoutData.imageResources.values()) {
+        imageRes.imageElement = new Image();
+        imageRes.imageElement.addEventListener('load', () => {
+          this.drawScreenIfFullyLoaded();
+        });
+        imageRes.imageElement.src = imageRes.url;
+      }
+    });
   }
 }

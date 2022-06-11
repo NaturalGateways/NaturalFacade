@@ -1,0 +1,76 @@
+{
+    "imageResources": {
+        "StaticBacking": "https://httpsorigin.s3.amazonaws.com/https/Overlay/StaticBacking.webp",
+        "BgLight": "https://httpsorigin.s3.amazonaws.com/https/Overlay/UIWoodLight.jpg",
+        "BgDark": "https://httpsorigin.s3.amazonaws.com/https/Overlay/UIWoodDark.jpg",
+        "GameCover": "https://httpsorigin.s3.amazonaws.com/https/Overlay/GameCover.jpg",
+        "FakeCam": "https://httpsorigin.s3.amazonaws.com/https/Overlay/FakeCam.png"
+    },
+    "fontResources": {
+        "StaticBacking": "https://httpsorigin.s3.amazonaws.com/https/Overlay/Norse.otf"
+    },
+    "fonts": [
+      {
+        "name": "AttTitle",
+        "fontRes": "NorseFont",
+        "size": "38px",
+        "colour": "#e9d26c",
+        "align": "center"
+      }
+    ],
+    "rootElement": {
+        "elTyp": "stack",
+        "children": [
+            {
+                "elTyp": "image",
+                "fit": "none",
+                "res": "StaticBacking"
+            },
+            {
+                "elTyp": "stack",
+                "halign": "right",
+                "width": "min",
+                "children": [
+                    {
+                        "elTyp": "image",
+                        "fit": "tiled",
+                        "res": "BgLight"
+                    },
+                    {
+                        "elTyp": "vsplit",
+                        "padding": 8,
+                        "children": [
+                            {
+                                "elTyp": "image",
+                                "fit": "none",
+                                "res": "GameCover"
+                            },
+                            {
+                                "elTyp": "stack",
+                                "height": "max",
+                                "children": [
+                                    {
+                                        "elTyp": "image",
+                                        "fit": "tiled",
+                                        "res": "BgDark"
+                                    },
+                                    {
+                                        "elTyp": "text",
+                                        "font": "AttTitle",
+                                        "text": "Valheim",
+                                        "marginTop": 50
+                                    }
+                                ]
+                            },
+                            {
+                                "elTyp": "image",
+                                "fit": "none",
+                                "res": "FakeCam"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
