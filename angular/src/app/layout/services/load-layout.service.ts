@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 
 import { LayoutApiDto } from '../model/layout-api-dto';
-import { LayoutData, LayoutImageResource } from '../layout-data';
+import { LayoutData, LayoutImageResource, LayoutFontResource, LayoutFontConfig } from '../layout-data';
 
 export class LoadLayoutService {
 
@@ -14,6 +14,18 @@ export class LoadLayoutService {
     {
       for (var key in apiDto.imageResources) {
         layoutData.imageResources.set(key, new LayoutImageResource(apiDto.imageResources[key]));
+      }
+    }
+    if (apiDto.fontResources !== undefined)
+    {
+      for (var key in apiDto.fontResources) {
+        layoutData.fontResources.set(key, new LayoutFontResource(apiDto.fontResources[key]));
+      }
+    }
+    if (apiDto.fonts !== undefined)
+    {
+      for (var key in apiDto.fonts) {
+        layoutData.fontConfigs.set(key, new LayoutFontConfig(apiDto.fonts[key]));
       }
     }
     layoutData.rootElement = apiDto.rootElement;

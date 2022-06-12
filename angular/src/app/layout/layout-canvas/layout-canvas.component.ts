@@ -1,9 +1,11 @@
+import type { } from "css-font-loading-module";
+
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { LoadLayoutService } from '../services/load-layout.service';
 import { RenderLayoutService } from '../services/render-layout.service';
-import { LayoutData } from '../layout-data';
+import { LayoutData, LayoutFontResource } from '../layout-data';
 
 @Component({
   selector: 'layout-canvas',
@@ -30,6 +32,11 @@ export class LayoutCanvasComponent implements OnInit {
   {
     for (const imageRes of this.layoutData!.imageResources.values()) {
       if (imageRes.imageElement === undefined || imageRes.imageElement.complete === false) {
+        return false;
+      }
+    }
+    for (const fontRes of this.layoutData!.fontResources.values()) {
+      if (fontRes.loaded === false) {
         return false;
       }
     }
@@ -65,6 +72,17 @@ export class LayoutCanvasComponent implements OnInit {
           this.drawScreenIfFullyLoaded();
         });
         imageRes.imageElement.src = imageRes.url;
+      }
+
+      // Run http fetches in parallel
+      for (const fontResKey of this.layoutData.fontResources.keys()) {
+        var fontRes: LayoutFontResource = this.layoutData.fontResources.get(fontResKey)!;
+        var fontFace = new FontFace(fontResKey, 'url(' + fontRes.url + ')');
+        fontFace.load().then((font) => {
+          document.fonts.add(font);
+          fontRes.loaded = true;
+          this.drawScreenIfFullyLoaded();
+        });
       }
     });
   }

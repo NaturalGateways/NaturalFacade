@@ -1,4 +1,4 @@
-import { LayoutData } from '../layout-data';
+import { LayoutData, LayoutFontConfig } from '../layout-data';
 
 enum RenderLayoutSizeType { Pixel, Min, Max }
 
@@ -19,6 +19,22 @@ export class RenderLayoutService {
   measureElement(layoutData: LayoutData, element: any): RenderLayoutSize
   {
     var size: RenderLayoutSize = this.measureElementNoMargin(layoutData, element);
+    if (typeof element.marginLeft == "number")
+    {
+      size.width += element.marginLeft;
+    }
+    if (typeof element.marginTop == "number")
+    {
+      size.height += element.marginTop;
+    }
+    if (typeof element.marginRight == "number")
+    {
+      size.width += element.marginRight;
+    }
+    if (typeof element.marginBottom == "number")
+    {
+      size.height += element.marginBottom;
+    }
     if (element.width !== undefined)
     {
       if (typeof element.width === "number") {
@@ -138,6 +154,28 @@ export class RenderLayoutService {
   renderElement(layoutData: LayoutData, element: any, left: number, top: number, width: number, height: number)
   {
     // Handle horizontal alignment
+    if (typeof element.marginLeft == "number")
+    {
+      var marginLeft = element.marginLeft;
+      left += marginLeft;
+      width -= marginLeft;
+    }
+    if (typeof element.marginTop == "number")
+    {
+      var marginTop = element.marginTop;
+      top += marginTop;
+      height -= marginTop;
+    }
+    if (typeof element.marginRight == "number")
+    {
+      var marginRight = element.marginRight;
+      width -= marginRight;
+    }
+    if (typeof element.marginBottom == "number")
+    {
+      var marginBottom = element.marginBottom;
+      height -= marginBottom;
+    }
     if (element.width === "min" || element.width === "max")
     {
       var size = this.measureElement(layoutData, element);
@@ -182,6 +220,9 @@ export class RenderLayoutService {
         break;
       case "image":
         this.renderElementImage(layoutData, element, left, top, width, height);
+        break;
+      case "text":
+        this.renderElementText(layoutData, element, left, top, width, height);
         break;
       case "colour":
         this.renderElementColour(element, left, top, width, height);
@@ -281,6 +322,28 @@ export class RenderLayoutService {
         curLeft += imageWidth;
       }
       curTop += imageHeight;
+    }
+  }
+
+  renderElementText(layoutData: LayoutData, element: any, left: number, top: number, width: number, height: number)
+  {
+    var fontConfig: LayoutFontConfig = layoutData.fontConfigs.get(element.font)!;
+    this.context!.fillStyle = fontConfig.fontJson.colour;
+    this.context!.font = fontConfig.fontJson.size + ' ' + fontConfig.fontJson.fontRes;
+    switch (element.textAlign)
+    {
+      case "center":
+        this.context!.textAlign = 'center';
+        this.context!.fillText(element.text, left + (width / 2), top);
+        break;
+      case "right":
+        this.context!.textAlign = 'right';
+        this.context!.fillText(element.text, left + width, top);
+        break;
+      default:
+        this.context!.textAlign = 'left';
+        this.context!.fillText(element.text, left, top);
+        break;
     }
   }
 

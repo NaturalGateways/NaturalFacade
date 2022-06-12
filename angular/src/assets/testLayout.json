@@ -7,17 +7,25 @@
         "FakeCam": "https://httpsorigin.s3.amazonaws.com/https/Overlay/FakeCam.png"
     },
     "fontResources": {
-        "StaticBacking": "https://httpsorigin.s3.amazonaws.com/https/Overlay/Norse.otf"
+        "NorseFont": "https://httpsorigin.s3.amazonaws.com/https/Overlay/Norse.otf"
     },
-    "fonts": [
-      {
-        "name": "AttTitle",
-        "fontRes": "NorseFont",
-        "size": "38px",
-        "colour": "#e9d26c",
-        "align": "center"
-      }
-    ],
+    "fonts": {
+        "AttTitle": {
+            "fontRes": "NorseFont",
+            "size": "38px",
+            "colour": "#e9d26c"
+        },
+        "AttLabel":{
+          "fontRes": "NorseFont",
+          "size": "28px",
+          "colour": "#e9d26c"
+        },
+        "AttValue":{
+          "fontRes": "NorseFont",
+          "size": "28px",
+          "colour": "#e9d26c"
+        }
+    },
     "rootElement": {
         "elTyp": "stack",
         "children": [
@@ -58,7 +66,160 @@
                                         "elTyp": "text",
                                         "font": "AttTitle",
                                         "text": "Valheim",
+                                        "textAlign": "center",
                                         "marginTop": 50
+                                    },
+                                    {
+                                        "elTyp": "vsplit",
+                                        "marginTop": 95,
+                                        "marginLeft": 12,
+                                        "marginRight": 12,
+                                        "children": [
+                                            {
+                                                "elTyp": "stack",
+                                                "height": 38,
+                                                "children": [
+                                                    {
+                                                        "elTyp": "text",
+                                                        "font": "AttLabel",
+                                                        "text": "Permadeath Run",
+                                                        "textAlign": "left"
+                                                    },
+                                                    {
+                                                        "elTyp": "text",
+                                                        "font": "AttValue",
+                                                        "text": "V1.0",
+                                                        "textAlign": "right"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "elTyp": "stack",
+                                                "height": 38,
+                                                "children": [
+                                                    {
+                                                        "elTyp": "text",
+                                                        "font": "AttLabel",
+                                                        "textAlign": "left",
+                                                        "text": "Hero"
+                                                    },
+                                                    {
+                                                        "elTyp": "text",
+                                                        "font": "AttValue",
+                                                        "textAlign": "right",
+                                                        "text": "Example"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "elTyp": "stack",
+                                                "height": 38,
+                                                "children": [
+                                                    {
+                                                        "elTyp": "text",
+                                                        "font": "AttLabel",
+                                                        "textAlign": "left",
+                                                        "text": "Total Time"
+                                                    },
+                                                    {
+                                                        "elTyp": "text",
+                                                        "font": "AttValue",
+                                                        "textAlign": "right",
+                                                        "text": "0:12:34"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "elTyp": "stack",
+                                                "height": 38,
+                                                "children": [
+                                                    {
+                                                        "elTyp": "text",
+                                                        "font": "AttLabel",
+                                                        "textAlign": "left",
+                                                        "text": "Session Time"
+                                                    },
+                                                    {
+                                                        "elTyp": "text",
+                                                        "font": "AttValue",
+                                                        "textAlign": "right",
+                                                        "text": "0:12:34"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "elTyp": "stack",
+                                                "height": 38,
+                                                "children": [
+                                                    {
+                                                        "elTyp": "text",
+                                                        "font": "AttLabel",
+                                                        "textAlign": "left",
+                                                        "text": "Longest Run"
+                                                    },
+                                                    {
+                                                        "elTyp": "text",
+                                                        "font": "AttValue",
+                                                        "textAlign": "right",
+                                                        "text": "0:12:34"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "elTyp": "stack",
+                                                "height": 38,
+                                                "children": [
+                                                    {
+                                                        "elTyp": "text",
+                                                        "font": "AttLabel",
+                                                        "textAlign": "left",
+                                                        "text": "Biome"
+                                                    },
+                                                    {
+                                                        "elTyp": "text",
+                                                        "font": "AttValue",
+                                                        "textAlign": "right",
+                                                        "text": "Forest"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "elTyp": "stack",
+                                                "height": 38,
+                                                "children": [
+                                                    {
+                                                        "elTyp": "text",
+                                                        "font": "AttLabel",
+                                                        "textAlign": "left",
+                                                        "text": "Phase"
+                                                    },
+                                                    {
+                                                        "elTyp": "text",
+                                                        "font": "AttValue",
+                                                        "textAlign": "right",
+                                                        "text": "Resting"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "elTyp": "stack",
+                                                "height": 38,
+                                                "children": [
+                                                    {
+                                                        "elTyp": "text",
+                                                        "font": "AttLabel",
+                                                        "textAlign": "left",
+                                                        "text": "Close calls"
+                                                    },
+                                                    {
+                                                        "elTyp": "text",
+                                                        "font": "AttValue",
+                                                        "textAlign": "right",
+                                                        "text": "2"
+                                                    }
+                                                ]
+                                            }
+                                        ]
                                     }
                                 ]
                             },
