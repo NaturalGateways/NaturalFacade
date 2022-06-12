@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 
 import { LayoutApiDto } from '../model/layout-api-dto';
-import { LayoutData, LayoutImageResource, LayoutFontResource, LayoutFontConfig } from '../layout-data';
+import { LayoutData, LayoutParameter, LayoutImageResource, LayoutFontResource, LayoutFontConfig } from '../layout-data';
 
 export class LoadLayoutService {
 
@@ -10,6 +10,12 @@ export class LoadLayoutService {
   fromJson(apiDto: LayoutApiDto) : LayoutData
   {
     var layoutData : LayoutData = new LayoutData();
+    if (apiDto.parameters !== undefined)
+    {
+      for (var key in apiDto.parameters) {
+        layoutData.parameters.set(key, new LayoutParameter());
+      }
+    }
     if (apiDto.imageResources !== undefined)
     {
       for (var key in apiDto.imageResources) {
@@ -36,5 +42,22 @@ export class LoadLayoutService {
   {
     var jsonObj: LayoutApiDto = JSON.parse(jsonString);
     return this.fromJson(jsonObj);
+  }
+
+  loadParametersFromData(layoutData: LayoutData | undefined, dataJson: {[key: string]: any;}) {
+    // Set parameters
+    var parameters: Map<string, LayoutParameter> | undefined = layoutData?.parameters;
+    if (parameters === undefined)
+    {
+      return;
+    }
+
+    // Set parameters
+    for (var key in dataJson) {
+      if (parameters!.has(key)) {
+        parameters.get(key)!.value = dataJson[key]!;
+      }
+    }
+    layoutData!.parametersLoaded = true;
   }
 }

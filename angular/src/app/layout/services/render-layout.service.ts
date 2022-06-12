@@ -16,6 +16,28 @@ export class RenderLayoutService {
     this.context = context;
   }
 
+  getString(layoutData: LayoutData, object: any) {
+    if (typeof object === "string")
+    {
+      return object;
+    }
+    if (object.op === "para")
+    {
+      if (layoutData.parameters.has(object.name))
+        return layoutData.parameters.get(object.name)!.value;
+      return "<" + object.name + ">";
+    }
+    if (object.op === "cat")
+    {
+      var result = "";
+      for (var valueIndex in object.values) {
+        result += this.getString(layoutData, object.values[valueIndex]);
+      }
+      return result;
+    }
+    return object;
+  }
+
   measureElement(layoutData: LayoutData, element: any): RenderLayoutSize
   {
     var size: RenderLayoutSize = this.measureElementNoMargin(layoutData, element);
@@ -334,15 +356,15 @@ export class RenderLayoutService {
     {
       case "center":
         this.context!.textAlign = 'center';
-        this.context!.fillText(element.text, left + (width / 2), top);
+        this.context!.fillText(this.getString(layoutData, element.text), left + (width / 2), top);
         break;
       case "right":
         this.context!.textAlign = 'right';
-        this.context!.fillText(element.text, left + width, top);
+        this.context!.fillText(this.getString(layoutData, element.text), left + width, top);
         break;
       default:
         this.context!.textAlign = 'left';
-        this.context!.fillText(element.text, left, top);
+        this.context!.fillText(this.getString(layoutData, element.text), left, top);
         break;
     }
   }

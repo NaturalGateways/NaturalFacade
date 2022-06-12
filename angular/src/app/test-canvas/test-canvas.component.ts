@@ -17,6 +17,6 @@ export class TestCanvasComponent implements OnInit {
   ngOnInit(): void { }
 
   ngAfterViewInit(): void {
-    this.layoutCanvasRef!.loadFromUrl("/assets/testLayout.json");
+    this.layoutCanvasRef!.loadFromUrl("/assets/testLayout.json", "/assets/testLayoutParas.json");
   }
 }

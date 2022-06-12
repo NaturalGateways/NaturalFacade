@@ -1,4 +1,8 @@
 export class LayoutData {
+  parameters: Map<string, LayoutParameter> = new Map<string, LayoutParameter>();
+
+  parametersLoaded: boolean = false;
+
   imageResources: Map<string, LayoutImageResource> = new Map<string, LayoutImageResource>();
 
   fontResources: Map<string, LayoutFontResource> = new Map<string, LayoutFontResource>();
@@ -6,6 +10,12 @@ export class LayoutData {
   fontConfigs: Map<string, LayoutFontConfig> = new Map<string, LayoutFontConfig>();
 
   rootElement: any;
+}
+
+export class LayoutParameter {
+  value: any | undefined;
+
+  constructor() { }
 }
 
 export class LayoutImageResource {

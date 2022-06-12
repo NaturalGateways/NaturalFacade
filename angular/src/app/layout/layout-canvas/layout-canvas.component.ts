@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { LoadLayoutService } from '../services/load-layout.service';
 import { RenderLayoutService } from '../services/render-layout.service';
-import { LayoutData, LayoutFontResource } from '../layout-data';
+import { LayoutData, LayoutParameter, LayoutFontResource } from '../layout-data';
 
 @Component({
   selector: 'layout-canvas',
@@ -30,6 +30,9 @@ export class LayoutCanvasComponent implements OnInit {
 
   isFullyLoaded(): boolean
   {
+    if (this.layoutData!.parametersLoaded === false) {
+      return false;
+    }
     for (const imageRes of this.layoutData!.imageResources.values()) {
       if (imageRes.imageElement === undefined || imageRes.imageElement.complete === false) {
         return false;
@@ -55,15 +58,12 @@ export class LayoutCanvasComponent implements OnInit {
     this.layourRender?.render(this.layoutData);
   }
 
-  loadFromUrl(url: string)
+  loadFromUrl(layoutUrl: string, parametersUrl: string)
   {
-    this.http.get<any>(url).subscribe(data => {
+    this.http.get<any>(layoutUrl).subscribe(data => {
       // Load data
       var loadLayoutService : LoadLayoutService = new LoadLayoutService();
       this.layoutData = loadLayoutService.fromJson(data);
-
-      // Draw if there are no resources
-      this.drawScreenIfFullyLoaded();
 
       // Run http fetches in parallel
       for (const imageRes of this.layoutData.imageResources.values()) {
@@ -84,6 +84,36 @@ export class LayoutCanvasComponent implements OnInit {
           this.drawScreenIfFullyLoaded();
         });
       }
+
+      // Load parameters
+      this.http.get<{[key: string]: any;}>(parametersUrl).subscribe(data => {
+        // Set parameters
+        loadLayoutService.loadParametersFromData(this.layoutData, data);
+
+        // Redraw
+        this.drawScreenIfFullyLoaded();
+      });
+    });
+  }
+
+  loadParametersFromUrl(url: string) {
+    this.http.get<{[key: string]: any;}>(url).subscribe(data => {
+      // Set parameters
+      var parameters: Map<string, LayoutParameter> | undefined = this.layoutData?.parameters;
+      if (parameters === undefined)
+      {
+        return;
+      }
+
+      // Set parameters
+      for (var key in data) {
+        if (parameters!.has(key)) {
+          parameters.get(key)!.value = data[key]!;
+        }
+      }
+
+      // Redraw
+      this.drawScreenIfFullyLoaded();
     });
   }
 }

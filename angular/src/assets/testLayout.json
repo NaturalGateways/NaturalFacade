@@ -1,4 +1,24 @@
 {
+    "parameters": {
+        "MajorVer": {
+            "type": "integer"
+        },
+        "MinorVer": {
+            "type": "integer"
+        },
+        "HeroName": {
+            "type": "string"
+        },
+        "Biome": {
+            "type": "string"
+        },
+        "Phase": {
+            "type": "string"
+        },
+        "CloseCalls": {
+            "type": "integer"
+        }
+    },
     "imageResources": {
         "StaticBacking": "https://httpsorigin.s3.amazonaws.com/https/Overlay/StaticBacking.webp",
         "BgLight": "https://httpsorigin.s3.amazonaws.com/https/Overlay/UIWoodLight.jpg",
@@ -15,15 +35,15 @@
             "size": "38px",
             "colour": "#e9d26c"
         },
-        "AttLabel":{
-          "fontRes": "NorseFont",
-          "size": "28px",
-          "colour": "#e9d26c"
+        "AttLabel": {
+            "fontRes": "NorseFont",
+            "size": "28px",
+            "colour": "#e9d26c"
         },
-        "AttValue":{
-          "fontRes": "NorseFont",
-          "size": "28px",
-          "colour": "#e9d26c"
+        "AttValue": {
+            "fontRes": "NorseFont",
+            "size": "28px",
+            "colour": "#e9d26c"
         }
     },
     "rootElement": {
@@ -88,8 +108,22 @@
                                                     {
                                                         "elTyp": "text",
                                                         "font": "AttValue",
-                                                        "text": "V1.0",
-                                                        "textAlign": "right"
+                                                        "textAlign": "right",
+                                                        "text": {
+                                                            "op": "cat",
+                                                            "values": [
+                                                                "v",
+                                                                {
+                                                                    "op": "para",
+                                                                    "name": "MajorVer"
+                                                                },
+                                                                ".",
+                                                                {
+                                                                    "op": "para",
+                                                                    "name": "MinorVer"
+                                                                }
+                                                            ]
+                                                        }
                                                     }
                                                 ]
                                             },
@@ -107,7 +141,10 @@
                                                         "elTyp": "text",
                                                         "font": "AttValue",
                                                         "textAlign": "right",
-                                                        "text": "Example"
+                                                        "text": {
+                                                            "op": "para",
+                                                            "name": "HeroName"
+                                                        }
                                                     }
                                                 ]
                                             },
@@ -179,7 +216,10 @@
                                                         "elTyp": "text",
                                                         "font": "AttValue",
                                                         "textAlign": "right",
-                                                        "text": "Forest"
+                                                        "text": {
+                                                            "op": "para",
+                                                            "name": "Biome"
+                                                        }
                                                     }
                                                 ]
                                             },
@@ -197,7 +237,10 @@
                                                         "elTyp": "text",
                                                         "font": "AttValue",
                                                         "textAlign": "right",
-                                                        "text": "Resting"
+                                                        "text": {
+                                                            "op": "para",
+                                                            "name": "Phase"
+                                                        }
                                                     }
                                                 ]
                                             },
@@ -215,7 +258,10 @@
                                                         "elTyp": "text",
                                                         "font": "AttValue",
                                                         "textAlign": "right",
-                                                        "text": "2"
+                                                        "text": {
+                                                            "op": "para",
+                                                            "name": "CloseCalls"
+                                                        }
                                                     }
                                                 ]
                                             }
