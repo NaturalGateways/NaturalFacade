@@ -8,12 +8,14 @@ import { MainComponent } from './main/main.component';
 import { TestCanvasComponent } from './test-canvas/test-canvas.component';
 
 import { LayoutModule } from './layout/layout.module';
+import { LoginComponent } from './auth/login/login.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MainComponent,
-    TestCanvasComponent
+    TestCanvasComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,

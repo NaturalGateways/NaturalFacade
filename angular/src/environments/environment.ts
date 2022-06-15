@@ -3,7 +3,11 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+
+  cognitoClientId:"TODO",
+  cognitoUrl:"https://naturalfacade.auth.ap-southeast-2.amazoncognito.com",
+  callbackUrl:"http://localhost:4200/login"
 };
 
 /*
