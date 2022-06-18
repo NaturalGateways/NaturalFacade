@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Natural.Aws.Mock" Version="1.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NaturalFacade.ApiServices\NaturalFacade.ApiServices.csproj" />
+    <ProjectReference Include="..\NaturalFacade.Common\NaturalFacade.Common.csproj" />
+  </ItemGroup>
+
+</Project>
