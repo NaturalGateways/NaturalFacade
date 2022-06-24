@@ -8,6 +8,8 @@ namespace NaturalFacade.Services
 {
     public class DynamoService
     {
+        #region Base
+
         /// <summary>The action table.</summary>
         private Natural.Aws.DynamoDB.IDynamoTable m_actionTable = null;
         /// <summary>The item table.</summary>
@@ -20,6 +22,10 @@ namespace NaturalFacade.Services
             m_actionTable = dynamo.GetTable("Actions", "UserId", "DateTimeUtc");
             m_itemTable = dynamo.GetTable("Items", "ItemId", "ComponentName");
         }
+
+        #endregion
+
+        #region Generic getters and setters
 
         /// <summary>Puts an action.</summary>
         public async Task PutActionAsync(string itemId, string description, ActionModel.Action action)
@@ -69,5 +75,38 @@ namespace NaturalFacade.Services
                 }
             });
         }
+
+        #endregion
+
+        #region Typed getters and setters
+
+        /// <summary>Gets a user.</summary>
+        public async Task<ItemModel.ItemUser> GetUserAsync(string userId)
+        {
+            return await GetItemDataAsync<ItemModel.ItemUser>(userId, "Users", userId);
+        }
+
+        /// <summary>Puts a user.</summary>
+        public async Task PutUserAsync(ItemModel.ItemUser itemUser)
+        {
+            await PutItemAsync(itemUser.UserId, "Users", itemUser.UserId, itemUser);
+        }
+
+        /// <summary>Gets a layout overlay.</summary>
+        public async Task<object> GetLayoutOverlayAsync(string userId, string layoutId)
+        {
+            return await GetItemDataAsync<object>(userId, layoutId, "Overlay");
+        }
+
+        /// <summary>Gets a layout overlay.</summary>
+        public async Task PutLayoutAsync(string userId, string layoutId, ItemModel.ItemLayoutSummary summaryData, ItemModel.ItemLayoutConfig configData, object overlayObject)
+        {
+            await PutItemAsync(userId, userId, layoutId, summaryData);
+            await PutItemAsync(userId, layoutId, "Summary", summaryData);
+            await PutItemAsync(userId, layoutId, "Config", configData);
+            await PutItemAsync(userId, layoutId, "Overlay", overlayObject);
+        }
+
+        #endregion
     }
 }

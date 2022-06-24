@@ -41,10 +41,7 @@ namespace NaturalFacade.Services
             };
 
             // Write
-            await dynamoService.PutItemAsync(userId, userId, actionLayout.LayoutId, summaryItemData);
-            await dynamoService.PutItemAsync(userId, actionLayout.LayoutId, "Summary", summaryItemData);
-            await dynamoService.PutItemAsync(userId, actionLayout.LayoutId, "Config", configItemData);
-            await dynamoService.PutItemAsync(userId, actionLayout.LayoutId, "Overlay", overlayObject);
+            await dynamoService.PutLayoutAsync(userId, actionLayout.LayoutId, summaryItemData, configItemData, overlayObject);
         }
     }
 }

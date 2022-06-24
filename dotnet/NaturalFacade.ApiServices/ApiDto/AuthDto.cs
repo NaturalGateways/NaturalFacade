@@ -6,23 +6,25 @@ using System.Threading.Tasks;
 
 namespace NaturalFacade.ApiDto
 {
+    public class AuthRequestDto : CommonDto<AuthRequestPayloadDto>
+    {
+        //
+    }
+
     public enum AuthRequestType
     {
+        GetCurrentUser,
+        GetLayoutOverlay,
         PutLayout
     }
 
-    public class AuthRequestDto
+    public class AuthRequestPayloadDto
     {
         public string AuthType { get; set; }
 
-        public AuthRequestDtoLayout Layout { get; set; }
-    }
-
-    public class AuthRequestDtoLayout
-    {
         public string LayoutId { get; set; }
 
-        public LayoutConfig.LayoutConfig Config { get; set; }
+        public AuthPutLayoutRequestDto PutLayout { get; set; }
     }
 
     public class AuthResponseDto
@@ -38,10 +40,5 @@ namespace NaturalFacade.ApiDto
         public static AuthResponseDto CreateSuccess(object payload) { return new AuthResponseDto { Success = true, Payload = payload }; }
 
         public static AuthResponseDto CreateError(string message) { return new AuthResponseDto { Success = false, Error = message }; }
-    }
-
-    public class AuthResponseDtoLayout
-    {
-        public string LayoutId { get; set; }
     }
 }

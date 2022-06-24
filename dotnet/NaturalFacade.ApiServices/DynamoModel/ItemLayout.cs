@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NaturalFacade.ItemModel
 {
-    internal class ItemLayoutSummary
+    public class ItemLayoutSummary
     {
         public string UserId { get; set; }
 
@@ -15,7 +15,7 @@ namespace NaturalFacade.ItemModel
         public string Name { get; set; }
     }
 
-    internal class ItemLayoutConfig
+    public class ItemLayoutConfig
     {
         public string UserId { get; set; }
 

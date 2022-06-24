@@ -30,6 +30,12 @@ class CognitoServiceAuth
     this.expiryDateTime = new Date();
     this.expiryDateTime.setSeconds(this.expiryDateTime.getSeconds() + responseDto.expires_in);
     this.expiryDateTime.setMinutes(this.expiryDateTime.getMinutes() - 5);
+    if (environment.production === false)
+    {
+      console.log("ID: " + responseDto.id_token!);
+      console.log("Access: " + responseDto.access_token!);
+      console.log("Refresh: " + responseDto.refresh_token!);
+    }
   }
 }
 
@@ -50,7 +56,6 @@ export class CognitoService {
   {
     this.registerUrl = environment.cognitoUrl + "/signup?client_id=" + environment.cognitoClientId + "&response_type=code&scope=openid&redirect_uri=" + environment.callbackUrl;
     this.signInUrl = environment.cognitoUrl + "/login?response_type=code&scope=openid&client_id=" + environment.cognitoClientId + "&redirect_uri=" + environment.callbackUrl;
-    console.log("URL: " + this.registerUrl);
   }
 
   authenticate(code: string, callback: () => void)
