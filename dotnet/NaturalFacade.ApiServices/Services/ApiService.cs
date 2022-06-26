@@ -9,7 +9,7 @@ namespace NaturalFacade.Services
     public static class ApiService
     {
         /// <summary>Handle the request.</summary>
-        public static async Task<ApiDto.AuthResponseDto> HandleAnonRequestAsync(Natural.Aws.DynamoDB.IDynamoService dynamoDb, ApiDto.AnonRequestDto requestDto)
+        public static async Task<ApiDto.AuthResponseDto> HandleAnonRequestAsync(DynamoService dynamoService, ApiDto.AnonRequestDto requestDto)
         {
             try
             {
@@ -17,7 +17,7 @@ namespace NaturalFacade.Services
                 switch (Enum.Parse<ApiDto.AnonRequestType>(requestDto.AnonType))
                 {
                     case ApiDto.AnonRequestType.GetLayoutOverlay:
-                        return await HandleAnonGetLayoutOverlayAsync(dynamoDb, requestDto);
+                        return await HandleAnonGetLayoutOverlayAsync(dynamoService, requestDto);
                     default:
                         return ApiDto.AuthResponseDto.CreateError($"Unrecognised request type: {requestDto.AnonType}");
                 }
@@ -29,15 +29,14 @@ namespace NaturalFacade.Services
         }
 
         /// <summary>Handle the request.</summary>
-        private static async Task<ApiDto.AuthResponseDto> HandleAnonGetLayoutOverlayAsync(Natural.Aws.DynamoDB.IDynamoService dynamoDb, ApiDto.AnonRequestDto requestDto)
+        private static async Task<ApiDto.AuthResponseDto> HandleAnonGetLayoutOverlayAsync(DynamoService dynamoService, ApiDto.AnonRequestDto requestDto)
         {
-            DynamoService dynamoService = new DynamoService(dynamoDb);
             object overlayObject = await dynamoService.GetLayoutOverlayAsync(requestDto.UserId, requestDto.LayoutId);
             return ApiDto.AuthResponseDto.CreateSuccess(overlayObject);
         }
 
         /// <summary>Handle the request.</summary>
-        public static async Task<ApiDto.AuthResponseDto> HandleAuthRequestAsync(Natural.Aws.DynamoDB.IDynamoService dynamoDb, ApiDto.AuthRequestDto requestDto)
+        public static async Task<ApiDto.AuthResponseDto> HandleAuthRequestAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
         {
             try
             {
@@ -45,11 +44,11 @@ namespace NaturalFacade.Services
                 switch (Enum.Parse<ApiDto.AuthRequestType>(requestDto.payload.AuthType))
                 {
                     case ApiDto.AuthRequestType.GetCurrentUser:
-                        return await HandleAuthGetCurrentUserAsync(dynamoDb, requestDto);
+                        return await HandleAuthGetCurrentUserAsync(dynamoService, requestDto);
                     case ApiDto.AuthRequestType.GetLayoutOverlay:
-                        return await HandleAuthGetLayoutOverlayAsync(dynamoDb, requestDto);
+                        return await HandleAuthGetLayoutOverlayAsync(dynamoService, requestDto);
                     case ApiDto.AuthRequestType.PutLayout:
-                        return await HandleAuthPutLayoutAsync(dynamoDb, requestDto);
+                        return await HandleAuthPutLayoutAsync(dynamoService, requestDto);
                     default:
                         return ApiDto.AuthResponseDto.CreateError($"Unrecognised request type: {requestDto.payload.AuthType}");
                 }
@@ -61,11 +60,8 @@ namespace NaturalFacade.Services
         }
 
         /// <summary>Handle the request.</summary>
-        private static async Task<ApiDto.AuthResponseDto> HandleAuthGetCurrentUserAsync(Natural.Aws.DynamoDB.IDynamoService dynamoDb, ApiDto.AuthRequestDto requestDto)
+        private static async Task<ApiDto.AuthResponseDto> HandleAuthGetCurrentUserAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
         {
-            // Create services
-            DynamoService dynamoService = new DynamoService(dynamoDb);
-
             // Get existing layout ID
             string userId = $"User-{requestDto.context.userId}";
 
@@ -94,9 +90,8 @@ namespace NaturalFacade.Services
         }
 
         /// <summary>Handle the request.</summary>
-        private static async Task<ApiDto.AuthResponseDto> HandleAuthGetLayoutOverlayAsync(Natural.Aws.DynamoDB.IDynamoService dynamoDb, ApiDto.AuthRequestDto requestDto)
+        private static async Task<ApiDto.AuthResponseDto> HandleAuthGetLayoutOverlayAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
         {
-            DynamoService dynamoService = new DynamoService(dynamoDb);
             string userId = $"User-{requestDto.context.userId}";
             object overlayObject = await dynamoService.GetLayoutOverlayAsync(userId, requestDto.payload.LayoutId);
             return ApiDto.AuthResponseDto.CreateSuccess(new ApiDto.AuthGetLayoutOverlayResponseDto
@@ -107,11 +102,8 @@ namespace NaturalFacade.Services
         }
 
         /// <summary>Handle the request.</summary>
-        private static async Task<ApiDto.AuthResponseDto> HandleAuthPutLayoutAsync(Natural.Aws.DynamoDB.IDynamoService dynamoDb, ApiDto.AuthRequestDto requestDto)
+        private static async Task<ApiDto.AuthResponseDto> HandleAuthPutLayoutAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
         {
-            // Create services
-            DynamoService dynamoService = new DynamoService(dynamoDb);
-
             // Get existing layout ID
             string userId = $"User-{requestDto.context.userId}";
             string layoutId = requestDto.payload.PutLayout.LayoutId ?? $"Layout-{Guid.NewGuid().ToString()}";

@@ -6,6 +6,13 @@ using System.Threading.Tasks;
 
 namespace NaturalFacade.Services
 {
+    public interface IDynamoServiceTableNames
+    {
+        string ActionTableName { get; }
+
+        string ItemTableName { get; }
+    }
+
     public class DynamoService
     {
         #region Base
@@ -16,11 +23,11 @@ namespace NaturalFacade.Services
         private Natural.Aws.DynamoDB.IDynamoTable m_itemTable = null;
 
         /// <summary>Constructor.</summary>
-        public DynamoService(Natural.Aws.DynamoDB.IDynamoService dynamo)
+        public DynamoService(Natural.Aws.DynamoDB.IDynamoService dynamo, IDynamoServiceTableNames tableNames)
         {
             // Get tables
-            m_actionTable = dynamo.GetTable("Actions", "UserId", "DateTimeUtc");
-            m_itemTable = dynamo.GetTable("Items", "ItemId", "ComponentName");
+            m_actionTable = dynamo.GetTable(tableNames?.ActionTableName ?? "Actions", "UserId", "DateTimeUtc");
+            m_itemTable = dynamo.GetTable(tableNames?.ItemTableName ?? "Items", "ItemId", "ComponentName");
         }
 
         #endregion

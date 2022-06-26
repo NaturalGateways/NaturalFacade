@@ -12,9 +12,10 @@ public class Functions
     {
         // Create service
         Natural.Aws.IAwsService awsService = new Natural.Aws.LambdaAwsService();
-        using (Natural.Aws.DynamoDB.IDynamoService? dyanmoService = awsService.CreateDynamoService())
+        using (Natural.Aws.DynamoDB.IDynamoService? dynamoDb = awsService.CreateDynamoService())
         {
-            return await Services.ApiService.HandleAnonRequestAsync(dyanmoService, request);
+            Services.DynamoService dynamoService = new Services.DynamoService(dynamoDb);
+            return await Services.ApiService.HandleAnonRequestAsync(dynamoService, request);
         }
     }
 
@@ -23,9 +24,10 @@ public class Functions
     {
         // Create service
         Natural.Aws.IAwsService awsService = new Natural.Aws.LambdaAwsService();
-        using (Natural.Aws.DynamoDB.IDynamoService? dyanmoService = awsService.CreateDynamoService())
+        using (Natural.Aws.DynamoDB.IDynamoService? dynamoDb = awsService.CreateDynamoService())
         {
-            return await Services.ApiService.HandleAuthRequestAsync(dyanmoService, request);
+            Services.DynamoService dynamoService = new Services.DynamoService(dynamoDb);
+            return await Services.ApiService.HandleAuthRequestAsync(dynamoService, request);
         }
     }
 }
