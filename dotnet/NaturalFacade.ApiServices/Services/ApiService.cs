@@ -9,6 +9,34 @@ namespace NaturalFacade.Services
     public static class ApiService
     {
         /// <summary>Handle the request.</summary>
+        public static async Task<ApiDto.AuthResponseDto> HandleAnonRequestAsync(Natural.Aws.DynamoDB.IDynamoService dynamoDb, ApiDto.AnonRequestDto requestDto)
+        {
+            try
+            {
+                // Parse enum
+                switch (Enum.Parse<ApiDto.AnonRequestType>(requestDto.AnonType))
+                {
+                    case ApiDto.AnonRequestType.GetLayoutOverlay:
+                        return await HandleAnonGetLayoutOverlayAsync(dynamoDb, requestDto);
+                    default:
+                        return ApiDto.AuthResponseDto.CreateError($"Unrecognised request type: {requestDto.AnonType}");
+                }
+            }
+            catch (Exception ex)
+            {
+                return ApiDto.AuthResponseDto.CreateError(ex.Message);
+            }
+        }
+
+        /// <summary>Handle the request.</summary>
+        private static async Task<ApiDto.AuthResponseDto> HandleAnonGetLayoutOverlayAsync(Natural.Aws.DynamoDB.IDynamoService dynamoDb, ApiDto.AnonRequestDto requestDto)
+        {
+            DynamoService dynamoService = new DynamoService(dynamoDb);
+            object overlayObject = await dynamoService.GetLayoutOverlayAsync(requestDto.UserId, requestDto.LayoutId);
+            return ApiDto.AuthResponseDto.CreateSuccess(overlayObject);
+        }
+
+        /// <summary>Handle the request.</summary>
         public static async Task<ApiDto.AuthResponseDto> HandleAuthRequestAsync(Natural.Aws.DynamoDB.IDynamoService dynamoDb, ApiDto.AuthRequestDto requestDto)
         {
             try
