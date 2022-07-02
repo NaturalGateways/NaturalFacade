@@ -1,0 +1,541 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Creates the serverless resources for the Write More project.",
+  "Parameters": {
+    "Environment": {
+      "Description": "Name of the environment to use to identify resources.",
+      "Type": "String"
+    },
+    "ApiBuildFilename": {
+      "Description": "The filename of the API build.",
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "ApiAnonHandlerLambdaPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:invokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ApiAnonHandlerLambda",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:aws:execute-api:ap-southeast-2:",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ApiAnonHandlerLambda": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Description": "Lambda to process API requests.",
+        "Code": {
+          "S3Bucket": "naturalfacade",
+          "S3Key": {
+            "Fn::Join": [
+              "/",
+              [
+                "apibuilds",
+                {
+                  "Ref": "ApiBuildFilename"
+                }
+              ]
+            ]
+          }
+        },
+        "Environment": {
+          "Variables": {
+            "Environment": {
+              "Ref": "Environment"
+            },
+            "DbTableAction": {
+              "Ref": "DynamicTableAction"
+            },
+            "DbTableItem": {
+              "Ref": "DynamicTableItem"
+            }
+          }
+        },
+        "Handler": "NaturalFacade.ApiLambdas::NaturalFacade.ApiLambdas.Functions::AnonFunctionHandler",
+        "MemorySize": 512,
+        "Role": "arn:aws:iam::582929002414:role/LambdaExecution",
+        "Runtime": "dotnet6",
+        "Timeout": 15
+      }
+    },
+    "ApiAuthHandlerLambdaPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:invokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ApiAuthHandlerLambda",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:aws:execute-api:ap-southeast-2:",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ApiAuthHandlerLambda": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Description": "Lambda to process API requests.",
+        "Code": {
+          "S3Bucket": "naturalfacade",
+          "S3Key": {
+            "Fn::Join": [
+              "/",
+              [
+                "apibuilds",
+                {
+                  "Ref": "ApiBuildFilename"
+                }
+              ]
+            ]
+          }
+        },
+        "Environment": {
+          "Variables": {
+            "Environment": {
+              "Ref": "Environment"
+            },
+            "DbTableAction": {
+              "Ref": "DynamicTableAction"
+            },
+            "DbTableItem": {
+              "Ref": "DynamicTableItem"
+            }
+          }
+        },
+        "Handler": "NaturalFacade.ApiLambdas::NaturalFacade.ApiLambdas.Functions::AuthFunctionHandler",
+        "MemorySize": 512,
+        "Role": "arn:aws:iam::582929002414:role/LambdaExecution",
+        "Runtime": "dotnet6",
+        "Timeout": 15
+      }
+    },
+    "ApiGatewayApi": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Description": "API Gateway to provide a RESTful interface.",
+        "Name": {
+          "Fn::Join": [
+            "-",
+            [
+              "NaturalFacade",
+              {
+                "Ref": "Environment"
+              }
+            ]
+          ]
+        },
+        "EndpointConfiguration": {
+          "Types": [
+            "REGIONAL"
+          ]
+        }
+      }
+    },
+    "ApiGatewayAnonResource": {
+      "DependsOn": [
+        "ApiGatewayApi"
+      ],
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "ApiGatewayApi"
+        },
+        "ParentId": {
+          "Fn::GetAtt": [
+            "ApiGatewayApi",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "anon"
+      }
+    },
+    "ApiGatewayAnonGetMethod": {
+      "DependsOn": [
+        "ApiGatewayAnonResource"
+      ],
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": {
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": [
+            {
+              "StatusCode": 200,
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
+              "ResponseTemplates": {
+                "application/json": ""
+              }
+            }
+          ],
+          "PassthroughBehavior": "NEVER",
+          "RequestTemplates": {
+            "application/json": "{\n\"body\":$input.json('$')\n}"
+          },
+          "Type": "AWS",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:aws:apigateway:ap-southeast-2:lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ApiAnonHandlerLambda",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": [
+          {
+            "ResponseModels": {
+              "application/json": "Empty"
+            },
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": false
+            },
+            "StatusCode": 200
+          }
+        ],
+        "ResourceId": {
+          "Ref": "ApiGatewayAnonResource"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayApi"
+        }
+      }
+    },
+    "ApiGatewayAnonOptionsMethod": {
+      "DependsOn": [
+        "ApiGatewayAnonResource"
+      ],
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": {
+          "IntegrationResponses": [
+            {
+              "StatusCode": 200,
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                "method.response.header.Access-Control-Allow-Methods": "'GET,OPTIONS'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
+              "ResponseTemplates": {
+                "application/json": ""
+              }
+            }
+          ],
+          "PassthroughBehavior": "WHEN_NO_MATCH",
+          "RequestTemplates": {
+            "application/json": "{\"statusCode\": 200}"
+          },
+          "Type": "MOCK"
+        },
+        "MethodResponses": [
+          {
+            "ResponseModels": {
+              "application/json": "Empty"
+            },
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": false,
+              "method.response.header.Access-Control-Allow-Methods": false,
+              "method.response.header.Access-Control-Allow-Origin": false
+            },
+            "StatusCode": 200
+          }
+        ],
+        "ResourceId": {
+          "Ref": "ApiGatewayAnonResource"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayApi"
+        }
+      }
+    },
+    "ApiGatewayAuthResource": {
+      "DependsOn": [
+        "ApiGatewayApi"
+      ],
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "ApiGatewayApi"
+        },
+        "ParentId": {
+          "Fn::GetAtt": [
+            "ApiGatewayApi",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "auth"
+      }
+    },
+    "ApiGatewayAuthGetMethod": {
+      "DependsOn": [
+        "ApiGatewayAuthResource"
+      ],
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": {
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": [
+            {
+              "StatusCode": 200,
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
+              "ResponseTemplates": {
+                "application/json": ""
+              }
+            }
+          ],
+          "PassthroughBehavior": "NEVER",
+          "RequestTemplates": {
+            "application/json": "#set($allParams = $input.params())\n{\n\"payload\":$input.json('$'),\n{\"userId\":\"$context.authorizer.claims.sub\",\"email\":\"$context.authorizer.claims.email\",\"sourceIp\":\"$context.identity.sourceIp\",\"userAgent\":\"$context.identity.userAgent\",\"requestId\":\"$context.requestId\"}\n}"
+          },
+          "Type": "AWS",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:aws:apigateway:ap-southeast-2:lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ApiAuthHandlerLambda",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": [
+          {
+            "ResponseModels": {
+              "application/json": "Empty"
+            },
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": false
+            },
+            "StatusCode": 200
+          }
+        ],
+        "ResourceId": {
+          "Ref": "ApiGatewayAuthResource"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayApi"
+        }
+      }
+    },
+    "ApiGatewayAuthPostMethod": {
+      "DependsOn": [
+        "ApiGatewayAuthResource"
+      ],
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "POST",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "IntegrationResponses": [
+            {
+              "StatusCode": 200,
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
+              "ResponseTemplates": {
+                "application/json": ""
+              }
+            }
+          ],
+          "PassthroughBehavior": "NEVER",
+          "RequestTemplates": {
+            "application/json": "#set($allParams = $input.params())\n{\n\"payload\":$input.json('$'),\n{\"userId\":\"$context.authorizer.claims.sub\",\"email\":\"$context.authorizer.claims.email\",\"sourceIp\":\"$context.identity.sourceIp\",\"userAgent\":\"$context.identity.userAgent\",\"requestId\":\"$context.requestId\"}\n}"
+          },
+          "Type": "AWS",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:aws:apigateway:ap-southeast-2:lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ApiAuthHandlerLambda",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": [
+          {
+            "ResponseModels": {
+              "application/json": "Empty"
+            },
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": false
+            },
+            "StatusCode": 200
+          }
+        ],
+        "ResourceId": {
+          "Ref": "ApiGatewayAuthResource"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayApi"
+        }
+      }
+    },
+    "ApiGatewayAuthOptionsMethod": {
+      "DependsOn": [
+        "ApiGatewayAuthResource"
+      ],
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": {
+          "IntegrationResponses": [
+            {
+              "StatusCode": 200,
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                "method.response.header.Access-Control-Allow-Methods": "'GET,POST,OPTIONS'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
+              "ResponseTemplates": {
+                "application/json": ""
+              }
+            }
+          ],
+          "PassthroughBehavior": "WHEN_NO_MATCH",
+          "RequestTemplates": {
+            "application/json": "{\"statusCode\": 200}"
+          },
+          "Type": "MOCK"
+        },
+        "MethodResponses": [
+          {
+            "ResponseModels": {
+              "application/json": "Empty"
+            },
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": false,
+              "method.response.header.Access-Control-Allow-Methods": false,
+              "method.response.header.Access-Control-Allow-Origin": false
+            },
+            "StatusCode": 200
+          }
+        ],
+        "ResourceId": {
+          "Ref": "ApiGatewayAuthResource"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayApi"
+        }
+      }
+    },
+    "DynamicTableAction": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "UserId",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "DateTimeUtc",
+            "AttributeType": "S"
+          }
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "KeySchema": [
+          {
+            "AttributeName": "UserId",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "DateTimeUtc",
+            "KeyType": "RANGE"
+          }
+        ]
+      }
+    },
+    "DynamicTableItem": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "ItemId",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "ComponentName",
+            "AttributeType": "S"
+          }
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "KeySchema": [
+          {
+            "AttributeName": "ItemId",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "ComponentName",
+            "KeyType": "RANGE"
+          }
+        ]
+      }
+    }
+  }
+}
