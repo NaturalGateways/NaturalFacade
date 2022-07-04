@@ -485,6 +485,23 @@
         }
       }
     },
+    "ApiGatewayDeployment": {
+      "DependsOn": [
+        "ApiGatewayAnonGetMethod",
+        "ApiGatewayAnonOptionsMethod",
+        "ApiGatewayAuthGetMethod",
+        "ApiGatewayAuthPostMethod",
+        "ApiGatewayAuthOptionsMethod"
+      ],
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "Description": "Deployment for the stage.",
+        "RestApiId": {
+          "Ref": "ApiGatewayApi"
+        },
+        "StageName": "LATEST"
+      }
+    },
     "DynamicTableAction": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
