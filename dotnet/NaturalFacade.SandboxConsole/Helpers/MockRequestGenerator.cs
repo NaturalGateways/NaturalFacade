@@ -26,7 +26,7 @@ namespace NaturalFacade.SandboxConsole.Helpers
             {
                 payload = new ApiDto.AuthRequestPayloadDto
                 {
-                    AuthType = ApiDto.AuthRequestType.GetCurrentUser.ToString()
+                    RequestType = ApiDto.AuthRequestType.GetCurrentUser.ToString()
                 },
                 context = CreateContext()
             };
@@ -38,7 +38,7 @@ namespace NaturalFacade.SandboxConsole.Helpers
             {
                 payload = new ApiDto.AuthRequestPayloadDto
                 {
-                    AuthType = ApiDto.AuthRequestType.PutLayout.ToString(),
+                    RequestType = ApiDto.AuthRequestType.PutLayout.ToString(),
                     PutLayout = new ApiDto.AuthPutLayoutRequestDto
                     {
                         Config = new LayoutConfig.LayoutConfig
@@ -59,7 +59,7 @@ namespace NaturalFacade.SandboxConsole.Helpers
             {
                 payload = new ApiDto.AuthRequestPayloadDto
                 {
-                    AuthType = ApiDto.AuthRequestType.GetLayoutOverlay.ToString(),
+                    RequestType = ApiDto.AuthRequestType.GetLayoutOverlay.ToString(),
                     LayoutId = layoutId
                 },
                 context = CreateContext()

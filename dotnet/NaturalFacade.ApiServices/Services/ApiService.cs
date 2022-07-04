@@ -14,12 +14,12 @@ namespace NaturalFacade.Services
             try
             {
                 // Parse enum
-                switch (Enum.Parse<ApiDto.AnonRequestType>(requestDto.AnonType))
+                switch (Enum.Parse<ApiDto.AnonRequestType>(requestDto.RequestType))
                 {
                     case ApiDto.AnonRequestType.GetLayoutOverlay:
                         return await HandleAnonGetLayoutOverlayAsync(dynamoService, requestDto);
                     default:
-                        return ApiDto.AuthResponseDto.CreateError($"Unrecognised request type: {requestDto.AnonType}");
+                        return ApiDto.AuthResponseDto.CreateError($"Unrecognised request type: {requestDto.RequestType}");
                 }
             }
             catch (Exception ex)
@@ -41,7 +41,7 @@ namespace NaturalFacade.Services
             try
             {
                 // Parse enum
-                switch (Enum.Parse<ApiDto.AuthRequestType>(requestDto.payload.AuthType))
+                switch (Enum.Parse<ApiDto.AuthRequestType>(requestDto.payload.RequestType))
                 {
                     case ApiDto.AuthRequestType.GetCurrentUser:
                         return await HandleAuthGetCurrentUserAsync(dynamoService, requestDto);
@@ -50,7 +50,7 @@ namespace NaturalFacade.Services
                     case ApiDto.AuthRequestType.PutLayout:
                         return await HandleAuthPutLayoutAsync(dynamoService, requestDto);
                     default:
-                        return ApiDto.AuthResponseDto.CreateError($"Unrecognised request type: {requestDto.payload.AuthType}");
+                        return ApiDto.AuthResponseDto.CreateError($"Unrecognised request type: {requestDto.payload.RequestType}");
                 }
             }
             catch (Exception ex)

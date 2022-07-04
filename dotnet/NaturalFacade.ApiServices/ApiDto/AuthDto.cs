@@ -20,7 +20,7 @@ namespace NaturalFacade.ApiDto
 
     public class AuthRequestPayloadDto
     {
-        public string AuthType { get; set; }
+        public string RequestType { get; set; }
 
         public string LayoutId { get; set; }
 

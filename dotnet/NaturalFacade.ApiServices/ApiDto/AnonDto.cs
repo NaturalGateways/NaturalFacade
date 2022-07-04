@@ -13,7 +13,7 @@ namespace NaturalFacade.ApiDto
 
     public class AnonRequestDto
     {
-        public string AnonType { get; set; }
+        public string RequestType { get; set; }
 
         public string UserId { get; set; }
 
