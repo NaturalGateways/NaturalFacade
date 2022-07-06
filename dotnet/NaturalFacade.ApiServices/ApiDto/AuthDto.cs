@@ -35,10 +35,39 @@ namespace NaturalFacade.ApiDto
 
         public string Error { get; private set; }
 
+        public AuthResponseExceptionDto[] Exception { get; private set; }
+
         private AuthResponseDto() { }
 
         public static AuthResponseDto CreateSuccess(object payload) { return new AuthResponseDto { Success = true, Payload = payload }; }
 
         public static AuthResponseDto CreateError(string message) { return new AuthResponseDto { Success = false, Error = message }; }
+
+        public static AuthResponseDto CreateError(Exception ex)
+        {
+            List<AuthResponseExceptionDto> exceptionList = new List<AuthResponseExceptionDto>();
+            while (ex != null)
+            {
+                exceptionList.Add(new AuthResponseExceptionDto(ex));
+                ex = ex.InnerException;
+            }
+            return new AuthResponseDto { Success = false, Exception = exceptionList.ToArray() };
+        }
+    }
+
+    public class AuthResponseExceptionDto
+    {
+        public string ExceptionType { get; private set; }
+
+        public string Message { get; private set; }
+
+        public string StackTrace { get; private set; }
+
+        public AuthResponseExceptionDto(Exception ex)
+        {
+            this.ExceptionType = ex.GetType().FullName;
+            this.Message = ex.Message;
+            this.StackTrace = ex.StackTrace;
+        }
     }
 }

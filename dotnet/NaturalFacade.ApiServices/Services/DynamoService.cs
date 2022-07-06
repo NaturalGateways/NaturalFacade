@@ -41,7 +41,7 @@ namespace NaturalFacade.Services
             {
                 ObjectAttributes = new Dictionary<string, object>
                 {
-                    { "Data", action }
+                    { "DataJson", action }
                 },
                 StringAttributes = new Dictionary<string, string>
                 {
@@ -53,7 +53,7 @@ namespace NaturalFacade.Services
         /// <summary>Gets an item.</summary>
         public async Task<ItemType> GetItemDataAsync<ItemType>(string userId, string partitionId, string sortId)
         {
-            Natural.Aws.DynamoDB.IDynamoItem item = await m_itemTable.GetItemByKeyAsync(partitionId, sortId, "UserId,Data");
+            Natural.Aws.DynamoDB.IDynamoItem item = await m_itemTable.GetItemByKeyAsync(partitionId, sortId, "UserId,DataJson");
             if (item == null)
             {
                 return default(ItemType);
@@ -63,7 +63,7 @@ namespace NaturalFacade.Services
             {
                 throw new Exception("Cannot access record by other user.");
             }
-            return item.GetStringAsObject<ItemType>("Data");
+            return item.GetStringAsObject<ItemType>("DataJson");
         }
 
         /// <summary>Puts an item.</summary>
@@ -73,7 +73,7 @@ namespace NaturalFacade.Services
             {
                 ObjectAttributes = new Dictionary<string, object>
                 {
-                    { "Data", data }
+                    { "DataJson", data }
                 },
                 StringAttributes = new Dictionary<string, string>
                 {

@@ -24,7 +24,7 @@ namespace NaturalFacade.Services
             }
             catch (Exception ex)
             {
-                return ApiDto.AuthResponseDto.CreateError(ex.Message);
+                return ApiDto.AuthResponseDto.CreateError(ex);
             }
         }
 
@@ -55,7 +55,7 @@ namespace NaturalFacade.Services
             }
             catch (Exception ex)
             {
-                return ApiDto.AuthResponseDto.CreateError(ex.Message);
+                return ApiDto.AuthResponseDto.CreateError(ex);
             }
         }
 
