@@ -65,7 +65,26 @@ export class CognitoService {
     let url: string = environment.cognitoUrl + "/oauth2/token?grant_type=authorization_code&client_id=" + environment.cognitoClientId + "&code=" + code + "&redirect_uri=" + environment.callbackUrl;
     const headers = new HttpHeaders().set("Content-Type", "application/x-www-form-urlencoded");
     this.http.post<CognitoServiceTokenResponseDto>(url, "", {headers}).subscribe(resp => {
-      this.auth = new CognitoServiceAuth(resp);
+      this.getCurrentUser(resp, callback)
+      callback();
+    }, error => {
+      console.log("Error: " + JSON.stringify(error));
+      this.authentication = CognitoServiceAuthStatus.None;
+      this.authEmitter.emit();
+      callback();
+    });
+  }
+
+  getCurrentUser(tokenResponse: CognitoServiceTokenResponseDto, callback: () => void)
+  {
+    this.authentication = CognitoServiceAuthStatus.LoggingIn;
+    this.authEmitter.emit();
+    let url: string = environment.apiUrl + "/auth";
+    const headers = new HttpHeaders().set("Content-Type", "application/json").set("Authorization", tokenResponse.id_token!);
+    var reqBody = {RequestType: "GetCurrentUser"};
+    this.http.post<any>(url, reqBody, {headers}).subscribe(resp => {
+      console.log("User: " + JSON.stringify(resp));
+      this.auth = new CognitoServiceAuth(tokenResponse);
       this.authentication = CognitoServiceAuthStatus.Authenticated;
       this.authEmitter.emit();
       callback();

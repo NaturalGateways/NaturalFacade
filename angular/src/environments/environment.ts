@@ -7,7 +7,8 @@ export const environment = {
 
   cognitoClientId:"TODO",
   cognitoUrl:"https://naturalfacade.auth.ap-southeast-2.amazoncognito.com",
-  callbackUrl:"http://localhost:4200/login"
+  callbackUrl:"http://localhost:4200/login",
+  apiUrl:"TODO"
 };
 
 /*
