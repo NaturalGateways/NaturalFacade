@@ -24,8 +24,8 @@ namespace NaturalFacade.ApiLambdas
         /// <summary>Constructor.</summary>
         public DynamoTableNames()
         {
-            this.ActionTableName = Environment.GetEnvironmentVariable("DbTableActions");
-            this.ItemTableName = Environment.GetEnvironmentVariable("DbTableItems");
+            this.ActionTableName = Environment.GetEnvironmentVariable("DbTableAction");
+            this.ItemTableName = Environment.GetEnvironmentVariable("DbTableItem");
         }
 
         /// <summary>Services.IDynamoServiceTableNames implentation.</summary>

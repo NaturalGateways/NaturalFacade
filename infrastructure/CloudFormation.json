@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Creates the serverless resources for the Write More project.",
+  "Description": "Creates the serverless resources for the Natural Facade project.",
   "Parameters": {
     "Environment": {
       "Description": "Name of the environment to use to identify resources.",
@@ -168,6 +168,23 @@
         }
       }
     },
+    "ApiGatewayAuthorizer": {
+      "DependsOn": [
+        "ApiGatewayApi"
+      ],
+      "Type": "AWS::ApiGateway::Authorizer",
+      "Properties": {
+        "IdentitySource": "method.request.header.Authorization",
+        "Name": "CognitoAuth",
+        "ProviderARNs": [
+          "arn:aws:cognito-idp:ap-southeast-2:582929002414:userpool/ap-southeast-2_tZVt8zq3R"
+        ],
+        "RestApiId": {
+          "Ref": "ApiGatewayApi"
+        },
+        "Type": "COGNITO_USER_POOLS"
+      }
+    },
     "ApiGatewayAnonResource": {
       "DependsOn": [
         "ApiGatewayApi"
@@ -320,7 +337,10 @@
       ],
       "Type": "AWS::ApiGateway::Method",
       "Properties": {
-        "AuthorizationType": "NONE",
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Ref": "ApiGatewayAuthorizer"
+        },
         "HttpMethod": "GET",
         "Integration": {
           "IntegrationHttpMethod": "GET",
@@ -381,7 +401,10 @@
       ],
       "Type": "AWS::ApiGateway::Method",
       "Properties": {
-        "AuthorizationType": "NONE",
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Ref": "ApiGatewayAuthorizer"
+        },
         "HttpMethod": "POST",
         "Integration": {
           "IntegrationHttpMethod": "POST",
@@ -398,7 +421,7 @@
           ],
           "PassthroughBehavior": "NEVER",
           "RequestTemplates": {
-            "application/json": "#set($allParams = $input.params())\n{\n\"payload\":$input.json('$'),\n{\"userId\":\"$context.authorizer.claims.sub\",\"email\":\"$context.authorizer.claims.email\",\"sourceIp\":\"$context.identity.sourceIp\",\"userAgent\":\"$context.identity.userAgent\",\"requestId\":\"$context.requestId\"}\n}"
+            "application/json": "#set($allParams = $input.params())\n{\n\"payload\":$input.json('$'),\n\"context\":{\"userId\":\"$context.authorizer.claims.sub\",\"email\":\"$context.authorizer.claims.email\",\"sourceIp\":\"$context.identity.sourceIp\",\"userAgent\":\"$context.identity.userAgent\",\"requestId\":\"$context.requestId\"}\n}"
           },
           "Type": "AWS",
           "Uri": {
