@@ -20,7 +20,7 @@ namespace NaturalFacade.LayoutConfig.Raw
             // Return
             return new ApiDto.OverlayDto
             {
-                imageResources = instance.m_resourcesByName.Values.Where(x => x.IsUsed && x.ResConfig.Type == RawLayoutConfigResourceType.Image).ToDictionary(x => x.ResConfig.Name, y => y.ResConfig.Url),
+                imageResources = instance.m_resourcesByName.Values.Where(x => x.IsUsed && x.ResConfig.Type == "Image").ToDictionary(x => x.ResConfig.Name, y => y.ResConfig.Url),
                 rootElement = rootElement
             };
         }
@@ -50,7 +50,7 @@ namespace NaturalFacade.LayoutConfig.Raw
         /// <summary>Creates an overlay element from a layout element.</summary>
         private object ConvertElement(RawLayoutConfigElement layoutElement)
         {
-            switch (layoutElement.ElementType)
+            switch (Enum.Parse<RawLayoutConfigElementType>(layoutElement.ElementType))
             {
                 case RawLayoutConfigElementType.Stack:
                     if (layoutElement.Stack == null)

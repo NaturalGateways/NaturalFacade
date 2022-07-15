@@ -24,7 +24,7 @@ namespace NaturalFacade.LayoutConfig.Raw
     {
         public string Name { get; set; }
 
-        public RawLayoutConfigResourceType? Type { get; set; }
+        public string Type { get; set; }
 
         public string Url { get; set; }
     }
@@ -37,7 +37,7 @@ namespace NaturalFacade.LayoutConfig.Raw
 
     public class RawLayoutConfigElement
     {
-        public RawLayoutConfigElementType ElementType { get; set; }
+        public string ElementType { get; set; }
 
         public RawLayoutConfigElementStack Stack { get; set; }
         public RawLayoutConfigElementImage Image { get; set; }

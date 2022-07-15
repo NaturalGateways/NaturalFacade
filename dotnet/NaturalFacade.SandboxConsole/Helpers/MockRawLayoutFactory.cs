@@ -17,19 +17,19 @@ namespace NaturalFacade.SandboxConsole.Helpers
                     new LayoutConfig.Raw.RawLayoutConfigResource
                     {
                         Name = "StaticBacking",
-                        Type = LayoutConfig.Raw.RawLayoutConfigResourceType.Image,
+                        Type = LayoutConfig.Raw.RawLayoutConfigResourceType.Image.ToString(),
                         Url = "https://httpsorigin.s3.amazonaws.com/https/Overlay/StaticBacking.webp"
                     },
                     new LayoutConfig.Raw.RawLayoutConfigResource
                     {
                         Name = "BgLight",
-                        Type = LayoutConfig.Raw.RawLayoutConfigResourceType.Image,
+                        Type = LayoutConfig.Raw.RawLayoutConfigResourceType.Image.ToString(),
                         Url = "https://httpsorigin.s3.amazonaws.com/https/Overlay/UIWoodLight.jpg"
                     }
                 },
                 RootElement = new LayoutConfig.Raw.RawLayoutConfigElement
                 {
-                    ElementType = LayoutConfig.Raw.RawLayoutConfigElementType.Stack,
+                    ElementType = LayoutConfig.Raw.RawLayoutConfigElementType.Stack.ToString(),
                     Stack = new LayoutConfig.Raw.RawLayoutConfigElementStack
                     {
                         Children = new LayoutConfig.Raw.RawLayoutConfigElementStackChild[]
@@ -38,7 +38,7 @@ namespace NaturalFacade.SandboxConsole.Helpers
                             {
                                 Element = new LayoutConfig.Raw.RawLayoutConfigElement
                                 {
-                                    ElementType = LayoutConfig.Raw.RawLayoutConfigElementType.Image,
+                                    ElementType = LayoutConfig.Raw.RawLayoutConfigElementType.Image.ToString(),
                                     Image = new LayoutConfig.Raw.RawLayoutConfigElementImage
                                     {
                                         Fit = LayoutConfig.Raw.RawLayoutConfigElementImageFit.None,
@@ -53,7 +53,7 @@ namespace NaturalFacade.SandboxConsole.Helpers
                                 MarginLeftType = LayoutConfig.Raw.RawLayoutConfigElementStackSizeType.Max,
                                 Element = new LayoutConfig.Raw.RawLayoutConfigElement
                                 {
-                                    ElementType = LayoutConfig.Raw.RawLayoutConfigElementType.Image,
+                                    ElementType = LayoutConfig.Raw.RawLayoutConfigElementType.Image.ToString(),
                                     Image = new LayoutConfig.Raw.RawLayoutConfigElementImage
                                     {
                                         Fit = LayoutConfig.Raw.RawLayoutConfigElementImageFit.Tiled,

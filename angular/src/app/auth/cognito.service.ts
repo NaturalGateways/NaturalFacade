@@ -37,7 +37,7 @@ class CognitoServiceAuth
     this.userDto = userDto;
     if (environment.production === false)
     {
-      console.log("User: " + userDto);
+      console.log("User: " + JSON.stringify(userDto));
       console.log("ID: " + tokenRespDto.id_token!);
       console.log("Access: " + tokenRespDto.access_token!);
       console.log("Refresh: " + tokenRespDto.refresh_token!);
