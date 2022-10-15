@@ -12,146 +12,6 @@
     }
   },
   "Resources": {
-    "ApiAnonHandlerLambdaPermission": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:invokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "ApiAnonHandlerLambda",
-            "Arn"
-          ]
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:aws:execute-api:ap-southeast-2:",
-              {
-                "Ref": "AWS::AccountId"
-              },
-              ":",
-              {
-                "Ref": "ApiGatewayApi"
-              },
-              "/*"
-            ]
-          ]
-        }
-      }
-    },
-    "ApiAnonHandlerLambda": {
-      "Type": "AWS::Lambda::Function",
-      "Properties": {
-        "Description": "Lambda to process API requests.",
-        "Code": {
-          "S3Bucket": "naturalfacade",
-          "S3Key": {
-            "Fn::Join": [
-              "/",
-              [
-                "apibuilds",
-                {
-                  "Ref": "ApiBuildFilename"
-                }
-              ]
-            ]
-          }
-        },
-        "Environment": {
-          "Variables": {
-            "Environment": {
-              "Ref": "Environment"
-            },
-            "DbTableAction": {
-              "Ref": "DynamicTableAction"
-            },
-            "DbTableItem": {
-              "Ref": "DynamicTableItem"
-            },
-            "DbTableLog": {
-              "Ref": "DynamicTableLog"
-            }
-          }
-        },
-        "Handler": "NaturalFacade.ApiLambdas::NaturalFacade.ApiLambdas.Functions::AnonFunctionHandler",
-        "MemorySize": 512,
-        "Role": "arn:aws:iam::582929002414:role/LambdaExecution",
-        "Runtime": "dotnet6",
-        "Timeout": 15
-      }
-    },
-    "ApiAuthHandlerLambdaPermission": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:invokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "ApiAuthHandlerLambda",
-            "Arn"
-          ]
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:aws:execute-api:ap-southeast-2:",
-              {
-                "Ref": "AWS::AccountId"
-              },
-              ":",
-              {
-                "Ref": "ApiGatewayApi"
-              },
-              "/*"
-            ]
-          ]
-        }
-      }
-    },
-    "ApiAuthHandlerLambda": {
-      "Type": "AWS::Lambda::Function",
-      "Properties": {
-        "Description": "Lambda to process API requests.",
-        "Code": {
-          "S3Bucket": "naturalfacade",
-          "S3Key": {
-            "Fn::Join": [
-              "/",
-              [
-                "apibuilds",
-                {
-                  "Ref": "ApiBuildFilename"
-                }
-              ]
-            ]
-          }
-        },
-        "Environment": {
-          "Variables": {
-            "Environment": {
-              "Ref": "Environment"
-            },
-            "DbTableAction": {
-              "Ref": "DynamicTableAction"
-            },
-            "DbTableItem": {
-              "Ref": "DynamicTableItem"
-            },
-            "DbTableLog": {
-              "Ref": "DynamicTableLog"
-            }
-          }
-        },
-        "Handler": "NaturalFacade.ApiLambdas::NaturalFacade.ApiLambdas.Functions::AuthFunctionHandler",
-        "MemorySize": 512,
-        "Role": "arn:aws:iam::582929002414:role/LambdaExecution",
-        "Runtime": "dotnet6",
-        "Timeout": 15
-      }
-    },
     "ApiGatewayApi": {
       "Type": "AWS::ApiGateway::RestApi",
       "Properties": {
@@ -218,7 +78,7 @@
         "AuthorizationType": "NONE",
         "HttpMethod": "GET",
         "Integration": {
-          "IntegrationHttpMethod": "GET",
+          "IntegrationHttpMethod": "POST",
           "IntegrationResponses": [
             {
               "StatusCode": 200,
@@ -232,7 +92,7 @@
           ],
           "PassthroughBehavior": "NEVER",
           "RequestTemplates": {
-            "application/json": "{\n\"payload\":$input.json('$')\n}"
+            "application/json": "#set($queryString = $input.params().querystring){\"payload\":{\"RequestType\":\"$util.escapeJavaScript($queryString.get('RequestType'))\",\"UserId\":\"$util.escapeJavaScript($queryString.get('UserId'))\",\"LayoutId\":\"$util.escapeJavaScript($queryString.get('LayoutId'))\"}}"
           },
           "Type": "AWS",
           "Uri": {
@@ -529,6 +389,254 @@
           "Ref": "ApiGatewayApi"
         },
         "StageName": "LATEST"
+      }
+    },
+    "ApiHandlerLambdaPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "ServiceWorkerApiLambdaPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "ActionDynamoDbAccess",
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:Query"
+              ],
+              "Resource": {
+                "Fn::GetAtt": [
+                  "DynamicTableAction",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Sid": "ItemDynamoDbAccess",
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:Query"
+              ],
+              "Resource": {
+                "Fn::GetAtt": [
+                  "DynamicTableItem",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Sid": "LogDynamoDbAccess",
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:Query"
+              ],
+              "Resource": {
+                "Fn::GetAtt": [
+                  "DynamicTableLog",
+                  "Arn"
+                ]
+              }
+            }
+          ]
+        },
+        "Roles": [
+          {
+            "Ref": "ApiHandlerLambdaRole"
+          }
+        ]
+      }
+    },
+    "ApiHandlerLambdaRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Description": "Role for the API Lambda.",
+        "Path": "/",
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "NaturalFacade"
+          },
+          {
+            "Key": "Environment",
+            "Value": {
+              "Ref": "Environment"
+            }
+          }
+        ]
+      }
+    },
+    "ApiAnonHandlerLambdaPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:invokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ApiAnonHandlerLambda",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:aws:execute-api:ap-southeast-2:",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ApiAnonHandlerLambda": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Description": "Lambda to process API requests.",
+        "Code": {
+          "S3Bucket": "naturalfacade",
+          "S3Key": {
+            "Fn::Join": [
+              "/",
+              [
+                "apibuilds",
+                {
+                  "Ref": "ApiBuildFilename"
+                }
+              ]
+            ]
+          }
+        },
+        "Environment": {
+          "Variables": {
+            "Environment": {
+              "Ref": "Environment"
+            },
+            "DbTableAction": {
+              "Ref": "DynamicTableAction"
+            },
+            "DbTableItem": {
+              "Ref": "DynamicTableItem"
+            },
+            "DbTableLog": {
+              "Ref": "DynamicTableLog"
+            }
+          }
+        },
+        "Handler": "NaturalFacade.ApiLambdas::NaturalFacade.ApiLambdas.Functions::AnonFunctionHandler",
+        "MemorySize": 512,
+        "Role": {
+          "Fn::GetAtt": [
+            "ApiHandlerLambdaRole",
+            "Arn"
+          ]
+        },
+        "Role": "arn:aws:iam::582929002414:role/LambdaExecution",
+        "Runtime": "dotnet6",
+        "Timeout": 15
+      }
+    },
+    "ApiAuthHandlerLambdaPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:invokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ApiAuthHandlerLambda",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:aws:execute-api:ap-southeast-2:",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ApiAuthHandlerLambda": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Description": "Lambda to process API requests.",
+        "Code": {
+          "S3Bucket": "naturalfacade",
+          "S3Key": {
+            "Fn::Join": [
+              "/",
+              [
+                "apibuilds",
+                {
+                  "Ref": "ApiBuildFilename"
+                }
+              ]
+            ]
+          }
+        },
+        "Environment": {
+          "Variables": {
+            "Environment": {
+              "Ref": "Environment"
+            },
+            "DbTableAction": {
+              "Ref": "DynamicTableAction"
+            },
+            "DbTableItem": {
+              "Ref": "DynamicTableItem"
+            },
+            "DbTableLog": {
+              "Ref": "DynamicTableLog"
+            }
+          }
+        },
+        "Handler": "NaturalFacade.ApiLambdas::NaturalFacade.ApiLambdas.Functions::AuthFunctionHandler",
+        "MemorySize": 512,
+        "Role": {
+          "Fn::GetAtt": [
+            "ApiHandlerLambdaRole",
+            "Arn"
+          ]
+        },
+        "Role": "arn:aws:iam::582929002414:role/LambdaExecution",
+        "Runtime": "dotnet6",
+        "Timeout": 15
       }
     },
     "DynamicTableAction": {
