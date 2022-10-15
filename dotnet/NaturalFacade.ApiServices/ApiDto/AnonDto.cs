@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace NaturalFacade.ApiDto
 {
-    public class AnonRequestDto : CommonDto<AnonRequestPayloadDto>
+    public class AnonRequestDto
     {
-        //
+        public AnonRequestPayloadDto payload { get; set; }
     }
 
     public enum AnonRequestType
