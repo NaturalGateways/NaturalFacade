@@ -51,9 +51,7 @@ namespace NaturalFacade.Services
         /// <summary>Handle the request.</summary>
         private static async Task<ApiDto.ApiResponseDto> HandleAnonGetLayoutOverlayAsync(DynamoService dynamoService, ApiDto.AnonRequestPayloadDto requestDto)
         {
-            string userItemId = $"User-{requestDto.UserId}";
-            string layoutItemId = $"Layout-{requestDto.LayoutId}";
-            object overlayObject = await dynamoService.GetLayoutOverlayAsync(userItemId, layoutItemId);
+            object overlayObject = await dynamoService.GetLayoutOverlayAsync(requestDto.UserId, requestDto.LayoutId);
             return ApiDto.ApiResponseDto.CreateSuccess(overlayObject);
         }
 
