@@ -69,6 +69,9 @@
             },
             "DbTableItem": {
               "Ref": "DynamicTableItem"
+            },
+            "DbTableLog": {
+              "Ref": "DynamicTableLog"
             }
           }
         },
@@ -136,6 +139,9 @@
             },
             "DbTableItem": {
               "Ref": "DynamicTableItem"
+            },
+            "DbTableLog": {
+              "Ref": "DynamicTableLog"
             }
           }
         },
@@ -226,7 +232,7 @@
           ],
           "PassthroughBehavior": "NEVER",
           "RequestTemplates": {
-            "application/json": "{\n\"body\":$input.json('$')\n}"
+            "application/json": "{\n\"payload\":$input.json('$'),\"context\":\n{\"requestId\":\"$context.requestId\"}\n}"
           },
           "Type": "AWS",
           "Uri": {
@@ -357,7 +363,7 @@
           ],
           "PassthroughBehavior": "NEVER",
           "RequestTemplates": {
-            "application/json": "#set($allParams = $input.params())\n{\n\"payload\":$input.json('$'),\"context\":\n{\"userId\":\"$context.authorizer.claims.sub\",\"email\":\"$context.authorizer.claims.email\",\"sourceIp\":\"$context.identity.sourceIp\",\"userAgent\":\"$context.identity.userAgent\",\"requestId\":\"$context.requestId\"}\n}"
+            "application/json": "#set($allParams = $input.params())\n{\n\"payload\":$input.json('$'),\n\"context\":\n{\"userId\":\"$context.authorizer.claims.sub\",\"email\":\"$context.authorizer.claims.email\",\"sourceIp\":\"$context.identity.sourceIp\",\"userAgent\":\"$context.identity.userAgent\",\"requestId\":\"$context.requestId\"}\n}"
           },
           "Type": "AWS",
           "Uri": {
@@ -421,7 +427,7 @@
           ],
           "PassthroughBehavior": "NEVER",
           "RequestTemplates": {
-            "application/json": "#set($allParams = $input.params())\n{\n\"payload\":$input.json('$'),\n\"context\":{\"userId\":\"$context.authorizer.claims.sub\",\"email\":\"$context.authorizer.claims.email\",\"sourceIp\":\"$context.identity.sourceIp\",\"userAgent\":\"$context.identity.userAgent\",\"requestId\":\"$context.requestId\"}\n}"
+            "application/json": "#set($allParams = $input.params())\n{\n\"payload\":$input.json('$'),\n\"context\":\n{\"userId\":\"$context.authorizer.claims.sub\",\"email\":\"$context.authorizer.claims.email\",\"sourceIp\":\"$context.identity.sourceIp\",\"userAgent\":\"$context.identity.userAgent\",\"requestId\":\"$context.requestId\"}\n}"
           },
           "Type": "AWS",
           "Uri": {
@@ -572,6 +578,32 @@
           },
           {
             "AttributeName": "ComponentName",
+            "KeyType": "RANGE"
+          }
+        ]
+      }
+    },
+    "DynamicTableLog": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "ItemId",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "EntryDateTimeUtc",
+            "AttributeType": "S"
+          }
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "KeySchema": [
+          {
+            "AttributeName": "ItemId",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "EntryDateTimeUtc",
             "KeyType": "RANGE"
           }
         ]

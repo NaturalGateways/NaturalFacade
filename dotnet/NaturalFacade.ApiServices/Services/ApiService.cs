@@ -9,34 +9,54 @@ namespace NaturalFacade.Services
     public static class ApiService
     {
         /// <summary>Handle the request.</summary>
-        public static async Task<ApiDto.AuthResponseDto> HandleAnonRequestAsync(DynamoService dynamoService, ApiDto.AnonRequestDto requestDto)
+        public static async Task<ApiDto.ApiResponseDto> HandleAnonRequestAsync(DynamoService dynamoService, ApiDto.AnonRequestPayloadDto requestDto)
         {
             try
             {
                 // Parse enum
+                if (string.IsNullOrEmpty(requestDto.RequestType))
+                {
+                    return ApiDto.ApiResponseDto.CreateError($"Missing request type");
+                }
                 switch (Enum.Parse<ApiDto.AnonRequestType>(requestDto.RequestType))
                 {
+                    case ApiDto.AnonRequestType.GetInfo:
+                        return HandleAnonGetInfo();
                     case ApiDto.AnonRequestType.GetLayoutOverlay:
                         return await HandleAnonGetLayoutOverlayAsync(dynamoService, requestDto);
                     default:
-                        return ApiDto.AuthResponseDto.CreateError($"Unrecognised request type: {requestDto.RequestType}");
+                        return ApiDto.ApiResponseDto.CreateError($"Unrecognised request type: {requestDto.RequestType}");
                 }
             }
             catch (Exception ex)
             {
-                return ApiDto.AuthResponseDto.CreateError(ex);
+                return ApiDto.ApiResponseDto.CreateError(ex);
             }
         }
 
         /// <summary>Handle the request.</summary>
-        private static async Task<ApiDto.AuthResponseDto> HandleAnonGetLayoutOverlayAsync(DynamoService dynamoService, ApiDto.AnonRequestDto requestDto)
+        private static ApiDto.ApiResponseDto HandleAnonGetInfo()
         {
-            object overlayObject = await dynamoService.GetLayoutOverlayAsync(requestDto.UserId, requestDto.LayoutId);
-            return ApiDto.AuthResponseDto.CreateSuccess(overlayObject);
+            // Get version
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
+            // Return
+            return ApiDto.ApiResponseDto.CreateSuccess(new Dictionary<string, string>
+            {
+                { "Project", "Natural Façade" },
+                { "Version", fvi.FileVersion }
+            });
         }
 
         /// <summary>Handle the request.</summary>
-        public static async Task<ApiDto.AuthResponseDto> HandleAuthRequestAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
+        private static async Task<ApiDto.ApiResponseDto> HandleAnonGetLayoutOverlayAsync(DynamoService dynamoService, ApiDto.AnonRequestPayloadDto requestDto)
+        {
+            object overlayObject = await dynamoService.GetLayoutOverlayAsync(requestDto.UserId, requestDto.LayoutId);
+            return ApiDto.ApiResponseDto.CreateSuccess(overlayObject);
+        }
+
+        /// <summary>Handle the request.</summary>
+        public static async Task<ApiDto.ApiResponseDto> HandleAuthRequestAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
         {
             try
             {
@@ -50,17 +70,17 @@ namespace NaturalFacade.Services
                     case ApiDto.AuthRequestType.PutLayout:
                         return await HandleAuthPutLayoutAsync(dynamoService, requestDto);
                     default:
-                        return ApiDto.AuthResponseDto.CreateError($"Unrecognised request type: {requestDto.payload.RequestType}");
+                        return ApiDto.ApiResponseDto.CreateError($"Unrecognised request type: {requestDto.payload.RequestType}");
                 }
             }
             catch (Exception ex)
             {
-                return ApiDto.AuthResponseDto.CreateError(ex);
+                return ApiDto.ApiResponseDto.CreateError(ex);
             }
         }
 
         /// <summary>Handle the request.</summary>
-        private static async Task<ApiDto.AuthResponseDto> HandleAuthGetCurrentUserAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
+        private static async Task<ApiDto.ApiResponseDto> HandleAuthGetCurrentUserAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
         {
             // Get existing layout ID
             string userId = $"User-{requestDto.context.userId}";
@@ -81,7 +101,7 @@ namespace NaturalFacade.Services
             }
 
             // Return response
-            return ApiDto.AuthResponseDto.CreateSuccess(new ApiDto.AuthGetCurrentUserResponseDto
+            return ApiDto.ApiResponseDto.CreateSuccess(new ApiDto.AuthGetCurrentUserResponseDto
             {
                 userId = userItem.UserId,
                 email = userItem.Email,
@@ -90,11 +110,11 @@ namespace NaturalFacade.Services
         }
 
         /// <summary>Handle the request.</summary>
-        private static async Task<ApiDto.AuthResponseDto> HandleAuthGetLayoutOverlayAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
+        private static async Task<ApiDto.ApiResponseDto> HandleAuthGetLayoutOverlayAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
         {
             string userId = $"User-{requestDto.context.userId}";
             object overlayObject = await dynamoService.GetLayoutOverlayAsync(userId, requestDto.payload.LayoutId);
-            return ApiDto.AuthResponseDto.CreateSuccess(new ApiDto.AuthGetLayoutOverlayResponseDto
+            return ApiDto.ApiResponseDto.CreateSuccess(new ApiDto.AuthGetLayoutOverlayResponseDto
             {
                 LayoutId = requestDto.payload.LayoutId,
                 Overlay = overlayObject
@@ -102,7 +122,7 @@ namespace NaturalFacade.Services
         }
 
         /// <summary>Handle the request.</summary>
-        private static async Task<ApiDto.AuthResponseDto> HandleAuthPutLayoutAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
+        private static async Task<ApiDto.ApiResponseDto> HandleAuthPutLayoutAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
         {
             // Get existing layout ID
             string userId = $"User-{requestDto.context.userId}";
@@ -127,7 +147,7 @@ namespace NaturalFacade.Services
             await ActionService.ProcessActionAsync(dynamoService, userId, action);
 
             // Return
-            return ApiDto.AuthResponseDto.CreateSuccess(new ApiDto.AuthPutLayoutResponseDto { LayoutId = layoutId });
+            return ApiDto.ApiResponseDto.CreateSuccess(new ApiDto.AuthPutLayoutResponseDto { LayoutId = layoutId });
         }
     }
 }

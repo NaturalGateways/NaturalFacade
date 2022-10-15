@@ -6,12 +6,18 @@ using System.Threading.Tasks;
 
 namespace NaturalFacade.ApiDto
 {
+    public class AnonRequestDto : CommonDto<AnonRequestPayloadDto>
+    {
+        //
+    }
+
     public enum AnonRequestType
     {
+        GetInfo,
         GetLayoutOverlay
     }
 
-    public class AnonRequestDto
+    public class AnonRequestPayloadDto
     {
         public string RequestType { get; set; }
 

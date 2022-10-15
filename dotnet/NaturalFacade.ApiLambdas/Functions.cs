@@ -8,19 +8,19 @@ namespace NaturalFacade.ApiLambdas;
 public class Functions
 {
     /// <summary>Handler for a request without authentication.</summary>
-    public async Task<ApiDto.AuthResponseDto> AnonFunctionHandler(ApiDto.AnonRequestDto request, ILambdaContext context)
+    public async Task<ApiDto.ApiResponseDto> AnonFunctionHandler(ApiDto.AnonRequestDto request, ILambdaContext context)
     {
         // Create service
         Natural.Aws.IAwsService awsService = new Natural.Aws.LambdaAwsService();
         using (Natural.Aws.DynamoDB.IDynamoService? dynamoDb = awsService.CreateDynamoService())
         {
             Services.DynamoService dynamoService = new Services.DynamoService(dynamoDb, DynamoTableNames.Singleton);
-            return await Services.ApiService.HandleAnonRequestAsync(dynamoService, request);
+            return await Services.ApiService.HandleAnonRequestAsync(dynamoService, request.payload);
         }
     }
 
     /// <summary>Handler for a request by an authenticated user.</summary>
-    public async Task<ApiDto.AuthResponseDto> AuthFunctionHandler(ApiDto.AuthRequestDto request, ILambdaContext context)
+    public async Task<ApiDto.ApiResponseDto> AuthFunctionHandler(ApiDto.AuthRequestDto request, ILambdaContext context)
     {
         // Create service
         Natural.Aws.IAwsService awsService = new Natural.Aws.LambdaAwsService();
