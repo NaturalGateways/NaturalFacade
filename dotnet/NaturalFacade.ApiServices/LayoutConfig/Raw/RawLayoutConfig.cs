@@ -57,17 +57,17 @@ namespace NaturalFacade.LayoutConfig.Raw
 
     public class RawLayoutConfigElementStackChild
     {
-        public RawLayoutConfigElementStackSizeType? WidthType { get; set; }
+        public string WidthType { get; set; }
         public int? WidthPixels { get; set; }
-        public RawLayoutConfigElementStackSizeType? HeightType { get; set; }
+        public string HeightType { get; set; }
         public int? HeightPixels { get; set; }
-        public RawLayoutConfigElementStackSizeType? MarginLeftType { get; set; }
+        public string MarginLeftType { get; set; }
         public int? MarginLeftPixels { get; set; }
-        public RawLayoutConfigElementStackSizeType? MarginRightType { get; set; }
+        public string MarginRightType { get; set; }
         public int? MarginRightPixels { get; set; }
-        public RawLayoutConfigElementStackSizeType? MarginTopType { get; set; }
+        public string MarginTopType { get; set; }
         public int? MarginTopPixels { get; set; }
-        public RawLayoutConfigElementStackSizeType? MarginBottomType { get; set; }
+        public string MarginBottomType { get; set; }
         public int? MarginBottomPixels { get; set; }
 
         public RawLayoutConfigElement Element { get; set; }

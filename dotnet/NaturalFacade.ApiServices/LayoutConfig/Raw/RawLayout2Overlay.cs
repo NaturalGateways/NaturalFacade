@@ -75,64 +75,85 @@ namespace NaturalFacade.LayoutConfig.Raw
             };
         }
 
+        /// <summary>Converts a string to an image fit enum.</summary>
+        private RawLayoutConfigElementStackSizeType? ConvertStringToStackSizeType(string attName, string sizeTypeString)
+        {
+            if (string.IsNullOrEmpty(sizeTypeString))
+            {
+                return null;
+            }
+            RawLayoutConfigElementStackSizeType sizeTypeEnum = RawLayoutConfigElementStackSizeType.Fixed;
+            if (Enum.TryParse<RawLayoutConfigElementStackSizeType>(sizeTypeString, out sizeTypeEnum))
+            {
+                return sizeTypeEnum;
+            }
+            throw new Exception($"Unrecognised stack size type for '{attName}': '{sizeTypeString}'");
+        }
+
         /// <summary>Creates an overlay element from a layout element.</summary>
         private object ConvertStackChildElement(RawLayoutConfigElementStackChild layoutStackChild)
         {
             Dictionary<string, object> overlayObject = new Dictionary<string, object>();
-            if (layoutStackChild.WidthType.HasValue && layoutStackChild.WidthType.Value == RawLayoutConfigElementStackSizeType.Fixed)
+            RawLayoutConfigElementStackSizeType? widthType = ConvertStringToStackSizeType("WidthType", layoutStackChild.WidthType);
+            RawLayoutConfigElementStackSizeType? heightType = ConvertStringToStackSizeType("HeightType", layoutStackChild.HeightType);
+            RawLayoutConfigElementStackSizeType? marginLeftType = ConvertStringToStackSizeType("MarginLeftType", layoutStackChild.MarginLeftType);
+            RawLayoutConfigElementStackSizeType? marginRightType = ConvertStringToStackSizeType("MarginRightType", layoutStackChild.MarginRightType);
+            RawLayoutConfigElementStackSizeType? marginTopType = ConvertStringToStackSizeType("MarginTopType", layoutStackChild.MarginTopType);
+            RawLayoutConfigElementStackSizeType? marginBottomType = ConvertStringToStackSizeType("MarginBottomType", layoutStackChild.MarginBottomType);
+            if (widthType.HasValue && widthType.Value == RawLayoutConfigElementStackSizeType.Fixed)
             {
                 overlayObject.Add("width", layoutStackChild.WidthPixels ?? 0);
             }
-            else if (layoutStackChild.WidthType.HasValue && layoutStackChild.WidthType.Value != RawLayoutConfigElementStackSizeType.Max)
+            else if (widthType.HasValue && widthType.Value != RawLayoutConfigElementStackSizeType.Max)
             {
-                overlayObject.Add("width", layoutStackChild.WidthType.Value.ToString());
+                overlayObject.Add("width", widthType.Value.ToString());
             }
-            if (layoutStackChild.HeightType.HasValue && layoutStackChild.HeightType.Value == RawLayoutConfigElementStackSizeType.Fixed)
+            if (heightType.HasValue && heightType.Value == RawLayoutConfigElementStackSizeType.Fixed)
             {
                 overlayObject.Add("height", layoutStackChild.HeightPixels ?? 0);
             }
-            else if (layoutStackChild.HeightType.HasValue && layoutStackChild.HeightType.Value != RawLayoutConfigElementStackSizeType.Max)
+            else if (heightType.HasValue && heightType.Value != RawLayoutConfigElementStackSizeType.Max)
             {
-                overlayObject.Add("height", layoutStackChild.HeightType.Value.ToString());
+                overlayObject.Add("height", heightType.Value.ToString());
             }
-            if (layoutStackChild.MarginLeftType.HasValue)
+            if (marginLeftType.HasValue)
             {
-                if (layoutStackChild.MarginLeftType.Value != RawLayoutConfigElementStackSizeType.Fixed)
+                if (marginLeftType.Value != RawLayoutConfigElementStackSizeType.Fixed)
                 {
-                    overlayObject.Add("marginLeft", layoutStackChild.MarginLeftType.Value.ToString());
+                    overlayObject.Add("marginLeft", marginLeftType.Value.ToString());
                 }
                 else if (layoutStackChild.MarginLeftPixels.HasValue)
                 {
                     overlayObject.Add("marginLeft", layoutStackChild.MarginLeftPixels.Value);
                 }
             }
-            if (layoutStackChild.MarginRightType.HasValue)
+            if (marginRightType.HasValue)
             {
-                if (layoutStackChild.MarginRightType.Value != RawLayoutConfigElementStackSizeType.Fixed)
+                if (marginRightType.Value != RawLayoutConfigElementStackSizeType.Fixed)
                 {
-                    overlayObject.Add("marginRight", layoutStackChild.MarginRightType.Value.ToString());
+                    overlayObject.Add("marginRight", marginRightType.Value.ToString());
                 }
                 else if (layoutStackChild.MarginRightPixels.HasValue)
                 {
                     overlayObject.Add("marginRight", layoutStackChild.MarginRightPixels.Value);
                 }
             }
-            if (layoutStackChild.MarginTopType.HasValue)
+            if (marginTopType.HasValue)
             {
-                if (layoutStackChild.MarginTopType.Value != RawLayoutConfigElementStackSizeType.Fixed)
+                if (marginTopType.Value != RawLayoutConfigElementStackSizeType.Fixed)
                 {
-                    overlayObject.Add("marginTop", layoutStackChild.MarginTopType.Value.ToString());
+                    overlayObject.Add("marginTop", marginTopType.Value.ToString());
                 }
                 else if (layoutStackChild.MarginTopPixels.HasValue)
                 {
                     overlayObject.Add("marginTop", layoutStackChild.MarginTopPixels.Value);
                 }
             }
-            if (layoutStackChild.MarginBottomType.HasValue)
+            if (marginBottomType.HasValue)
             {
-                if (layoutStackChild.MarginBottomType.Value != RawLayoutConfigElementStackSizeType.Fixed)
+                if (marginBottomType.Value != RawLayoutConfigElementStackSizeType.Fixed)
                 {
-                    overlayObject.Add("marginBottom", layoutStackChild.MarginBottomType.Value.ToString());
+                    overlayObject.Add("marginBottom", marginBottomType.Value.ToString());
                 }
                 else if (layoutStackChild.MarginBottomPixels.HasValue)
                 {

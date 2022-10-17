@@ -48,7 +48,7 @@ namespace NaturalFacade.SandboxConsole.Helpers
                             },
                             new LayoutConfig.Raw.RawLayoutConfigElementStackChild
                             {
-                                WidthType = LayoutConfig.Raw.RawLayoutConfigElementStackSizeType.Fixed,
+                                WidthType = LayoutConfig.Raw.RawLayoutConfigElementStackSizeType.Fixed.ToString(),
                                 WidthPixels = 500,
                                 MarginLeftType = LayoutConfig.Raw.RawLayoutConfigElementStackSizeType.Max,
                                 Element = new LayoutConfig.Raw.RawLayoutConfigElement
