@@ -143,6 +143,21 @@ namespace NaturalFacade.LayoutConfig.Raw
             return overlayObject;
         }
 
+        /// <summary>Converts a string to an image fit enum.</summary>
+        private RawLayoutConfigElementImageFit ConvertStringToImageFit(string fitString)
+        {
+            if (string.IsNullOrEmpty(fitString))
+            {
+                return RawLayoutConfigElementImageFit.None;
+            }
+            RawLayoutConfigElementImageFit fitEnum = RawLayoutConfigElementImageFit.None;
+            if (Enum.TryParse<RawLayoutConfigElementImageFit>(fitString, out fitEnum))
+            {
+                return fitEnum;
+            }
+            throw new Exception($"Unrecognised image fit: '{fitString}'");
+        }
+
         /// <summary>Creates an overlay element from a layout element.</summary>
         private object ConvertImageElement(RawLayoutConfigElementImage layoutImage)
         {
@@ -157,7 +172,7 @@ namespace NaturalFacade.LayoutConfig.Raw
             return new Dictionary<string, string>
             {
                 { "elTyp", "Image" },
-                { "fit", (layoutImage.Fit ?? RawLayoutConfigElementImageFit.None).ToString() },
+                { "fit", ConvertStringToImageFit(layoutImage.Fit).ToString() },
                 { "res", layoutImage.Res }
             };
         }

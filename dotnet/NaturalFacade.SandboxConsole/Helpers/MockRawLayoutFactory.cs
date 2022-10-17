@@ -41,7 +41,7 @@ namespace NaturalFacade.SandboxConsole.Helpers
                                     ElementType = LayoutConfig.Raw.RawLayoutConfigElementType.Image.ToString(),
                                     Image = new LayoutConfig.Raw.RawLayoutConfigElementImage
                                     {
-                                        Fit = LayoutConfig.Raw.RawLayoutConfigElementImageFit.None,
+                                        Fit = LayoutConfig.Raw.RawLayoutConfigElementImageFit.None.ToString(),
                                         Res = "StaticBacking"
                                     }
                                 }
@@ -56,7 +56,7 @@ namespace NaturalFacade.SandboxConsole.Helpers
                                     ElementType = LayoutConfig.Raw.RawLayoutConfigElementType.Image.ToString(),
                                     Image = new LayoutConfig.Raw.RawLayoutConfigElementImage
                                     {
-                                        Fit = LayoutConfig.Raw.RawLayoutConfigElementImageFit.Tiled,
+                                        Fit = LayoutConfig.Raw.RawLayoutConfigElementImageFit.Tiled.ToString(),
                                         Res = "BgLight"
                                     }
                                 }

@@ -82,7 +82,7 @@ namespace NaturalFacade.LayoutConfig.Raw
 
     public class RawLayoutConfigElementImage
     {
-        public RawLayoutConfigElementImageFit? Fit { get; set; }
+        public string Fit { get; set; }
 
         public string Res { get; set; }
     }
