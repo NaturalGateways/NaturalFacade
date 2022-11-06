@@ -20,6 +20,17 @@ namespace NaturalFacade.SandboxConsole.Helpers
             };
         }
 
+        public static ApiDto.AnonRequestDto CreateGetInfoRequest()
+        {
+            return new ApiDto.AnonRequestDto
+            {
+                payload = new ApiDto.AnonRequestPayloadDto
+                {
+                    RequestType = ApiDto.AnonRequestType.GetInfo.ToString()
+                }
+            };
+        }
+
         public static ApiDto.AuthRequestDto CreateGetCurrentUserRequest()
         {
             return new ApiDto.AuthRequestDto

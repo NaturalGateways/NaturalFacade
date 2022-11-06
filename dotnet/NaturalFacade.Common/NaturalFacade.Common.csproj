@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>NaturalFacade</RootNamespace>
+    <Authors>Steven Moore</Authors>
+    <Product>NaturalFacade</Product>
   </PropertyGroup>
 
 </Project>

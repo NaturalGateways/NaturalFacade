@@ -5,10 +5,21 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>NaturalFacade</RootNamespace>
+    <Authors>Steven Moore</Authors>
+    <Product>NaturalFacade</Product>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="AppConfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="AppConfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Natural.Aws" Version="1.0.7" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
   <ItemGroup>

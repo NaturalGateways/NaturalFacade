@@ -37,14 +37,25 @@ namespace NaturalFacade.Services
         /// <summary>Handle the request.</summary>
         private static ApiDto.ApiResponseDto HandleAnonGetInfo()
         {
-            // Get version
-            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
-            System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
+            // Get the config resource stream
+            System.IO.Stream resourceStream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("NaturalFacade.AppConfig.json");
+            if (resourceStream == null)
+            {
+                throw new Exception("Cannot retrieve version text: " + string.Join(", ", System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceNames().Select(x => $"'{x}'")));
+            }
+            // Read the config
+            Dictionary<string, string> configStringsByName = null;
+            using (System.IO.StreamReader configStream = new System.IO.StreamReader(resourceStream))
+            {
+                string configText = configStream.ReadToEnd();
+                configStringsByName = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(configText);
+            }
             // Return
             return ApiDto.ApiResponseDto.CreateSuccess(new Dictionary<string, string>
             {
                 { "Project", "Natural Façade" },
-                { "Version", fvi.FileVersion }
+                { "Environment", configStringsByName["environment"] },
+                { "Version", configStringsByName["version"] }
             });
         }
 
