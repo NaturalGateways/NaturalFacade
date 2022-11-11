@@ -48,25 +48,25 @@ namespace NaturalFacade.LayoutConfig.Raw
         }
 
         /// <summary>Creates an overlay element from a layout element.</summary>
-        private object ConvertElement(RawLayoutConfigElement layoutElement)
+        private Dictionary<string, object> ConvertElement(RawLayoutConfigElement layoutElement)
         {
             switch (Enum.Parse<RawLayoutConfigElementType>(layoutElement.ElementType))
             {
                 case RawLayoutConfigElementType.Stack:
                     if (layoutElement.Stack == null)
-                        return new Exception("Stack element missing data.");
+                        throw new Exception("Stack element missing data.");
                     return ConvertStackElement(layoutElement.Stack);
                 case RawLayoutConfigElementType.Image:
                     if (layoutElement.Image == null)
-                        return new Exception("Stack element missing data.");
+                        throw new Exception("Stack element missing data.");
                     return ConvertImageElement(layoutElement.Image);
                 default:
-                    return new Exception("Unrecognized element type.");
+                    throw new Exception("Unrecognized element type.");
             }
         }
 
         /// <summary>Creates an overlay element from a layout element.</summary>
-        private object ConvertStackElement(RawLayoutConfigElementStack layoutStack)
+        private Dictionary<string, object> ConvertStackElement(RawLayoutConfigElementStack layoutStack)
         {
             return new Dictionary<string, object>
             {
@@ -91,9 +91,12 @@ namespace NaturalFacade.LayoutConfig.Raw
         }
 
         /// <summary>Creates an overlay element from a layout element.</summary>
-        private object ConvertStackChildElement(RawLayoutConfigElementStackChild layoutStackChild)
+        private Dictionary<string, object> ConvertStackChildElement(RawLayoutConfigElementStackChild layoutStackChild)
         {
-            Dictionary<string, object> overlayObject = new Dictionary<string, object>();
+            // Get element
+            Dictionary<string, object> overlayObject = ConvertElement(layoutStackChild.Element);
+
+            // Add stack attributes
             RawLayoutConfigElementStackSizeType? widthType = ConvertStringToStackSizeType("WidthType", layoutStackChild.WidthType);
             RawLayoutConfigElementStackSizeType? heightType = ConvertStringToStackSizeType("HeightType", layoutStackChild.HeightType);
             RawLayoutConfigElementStackSizeType? marginLeftType = ConvertStringToStackSizeType("MarginLeftType", layoutStackChild.MarginLeftType);
@@ -160,7 +163,6 @@ namespace NaturalFacade.LayoutConfig.Raw
                     overlayObject.Add("marginBottom", layoutStackChild.MarginBottomPixels.Value);
                 }
             }
-            overlayObject.Add("element", ConvertElement(layoutStackChild.Element));
             return overlayObject;
         }
 
@@ -180,7 +182,7 @@ namespace NaturalFacade.LayoutConfig.Raw
         }
 
         /// <summary>Creates an overlay element from a layout element.</summary>
-        private object ConvertImageElement(RawLayoutConfigElementImage layoutImage)
+        private Dictionary<string, object> ConvertImageElement(RawLayoutConfigElementImage layoutImage)
         {
             // Check resources exists
             if (m_resourcesByName.ContainsKey(layoutImage.Res) == false)
@@ -190,7 +192,7 @@ namespace NaturalFacade.LayoutConfig.Raw
             m_resourcesByName[layoutImage.Res].IsUsed = true;
 
             // Return object
-            return new Dictionary<string, string>
+            return new Dictionary<string, object>
             {
                 { "elTyp", "Image" },
                 { "fit", ConvertStringToImageFit(layoutImage.Fit).ToString() },
