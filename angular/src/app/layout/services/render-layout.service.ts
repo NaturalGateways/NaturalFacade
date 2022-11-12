@@ -11,6 +11,8 @@ class RenderLayoutSize {
 
 class LayoutElementWithBounds {
   element: any | undefined;
+  minWidth: number = 0;
+  minHeight: number = 0;
   left: number = 0;
   right: number = 0;
   top: number = 0;
@@ -67,75 +69,168 @@ export class RenderLayoutService {
 
   measureRootElementWithBounds(width: number, height: number)
   {
+    this.rootElementWithBounds!.left = 0;
+    this.rootElementWithBounds!.top = 0;
     this.rootElementWithBounds!.right = width;
     this.rootElementWithBounds!.bottom = height;
-    this.rootElementWithBounds!.children.forEach((item: LayoutElementWithBounds) => {
-      this.measureElementWithBounds(this.rootElementWithBounds!, item);
-    });
+    this.measureElementMinimumSize(this.rootElementWithBounds!);
+    //console.log("Min: " + JSON.stringify(this.rootElementWithBounds!));
+    this.measureElementBounds(this.rootElementWithBounds!);
+    //console.log("Bounds: " + JSON.stringify(this.rootElementWithBounds!));
   }
 
-  measureElementWithBounds(parentElement: LayoutElementWithBounds, childElement: LayoutElementWithBounds)
+  measureElementMinimumSize(element: LayoutElementWithBounds)
   {
-    // Copy from parent
-    childElement.left = 0;
-    childElement.top = 0;
-    var parentWidth = parentElement.right - parentElement.left;
-    var parentHeight = parentElement.bottom - parentElement.top;
-    childElement.right = parentWidth;
-    childElement.bottom = parentHeight;
-    // Apply pixel margins and constant widths
-    if (typeof childElement.element.marginLeft == "number")
+    switch (element.element.elTyp)
     {
-      childElement.left += childElement.element.marginLeft;
+      case "Image":
+        this.measureImageElementMinimumSize(element);
+        break;
+      case "Stack":
+        this.measureStackElementMinimumSize(element);
+        break;
     }
-    if (typeof childElement.element.marginRight == "number")
+  }
+
+  measureImageElementMinimumSize(elementWithBounds: LayoutElementWithBounds)
+  {
+    var minWidth = 0;
+    var minHeight = 0;
+    if (elementWithBounds.element.fit === "None")
     {
-      childElement.right -= childElement.element.marginRight;
+      var image: HTMLImageElement = this.layoutData!.imageResources.get(elementWithBounds.element.res)!.imageElement!;
+      minWidth = image.width;
+      minHeight = image.height;
     }
-    if (typeof childElement.element.marginTop == "number")
-    {
-      childElement.top += childElement.element.marginTop;
-    }
-    if (typeof childElement.element.marginBottom == "number")
-    {
-      childElement.bottom -= childElement.element.marginBottom;
-    }
-    if (typeof childElement.element.width == "number")
-    {
-      var newRight : number = childElement.left + childElement.element.width;
-      childElement.right = (childElement.right < newRight) ? childElement.right : newRight;
-    }
-    if (typeof childElement.element.height == "number")
-    {
-      var newTop : number = childElement.top + childElement.element.height;
-      childElement.bottom = (childElement.bottom < newTop) ? childElement.bottom : newTop;
-    }
-    // Do children
-    childElement.children.forEach((item: LayoutElementWithBounds) => {
-      this.measureElementWithBounds(childElement, item);
+    elementWithBounds.minWidth = minWidth;
+    elementWithBounds.minHeight = minHeight;
+  }
+
+  measureStackElementMinimumSize(element: LayoutElementWithBounds)
+  {
+    var parentMinWidth = 0;
+    var parentMinHeight = 0;
+    element.children.forEach((child: LayoutElementWithBounds) => {
+      this.measureElementMinimumSize(child);
+      // Apply fixed widths and heights
+      if (typeof child.element.width == "number")
+      {
+        child.minWidth = child.element.width;
+      }
+      if (typeof child.element.height == "number")
+      {
+        child.minHeight = child.element.height;
+      }
+      // Store child widths then apply margins
+      var childMinWidth = child.minWidth;
+      var childMinHeight = child.minHeight;
+      if (typeof child.element.marginLeft == "number")
+      {
+        childMinWidth += child.element.marginLeft;
+      }
+      if (typeof child.element.marginRight == "number")
+      {
+        childMinWidth += child.element.marginRight;
+      }
+      if (typeof child.element.marginTop == "number")
+      {
+        childMinHeight += child.element.marginTop;
+      }
+      if (typeof child.element.marginBottom == "number")
+      {
+        childMinHeight += child.element.marginBottom;
+      }
+      // Apply to parent
+      if (parentMinWidth < childMinWidth)
+      {
+        parentMinWidth = childMinWidth;
+      }
+      if (parentMinHeight < childMinHeight)
+      {
+        parentMinHeight = childMinHeight;
+      }
     });
-    // Apply min and max heights
-    if (childElement.element.width === "Min")
+    element.minWidth = parentMinWidth;
+    element.minHeight = parentMinHeight;
+  }
+
+  measureElementBounds(element: LayoutElementWithBounds)
+  {
+    switch (element.element.elTyp)
     {
-      // TODO
+      case "Stack":
+        this.measureStackElementBounds(element);
+        break;
     }
-    if (childElement.element.height === "Min")
-    {
-      // TODO
-    }
-    // Apply alignment margins
-    if (childElement.element.marginLeft === "Max")
-    {
-      var offset : number = parentWidth - childElement.right;
-      childElement.left += offset;
-      childElement.right += offset;
-    }
-    if (childElement.element.marginTop === "Max")
-    {
-      var offset : number = parentHeight - childElement.bottom;
-      childElement.top += offset;
-      childElement.bottom += offset;
-    }
+  }
+
+  measureStackElementBounds(element: LayoutElementWithBounds)
+  {
+    element.children.forEach((child: LayoutElementWithBounds) => {
+      // Set from parent
+      child.left = element.left;
+      child.top = element.top;
+      child.right = element.right;
+      child.bottom = element.bottom;
+      // Apply margins
+      if (typeof child.element.marginLeft == "number")
+      {
+        child.left += child.element.marginLeft;
+      }
+      if (typeof child.element.marginRight == "number")
+      {
+        child.right -= child.element.marginRight;
+      }
+      if (typeof child.element.marginTop == "number")
+      {
+        child.top += child.element.marginTop;
+      }
+      if (typeof child.element.marginBottom == "number")
+      {
+        child.bottom -= child.element.marginBottom;
+      }
+      // Apply alignment
+      if (typeof child.element.halign === "string")
+      {
+        switch (child.element.halign)
+        {
+          case "Left":
+            child.right = child.left + child.minWidth;
+            break;
+          case "Centre":
+            {
+              var center = (child.left + child.right) / 2;
+              child.left = center - child.minWidth / 2;
+              child.right = center + child.minWidth / 2;
+              break;
+            }
+          case "Right":
+            child.left = child.right +- child.minWidth;
+            break;
+        }
+      }
+      if (typeof child.element.valign === "string")
+      {
+        switch (child.element.valign)
+        {
+          case "Top":
+            child.bottom = child.top + child.minHeight;
+            break;
+          case "Centre":
+            {
+              var center = (child.top + child.bottom) / 2;
+              child.top = center - child.minHeight / 2;
+              child.bottom = center + child.minHeight / 2;
+              break;
+            }
+          case "Bottom":
+            child.top = child.bottom +- child.minHeight;
+            break;
+        }
+      }
+      // Layout child
+      this.measureElementBounds(child);
+    });
   }
 
   render(isLoaded: boolean) : void
@@ -149,7 +244,6 @@ export class RenderLayoutService {
     else
     {
       this.measureRootElementWithBounds(canvasWidth, canvasHeight);
-      console.log("Bounds: " + JSON.stringify(this.rootElementWithBounds!));
       this.context!.clearRect(0, 0, canvasWidth, canvasHeight);
       this.renderElement(this.rootElementWithBounds!);
     }
