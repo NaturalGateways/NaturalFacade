@@ -56,9 +56,9 @@ namespace NaturalFacade.LayoutConfig.Raw
 
     public enum RawLayoutConfigElementStackVAlignment
     {
-        Start,
+        Top,
         Centre,
-        End,
+        Bottom,
         Fill
     }
 
