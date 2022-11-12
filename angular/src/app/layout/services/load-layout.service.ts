@@ -1,47 +1,41 @@
 import { HttpClient } from '@angular/common/http';
 
-import { LayoutApiDto } from '../model/layout-api-dto';
+import { LayoutApiDto, LayoutApiDtoContainer } from '../model/layout-api-dto';
 import { LayoutData, LayoutParameter, LayoutImageResource, LayoutFontResource, LayoutFontConfig } from '../layout-data';
 
 export class LoadLayoutService {
 
   constructor() { }
 
-  fromJson(apiDto: LayoutApiDto) : LayoutData
+  fromJson(apiDto: LayoutApiDtoContainer) : LayoutData
   {
     var layoutData : LayoutData = new LayoutData();
-    if (apiDto.parameters !== undefined)
+    if (apiDto.Payload.parameters !== undefined)
     {
-      for (var key in apiDto.parameters) {
+      for (var key in apiDto.Payload.parameters) {
         layoutData.parameters.set(key, new LayoutParameter());
       }
     }
-    if (apiDto.imageResources !== undefined)
+    if (apiDto.Payload.imageResources !== undefined)
     {
-      for (var key in apiDto.imageResources) {
-        layoutData.imageResources.set(key, new LayoutImageResource(apiDto.imageResources[key]));
+      for (var key in apiDto.Payload.imageResources) {
+        layoutData.imageResources.set(key, new LayoutImageResource(apiDto.Payload.imageResources[key]));
       }
     }
-    if (apiDto.fontResources !== undefined)
+    if (apiDto.Payload.fontResources !== undefined)
     {
-      for (var key in apiDto.fontResources) {
-        layoutData.fontResources.set(key, new LayoutFontResource(apiDto.fontResources[key]));
+      for (var key in apiDto.Payload.fontResources) {
+        layoutData.fontResources.set(key, new LayoutFontResource(apiDto.Payload.fontResources[key]));
       }
     }
-    if (apiDto.fonts !== undefined)
+    if (apiDto.Payload.fonts !== undefined)
     {
-      for (var key in apiDto.fonts) {
-        layoutData.fontConfigs.set(key, new LayoutFontConfig(apiDto.fonts[key]));
+      for (var key in apiDto.Payload.fonts) {
+        layoutData.fontConfigs.set(key, new LayoutFontConfig(apiDto.Payload.fonts[key]));
       }
     }
-    layoutData.rootElement = apiDto.rootElement;
+    layoutData.rootElement = apiDto.Payload.rootElement;
     return layoutData;
-  }
-
-  fromString(jsonString: string) : LayoutData
-  {
-    var jsonObj: LayoutApiDto = JSON.parse(jsonString);
-    return this.fromJson(jsonObj);
   }
 
   loadParametersFromData(layoutData: LayoutData | undefined, dataJson: {[key: string]: any;}) {

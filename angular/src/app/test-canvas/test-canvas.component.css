@@ -1,3 +1,14 @@
+.backing {
+    background-color: black;
+    height:100%;
+    position:absolute;
+    width:100%;
+    top:0px;
+    right:0px;
+    bottom:0px;
+    left:0px;
+}
+
 .content {
-    margin: 82px 16px 32px 16px;
+    margin: 0px;
 }

@@ -14,7 +14,7 @@ import { LayoutData, LayoutParameter, LayoutFontResource } from '../layout-data'
 })
 export class LayoutCanvasComponent implements OnInit {
 
-  layourRender: RenderLayoutService | undefined;
+  layoutRender: RenderLayoutService | undefined;
 
   layoutData: LayoutData | undefined;
 
@@ -23,9 +23,9 @@ export class LayoutCanvasComponent implements OnInit {
   ngOnInit(): void {
     var canvas: HTMLCanvasElement = document.getElementById('overlayCanvas') as HTMLCanvasElement;
     var context: CanvasRenderingContext2D = canvas!.getContext("2d")!;
-    this.layourRender = new RenderLayoutService(context);
+    this.layoutRender = new RenderLayoutService(context);
 
-    this.drawScreen();
+    this.layoutRender?.render(false);
   }
 
   isFullyLoaded(): boolean
@@ -49,13 +49,13 @@ export class LayoutCanvasComponent implements OnInit {
   drawScreenIfFullyLoaded()
   {
     if (this.isFullyLoaded()) {
-      this.drawScreen();
+      this.layoutRender?.render(true);
     }
   }
 
   drawScreen()
   {
-    this.layourRender?.render(this.layoutData);
+    this.layoutRender?.render(this.isFullyLoaded());
   }
 
   loadFromUrl(layoutUrl: string, parametersUrl: string)
@@ -64,6 +64,7 @@ export class LayoutCanvasComponent implements OnInit {
       // Load data
       var loadLayoutService : LoadLayoutService = new LoadLayoutService();
       this.layoutData = loadLayoutService.fromJson(data);
+      this.layoutRender?.setLayout(this.layoutData);
 
       // Run http fetches in parallel
       for (const imageRes of this.layoutData.imageResources.values()) {

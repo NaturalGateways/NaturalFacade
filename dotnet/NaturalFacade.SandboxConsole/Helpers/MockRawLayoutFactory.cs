@@ -29,7 +29,6 @@ namespace NaturalFacade.SandboxConsole.Helpers
                 },
                 RootElement = new LayoutConfig.Raw.RawLayoutConfigElement
                 {
-                    ElementType = LayoutConfig.Raw.RawLayoutConfigElementType.Stack.ToString(),
                     Stack = new LayoutConfig.Raw.RawLayoutConfigElementStack
                     {
                         Children = new LayoutConfig.Raw.RawLayoutConfigElementStackChild[]
@@ -38,7 +37,6 @@ namespace NaturalFacade.SandboxConsole.Helpers
                             {
                                 Element = new LayoutConfig.Raw.RawLayoutConfigElement
                                 {
-                                    ElementType = LayoutConfig.Raw.RawLayoutConfigElementType.Image.ToString(),
                                     Image = new LayoutConfig.Raw.RawLayoutConfigElementImage
                                     {
                                         Fit = LayoutConfig.Raw.RawLayoutConfigElementImageFit.None.ToString(),
@@ -48,12 +46,10 @@ namespace NaturalFacade.SandboxConsole.Helpers
                             },
                             new LayoutConfig.Raw.RawLayoutConfigElementStackChild
                             {
-                                WidthType = LayoutConfig.Raw.RawLayoutConfigElementStackSizeType.Fixed.ToString(),
+                                HAlign = LayoutConfig.Raw.RawLayoutConfigElementStackHAlignment.Right.ToString(),
                                 WidthPixels = 500,
-                                MarginLeftType = LayoutConfig.Raw.RawLayoutConfigElementStackSizeType.Max.ToString(),
                                 Element = new LayoutConfig.Raw.RawLayoutConfigElement
                                 {
-                                    ElementType = LayoutConfig.Raw.RawLayoutConfigElementType.Image.ToString(),
                                     Image = new LayoutConfig.Raw.RawLayoutConfigElementImage
                                     {
                                         Fit = LayoutConfig.Raw.RawLayoutConfigElementImageFit.Tiled.ToString(),

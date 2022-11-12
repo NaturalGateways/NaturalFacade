@@ -50,19 +50,11 @@ namespace NaturalFacade.LayoutConfig.Raw
         /// <summary>Creates an overlay element from a layout element.</summary>
         private Dictionary<string, object> ConvertElement(RawLayoutConfigElement layoutElement)
         {
-            switch (Enum.Parse<RawLayoutConfigElementType>(layoutElement.ElementType))
-            {
-                case RawLayoutConfigElementType.Stack:
-                    if (layoutElement.Stack == null)
-                        throw new Exception("Stack element missing data.");
-                    return ConvertStackElement(layoutElement.Stack);
-                case RawLayoutConfigElementType.Image:
-                    if (layoutElement.Image == null)
-                        throw new Exception("Stack element missing data.");
-                    return ConvertImageElement(layoutElement.Image);
-                default:
-                    throw new Exception("Unrecognized element type.");
-            }
+            if (layoutElement.Stack != null)
+                return ConvertStackElement(layoutElement.Stack);
+            if (layoutElement.Image != null)
+                return ConvertImageElement(layoutElement.Image);
+            throw new Exception("Unrecognized element type.");
         }
 
         /// <summary>Creates an overlay element from a layout element.</summary>
@@ -75,19 +67,34 @@ namespace NaturalFacade.LayoutConfig.Raw
             };
         }
 
-        /// <summary>Converts a string to an image fit enum.</summary>
-        private RawLayoutConfigElementStackSizeType? ConvertStringToStackSizeType(string attName, string sizeTypeString)
+        /// <summary>Converts a string to a stack alignment.</summary>
+        private RawLayoutConfigElementStackHAlignment ConvertStringToStackHAlign(string attValue, RawLayoutConfigElementStackHAlignment defaultValue)
         {
-            if (string.IsNullOrEmpty(sizeTypeString))
+            if (string.IsNullOrEmpty(attValue))
             {
-                return null;
+                return defaultValue;
             }
-            RawLayoutConfigElementStackSizeType sizeTypeEnum = RawLayoutConfigElementStackSizeType.Fixed;
-            if (Enum.TryParse<RawLayoutConfigElementStackSizeType>(sizeTypeString, out sizeTypeEnum))
+            RawLayoutConfigElementStackHAlignment enumValue = defaultValue;
+            if (Enum.TryParse<RawLayoutConfigElementStackHAlignment>(attValue, out enumValue))
             {
-                return sizeTypeEnum;
+                return enumValue;
             }
-            throw new Exception($"Unrecognised stack size type for '{attName}': '{sizeTypeString}'");
+            throw new Exception($"Unrecognised stack halign: '{attValue}'");
+        }
+
+        /// <summary>Converts a string to a stack alignment.</summary>
+        private RawLayoutConfigElementStackVAlignment ConvertStringToStackVAlign(string attValue, RawLayoutConfigElementStackVAlignment defaultValue)
+        {
+            if (string.IsNullOrEmpty(attValue))
+            {
+                return defaultValue;
+            }
+            RawLayoutConfigElementStackVAlignment enumValue = defaultValue;
+            if (Enum.TryParse<RawLayoutConfigElementStackVAlignment>(attValue, out enumValue))
+            {
+                return enumValue;
+            }
+            throw new Exception($"Unrecognised stack halign: '{attValue}'");
         }
 
         /// <summary>Creates an overlay element from a layout element.</summary>
@@ -97,72 +104,30 @@ namespace NaturalFacade.LayoutConfig.Raw
             Dictionary<string, object> overlayObject = ConvertElement(layoutStackChild.Element);
 
             // Add stack attributes
-            RawLayoutConfigElementStackSizeType? widthType = ConvertStringToStackSizeType("WidthType", layoutStackChild.WidthType);
-            RawLayoutConfigElementStackSizeType? heightType = ConvertStringToStackSizeType("HeightType", layoutStackChild.HeightType);
-            RawLayoutConfigElementStackSizeType? marginLeftType = ConvertStringToStackSizeType("MarginLeftType", layoutStackChild.MarginLeftType);
-            RawLayoutConfigElementStackSizeType? marginRightType = ConvertStringToStackSizeType("MarginRightType", layoutStackChild.MarginRightType);
-            RawLayoutConfigElementStackSizeType? marginTopType = ConvertStringToStackSizeType("MarginTopType", layoutStackChild.MarginTopType);
-            RawLayoutConfigElementStackSizeType? marginBottomType = ConvertStringToStackSizeType("MarginBottomType", layoutStackChild.MarginBottomType);
-            if (widthType.HasValue && widthType.Value == RawLayoutConfigElementStackSizeType.Fixed)
-            {
-                overlayObject.Add("width", layoutStackChild.WidthPixels ?? 0);
-            }
-            else if (widthType.HasValue && widthType.Value != RawLayoutConfigElementStackSizeType.Max)
-            {
-                overlayObject.Add("width", widthType.Value.ToString());
-            }
-            if (heightType.HasValue && heightType.Value == RawLayoutConfigElementStackSizeType.Fixed)
-            {
-                overlayObject.Add("height", layoutStackChild.HeightPixels ?? 0);
-            }
-            else if (heightType.HasValue && heightType.Value != RawLayoutConfigElementStackSizeType.Max)
-            {
-                overlayObject.Add("height", heightType.Value.ToString());
-            }
-            if (marginLeftType.HasValue)
-            {
-                if (marginLeftType.Value != RawLayoutConfigElementStackSizeType.Fixed)
-                {
-                    overlayObject.Add("marginLeft", marginLeftType.Value.ToString());
-                }
-                else if (layoutStackChild.MarginLeftPixels.HasValue)
-                {
-                    overlayObject.Add("marginLeft", layoutStackChild.MarginLeftPixels.Value);
-                }
-            }
-            if (marginRightType.HasValue)
-            {
-                if (marginRightType.Value != RawLayoutConfigElementStackSizeType.Fixed)
-                {
-                    overlayObject.Add("marginRight", marginRightType.Value.ToString());
-                }
-                else if (layoutStackChild.MarginRightPixels.HasValue)
-                {
-                    overlayObject.Add("marginRight", layoutStackChild.MarginRightPixels.Value);
-                }
-            }
-            if (marginTopType.HasValue)
-            {
-                if (marginTopType.Value != RawLayoutConfigElementStackSizeType.Fixed)
-                {
-                    overlayObject.Add("marginTop", marginTopType.Value.ToString());
-                }
-                else if (layoutStackChild.MarginTopPixels.HasValue)
-                {
-                    overlayObject.Add("marginTop", layoutStackChild.MarginTopPixels.Value);
-                }
-            }
-            if (marginBottomType.HasValue)
-            {
-                if (marginBottomType.Value != RawLayoutConfigElementStackSizeType.Fixed)
-                {
-                    overlayObject.Add("marginBottom", marginBottomType.Value.ToString());
-                }
-                else if (layoutStackChild.MarginBottomPixels.HasValue)
-                {
-                    overlayObject.Add("marginBottom", layoutStackChild.MarginBottomPixels.Value);
-                }
-            }
+            RawLayoutConfigElementStackHAlignment hAlign = ConvertStringToStackHAlign(layoutStackChild.HAlign, RawLayoutConfigElementStackHAlignment.Fill);
+            RawLayoutConfigElementStackVAlignment vAlign = ConvertStringToStackVAlign(layoutStackChild.VAlign, RawLayoutConfigElementStackVAlignment.Fill);
+            int widthPixels = layoutStackChild.WidthPixels ?? 0;
+            int heightPixels = layoutStackChild.HeightPixels ?? 0;
+            int marginLeft = layoutStackChild.MarginLeft ?? layoutStackChild.MarginHorizontal ?? layoutStackChild.Margin ?? 0;
+            int marginRight = layoutStackChild.MarginRight ?? layoutStackChild.MarginHorizontal ?? layoutStackChild.Margin ?? 0;
+            int marginTop = layoutStackChild.MarginTop ?? layoutStackChild.MarginVertical ?? layoutStackChild.Margin ?? 0;
+            int marginBottom = layoutStackChild.MarginBottom ?? layoutStackChild.MarginVertical ?? layoutStackChild.Margin ?? 0;
+            if (hAlign != RawLayoutConfigElementStackHAlignment.Fill)
+                overlayObject.Add("halign", hAlign.ToString());
+            if (vAlign != RawLayoutConfigElementStackVAlignment.Fill)
+                overlayObject.Add("valign", vAlign.ToString());
+            if (widthPixels != 0)
+                overlayObject.Add("width", widthPixels);
+            if (heightPixels != 0)
+                overlayObject.Add("height", heightPixels);
+            if (marginLeft != 0)
+                overlayObject.Add("marginLeft", marginLeft);
+            if (marginRight != 0)
+                overlayObject.Add("marginRight", marginRight);
+            if (marginTop != 0)
+                overlayObject.Add("marginTop", marginTop);
+            if (marginBottom != 0)
+                overlayObject.Add("marginBottom", marginBottom);
             return overlayObject;
         }
 

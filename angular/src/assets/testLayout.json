@@ -1,283 +1,74 @@
 {
-    "parameters": {
-        "MajorVer": {
-            "type": "integer"
-        },
-        "MinorVer": {
-            "type": "integer"
-        },
-        "HeroName": {
-            "type": "string"
-        },
-        "Biome": {
-            "type": "string"
-        },
-        "Phase": {
-            "type": "string"
-        },
-        "CloseCalls": {
-            "type": "integer"
-        }
-    },
-    "imageResources": {
-        "StaticBacking": "https://httpsorigin.s3.amazonaws.com/https/Overlay/StaticBacking.webp",
-        "BgLight": "https://httpsorigin.s3.amazonaws.com/https/Overlay/UIWoodLight.jpg",
-        "BgDark": "https://httpsorigin.s3.amazonaws.com/https/Overlay/UIWoodDark.jpg",
-        "GameCover": "https://httpsorigin.s3.amazonaws.com/https/Overlay/GameCover.jpg",
-        "FakeCam": "https://httpsorigin.s3.amazonaws.com/https/Overlay/FakeCam.png"
-    },
-    "fontResources": {
-        "NorseFont": "https://httpsorigin.s3.amazonaws.com/https/Overlay/Norse.otf"
-    },
-    "fonts": {
-        "AttTitle": {
-            "fontRes": "NorseFont",
-            "size": "38px",
-            "colour": "#e9d26c"
-        },
-        "AttLabel": {
-            "fontRes": "NorseFont",
-            "size": "28px",
-            "colour": "#e9d26c"
-        },
-        "AttValue": {
-            "fontRes": "NorseFont",
-            "size": "28px",
-            "colour": "#e9d26c"
-        }
-    },
-    "rootElement": {
-        "elTyp": "stack",
-        "children": [
-            {
-                "elTyp": "image",
-                "fit": "none",
-                "res": "StaticBacking"
+    "Success": true,
+    "Payload": {
+        "parameters": {
+            "MajorVer": {
+                "type": "integer"
             },
-            {
-                "elTyp": "stack",
-                "halign": "right",
-                "width": "min",
-                "children": [
-                    {
-                        "elTyp": "image",
-                        "fit": "tiled",
-                        "res": "BgLight"
-                    },
-                    {
-                        "elTyp": "vsplit",
-                        "padding": 8,
-                        "children": [
-                            {
-                                "elTyp": "image",
-                                "fit": "none",
-                                "res": "GameCover"
-                            },
-                            {
-                                "elTyp": "stack",
-                                "height": "max",
-                                "children": [
-                                    {
-                                        "elTyp": "image",
-                                        "fit": "tiled",
-                                        "res": "BgDark"
-                                    },
-                                    {
-                                        "elTyp": "text",
-                                        "font": "AttTitle",
-                                        "text": "Valheim",
-                                        "textAlign": "center",
-                                        "marginTop": 50
-                                    },
-                                    {
-                                        "elTyp": "vsplit",
-                                        "marginTop": 95,
-                                        "marginLeft": 12,
-                                        "marginRight": 12,
-                                        "children": [
-                                            {
-                                                "elTyp": "stack",
-                                                "height": 38,
-                                                "children": [
-                                                    {
-                                                        "elTyp": "text",
-                                                        "font": "AttLabel",
-                                                        "text": "Permadeath Run",
-                                                        "textAlign": "left"
-                                                    },
-                                                    {
-                                                        "elTyp": "text",
-                                                        "font": "AttValue",
-                                                        "textAlign": "right",
-                                                        "text": {
-                                                            "op": "cat",
-                                                            "values": [
-                                                                "v",
-                                                                {
-                                                                    "op": "para",
-                                                                    "name": "MajorVer"
-                                                                },
-                                                                ".",
-                                                                {
-                                                                    "op": "para",
-                                                                    "name": "MinorVer"
-                                                                }
-                                                            ]
-                                                        }
-                                                    }
-                                                ]
-                                            },
-                                            {
-                                                "elTyp": "stack",
-                                                "height": 38,
-                                                "children": [
-                                                    {
-                                                        "elTyp": "text",
-                                                        "font": "AttLabel",
-                                                        "textAlign": "left",
-                                                        "text": "Hero"
-                                                    },
-                                                    {
-                                                        "elTyp": "text",
-                                                        "font": "AttValue",
-                                                        "textAlign": "right",
-                                                        "text": {
-                                                            "op": "para",
-                                                            "name": "HeroName"
-                                                        }
-                                                    }
-                                                ]
-                                            },
-                                            {
-                                                "elTyp": "stack",
-                                                "height": 38,
-                                                "children": [
-                                                    {
-                                                        "elTyp": "text",
-                                                        "font": "AttLabel",
-                                                        "textAlign": "left",
-                                                        "text": "Total Time"
-                                                    },
-                                                    {
-                                                        "elTyp": "text",
-                                                        "font": "AttValue",
-                                                        "textAlign": "right",
-                                                        "text": "0:12:34"
-                                                    }
-                                                ]
-                                            },
-                                            {
-                                                "elTyp": "stack",
-                                                "height": 38,
-                                                "children": [
-                                                    {
-                                                        "elTyp": "text",
-                                                        "font": "AttLabel",
-                                                        "textAlign": "left",
-                                                        "text": "Session Time"
-                                                    },
-                                                    {
-                                                        "elTyp": "text",
-                                                        "font": "AttValue",
-                                                        "textAlign": "right",
-                                                        "text": "0:12:34"
-                                                    }
-                                                ]
-                                            },
-                                            {
-                                                "elTyp": "stack",
-                                                "height": 38,
-                                                "children": [
-                                                    {
-                                                        "elTyp": "text",
-                                                        "font": "AttLabel",
-                                                        "textAlign": "left",
-                                                        "text": "Longest Run"
-                                                    },
-                                                    {
-                                                        "elTyp": "text",
-                                                        "font": "AttValue",
-                                                        "textAlign": "right",
-                                                        "text": "0:12:34"
-                                                    }
-                                                ]
-                                            },
-                                            {
-                                                "elTyp": "stack",
-                                                "height": 38,
-                                                "children": [
-                                                    {
-                                                        "elTyp": "text",
-                                                        "font": "AttLabel",
-                                                        "textAlign": "left",
-                                                        "text": "Biome"
-                                                    },
-                                                    {
-                                                        "elTyp": "text",
-                                                        "font": "AttValue",
-                                                        "textAlign": "right",
-                                                        "text": {
-                                                            "op": "para",
-                                                            "name": "Biome"
-                                                        }
-                                                    }
-                                                ]
-                                            },
-                                            {
-                                                "elTyp": "stack",
-                                                "height": 38,
-                                                "children": [
-                                                    {
-                                                        "elTyp": "text",
-                                                        "font": "AttLabel",
-                                                        "textAlign": "left",
-                                                        "text": "Phase"
-                                                    },
-                                                    {
-                                                        "elTyp": "text",
-                                                        "font": "AttValue",
-                                                        "textAlign": "right",
-                                                        "text": {
-                                                            "op": "para",
-                                                            "name": "Phase"
-                                                        }
-                                                    }
-                                                ]
-                                            },
-                                            {
-                                                "elTyp": "stack",
-                                                "height": 38,
-                                                "children": [
-                                                    {
-                                                        "elTyp": "text",
-                                                        "font": "AttLabel",
-                                                        "textAlign": "left",
-                                                        "text": "Close calls"
-                                                    },
-                                                    {
-                                                        "elTyp": "text",
-                                                        "font": "AttValue",
-                                                        "textAlign": "right",
-                                                        "text": {
-                                                            "op": "para",
-                                                            "name": "CloseCalls"
-                                                        }
-                                                    }
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
-                            {
-                                "elTyp": "image",
-                                "fit": "none",
-                                "res": "FakeCam"
-                            }
-                        ]
-                    }
-                ]
+            "MinorVer": {
+                "type": "integer"
+            },
+            "HeroName": {
+                "type": "string"
+            },
+            "Biome": {
+                "type": "string"
+            },
+            "Phase": {
+                "type": "string"
+            },
+            "CloseCalls": {
+                "type": "integer"
             }
-        ]
+        },
+        "imageResources": {
+            "StaticBacking": "https://httpsorigin.s3.amazonaws.com/https/Overlay/StaticBacking.webp",
+            "BgLight": "https://httpsorigin.s3.amazonaws.com/https/Overlay/UIWoodLight.jpg",
+            "BgDark": "https://httpsorigin.s3.amazonaws.com/https/Overlay/UIWoodDark.jpg",
+            "GameCover": "https://httpsorigin.s3.amazonaws.com/https/Overlay/GameCover.jpg",
+            "FakeCam": "https://httpsorigin.s3.amazonaws.com/https/Overlay/FakeCam.png"
+        },
+        "fontResources": {
+            "NorseFont": "https://httpsorigin.s3.amazonaws.com/https/Overlay/Norse.otf"
+        },
+        "fonts": {
+            "AttTitle": {
+                "fontRes": "NorseFont",
+                "size": "38px",
+                "colour": "#e9d26c"
+            },
+            "AttLabel": {
+                "fontRes": "NorseFont",
+                "size": "28px",
+                "colour": "#e9d26c"
+            },
+            "AttValue": {
+                "fontRes": "NorseFont",
+                "size": "28px",
+                "colour": "#e9d26c"
+            }
+        },
+        "rootElement": {
+            "elTyp": "stack",
+            "children": [
+                {
+                    "elTyp": "Image",
+                    "fit": "None",
+                    "res": "StaticBacking"
+                },
+                {
+                    "elTyp": "Stack",
+                    "halign": "Right",
+                    "width": "min",
+                    "children": [
+                        {
+                            "elTyp": "Image",
+                            "fit": "Tiled",
+                            "res": "BgLight"
+                        }
+                    ]
+                }
+            ]
+        }
     }
 }

@@ -9,11 +9,38 @@ class RenderLayoutSize {
   height: number = 0;
 }
 
+class LayoutElementWithBounds {
+  element: any | undefined;
+  left: number = 0;
+  right: number = 0;
+  top: number = 0;
+  bottom: number = 0;
+  children: LayoutElementWithBounds[] = [];
+}
+
 export class RenderLayoutService {
   context: CanvasRenderingContext2D | undefined;
+  layoutData: LayoutData | undefined;
+  rootElementWithBounds: LayoutElementWithBounds | undefined;
 
   constructor(context: CanvasRenderingContext2D) {
     this.context = context;
+  }
+
+  setLayout(layoutData: LayoutData)
+  {
+    this.layoutData = layoutData;
+    this.rootElementWithBounds = this.createElementWithBounds(layoutData, layoutData.rootElement);
+  }
+
+  createElementWithBounds(layoutData: LayoutData, element: any): LayoutElementWithBounds
+  {
+    var elementWithBounds: LayoutElementWithBounds = new LayoutElementWithBounds();
+    elementWithBounds.element = element;
+    element.children?.forEach((item: any) => {
+      elementWithBounds.children.push(this.createElementWithBounds(layoutData, item));
+    });
+    return elementWithBounds;
   }
 
   getString(layoutData: LayoutData, object: any) {
@@ -38,129 +65,93 @@ export class RenderLayoutService {
     return object;
   }
 
-  measureElement(layoutData: LayoutData, element: any): RenderLayoutSize
+  measureRootElementWithBounds(width: number, height: number)
   {
-    var size: RenderLayoutSize = this.measureElementNoMargin(layoutData, element);
-    if (typeof element.marginLeft == "number")
-    {
-      size.width += element.marginLeft;
-    }
-    if (typeof element.marginTop == "number")
-    {
-      size.height += element.marginTop;
-    }
-    if (typeof element.marginRight == "number")
-    {
-      size.width += element.marginRight;
-    }
-    if (typeof element.marginBottom == "number")
-    {
-      size.height += element.marginBottom;
-    }
-    if (element.width !== undefined)
-    {
-      if (typeof element.width === "number") {
-        size.width = element.width;
-      }
-      else if (element.width === "max") {
-        size.widthType = RenderLayoutSizeType.Max;
-      }
-      else if (element.width === "min") {
-        size.widthType = RenderLayoutSizeType.Min;
-      }
-    }
-    if (element.height !== undefined)
-    {
-      if (typeof element.height === "number") {
-        size.height = element.height;
-      }
-      else if (element.height === "max") {
-        size.heightType = RenderLayoutSizeType.Max;
-      }
-      else if (element.height === "min") {
-        size.heightType = RenderLayoutSizeType.Min;
-      }
-    }
-    return size;
-  }
-
-  measureElementNoMargin(layoutData: LayoutData, element: any): RenderLayoutSize
-  {
-    switch (element.elTyp)
-    {
-      case "stack":
-        return this.measureElementStack(layoutData, element);
-      case "vsplit":
-        return this.measureElementVSplit(layoutData, element);
-      case "image":
-        return this.measureElementImage(layoutData, element);
-    }
-    return new RenderLayoutSize();
-  }
-
-  measureElementStack(layoutData: LayoutData, element: any): RenderLayoutSize
-  {
-    var size: RenderLayoutSize = new RenderLayoutSize();
-    element.children.forEach((item: any) => {
-      var childSize = this.measureElement(layoutData, item);
-      if (size.width < childSize.width) {
-        size.width = childSize.width;
-      }
-      if (size.height < childSize.height) {
-        size.height = childSize.height;
-      }
+    this.rootElementWithBounds!.right = width;
+    this.rootElementWithBounds!.bottom = height;
+    this.rootElementWithBounds!.children.forEach((item: LayoutElementWithBounds) => {
+      this.measureElementWithBounds(this.rootElementWithBounds!, item);
     });
-    return size;
   }
 
-  measureElementVSplit(layoutData: LayoutData, element: any): RenderLayoutSize
+  measureElementWithBounds(parentElement: LayoutElementWithBounds, childElement: LayoutElementWithBounds)
   {
-    // Get padding
-    var padding: number = 0;
-    if (typeof element.padding === "number") {
-      padding = element.padding;
+    // Copy from parent
+    childElement.left = 0;
+    childElement.top = 0;
+    var parentWidth = parentElement.right - parentElement.left;
+    var parentHeight = parentElement.bottom - parentElement.top;
+    childElement.right = parentWidth;
+    childElement.bottom = parentHeight;
+    // Apply pixel margins and constant widths
+    if (typeof childElement.element.marginLeft == "number")
+    {
+      childElement.left += childElement.element.marginLeft;
     }
-
-    // Traverse children
-    var size: RenderLayoutSize = new RenderLayoutSize();
-    element.children.forEach((item: any) => {
-      var childSize = this.measureElement(layoutData, item);
-      if (size.width < childSize.width) {
-        size.width = childSize.width;
-      }
-      size.height += childSize.height + padding;
+    if (typeof childElement.element.marginRight == "number")
+    {
+      childElement.right -= childElement.element.marginRight;
+    }
+    if (typeof childElement.element.marginTop == "number")
+    {
+      childElement.top += childElement.element.marginTop;
+    }
+    if (typeof childElement.element.marginBottom == "number")
+    {
+      childElement.bottom -= childElement.element.marginBottom;
+    }
+    if (typeof childElement.element.width == "number")
+    {
+      var newRight : number = childElement.left + childElement.element.width;
+      childElement.right = (childElement.right < newRight) ? childElement.right : newRight;
+    }
+    if (typeof childElement.element.height == "number")
+    {
+      var newTop : number = childElement.top + childElement.element.height;
+      childElement.bottom = (childElement.bottom < newTop) ? childElement.bottom : newTop;
+    }
+    // Do children
+    childElement.children.forEach((item: LayoutElementWithBounds) => {
+      this.measureElementWithBounds(childElement, item);
     });
-    size.width += padding + padding;
-    size.height += padding;
-    return size;
+    // Apply min and max heights
+    if (childElement.element.width === "Min")
+    {
+      // TODO
+    }
+    if (childElement.element.height === "Min")
+    {
+      // TODO
+    }
+    // Apply alignment margins
+    if (childElement.element.marginLeft === "Max")
+    {
+      var offset : number = parentWidth - childElement.right;
+      childElement.left += offset;
+      childElement.right += offset;
+    }
+    if (childElement.element.marginTop === "Max")
+    {
+      var offset : number = parentHeight - childElement.bottom;
+      childElement.top += offset;
+      childElement.bottom += offset;
+    }
   }
 
-  measureElementImage(layoutData: LayoutData, element: any): RenderLayoutSize
-  {
-    if (element.fit === "tiled") {
-      return new RenderLayoutSize();
-    }
-    else {
-      var image: HTMLImageElement = layoutData.imageResources.get(element.res)!.imageElement!;
-      var size: RenderLayoutSize = new RenderLayoutSize();
-      size.width = image.width;
-      size.height = image.height;
-      return size;
-    }
-  }
-
-  render(layoutData: LayoutData | undefined) : void
+  render(isLoaded: boolean) : void
   {
     var canvasWidth = 1920;
     var canvasHeight = 1080;
-    if (layoutData === undefined)
+    if (isLoaded === false|| this.rootElementWithBounds === undefined)
     {
       this.renderLoading(canvasWidth, canvasHeight);
     }
     else
     {
+      this.measureRootElementWithBounds(canvasWidth, canvasHeight);
+      console.log("Bounds: " + JSON.stringify(this.rootElementWithBounds!));
       this.context!.clearRect(0, 0, canvasWidth, canvasHeight);
-      this.renderElement(layoutData, layoutData.rootElement, 0, 0, canvasWidth, canvasHeight);
+      this.renderElement(this.rootElementWithBounds!);
     }
   }
 
@@ -173,158 +164,51 @@ export class RenderLayoutService {
     this.context!.fillText('Loading...', 20, 50);
   }
 
-  renderElement(layoutData: LayoutData, element: any, left: number, top: number, width: number, height: number)
+  renderElement(elementWithBounds: LayoutElementWithBounds)
   {
-    // Handle horizontal alignment
-    if (typeof element.marginLeft == "number")
+    switch (elementWithBounds.element.elTyp)
     {
-      var marginLeft = element.marginLeft;
-      left += marginLeft;
-      width -= marginLeft;
-    }
-    if (typeof element.marginTop == "number")
-    {
-      var marginTop = element.marginTop;
-      top += marginTop;
-      height -= marginTop;
-    }
-    if (typeof element.marginRight == "number")
-    {
-      var marginRight = element.marginRight;
-      width -= marginRight;
-    }
-    if (typeof element.marginBottom == "number")
-    {
-      var marginBottom = element.marginBottom;
-      height -= marginBottom;
-    }
-    if (element.width === "min" || element.width === "max")
-    {
-      var size = this.measureElement(layoutData, element);
-      if (element.width === "min")
-      {
-        element.width = size.width;
-      }
-      if (element.width === "max")
-      {
-        element.height = size.height;
-      }
-    }
-    if (typeof element.halign === "string" && typeof element.width === "number")
-    {
-      switch (element.halign)
-      {
-        case "left":
-          width = element.width;
-          break;
-        case "centre":
-          width = element.width;
-          break;
-        case "right":
-          {
-            var newLeft = left + width - element.width;
-            newLeft = (newLeft < left) ? left : newLeft;
-            left = newLeft;
-            width = element.width;
-          }
-          break;
-      }
-    }
-
-    // Handle type
-    switch (element.elTyp)
-    {
-      case "stack":
-        this.renderElementStack(layoutData, element, left, top, width, height);
+      case "Stack":
+        this.renderElementStack(elementWithBounds);
         break;
-      case "vsplit":
-        this.renderElementVSplit(layoutData, element, left, top, width, height);
+      case "Image":
+        this.renderElementImage(elementWithBounds);
         break;
-      case "image":
-        this.renderElementImage(layoutData, element, left, top, width, height);
+      case "Text":
+        this.renderElementText(elementWithBounds);
         break;
-      case "text":
-        this.renderElementText(layoutData, element, left, top, width, height);
-        break;
-      case "colour":
-        this.renderElementColour(element, left, top, width, height);
+      case "Colour":
+        this.renderElementColour(elementWithBounds);
         break;
     }
   }
 
-  renderElementStack(layoutData: LayoutData, element: any, left: number, top: number, width: number, height: number)
+  renderElementStack(elementWithBounds: LayoutElementWithBounds)
   {
-    element.children.forEach((item: any) => {
-      this.renderElement(layoutData, item, left, top, width, height);
+    elementWithBounds.children.forEach((item: any) => {
+      this.renderElement(item);
     });
   }
 
-  renderElementVSplit(layoutData: LayoutData, element: any, left: number, top: number, width: number, height: number)
+  renderElementImage(elementWithBounds: LayoutElementWithBounds)
   {
-    // Apply padding
-    var padding: number = 0;
-    if (typeof element.padding === "number") {
-      padding = element.padding;
-    }
-    left += padding;
-    top += padding;
-    width -= padding + padding;
-    height -= padding + padding;
-
-    // Work out heights
-    var heightLeft: number = height - padding * (element.children.length - 1);
-    var numMaxChildren: number = 0;
-    var childrenWithSizes: any[] = [];
-    element.children.forEach((item: any) => {
-      var childSize: RenderLayoutSize = this.measureElement(layoutData, item);
-      if (childSize.heightType === RenderLayoutSizeType.Max)
-      {
-        ++numMaxChildren;
-      }
-      else
-      {
-        heightLeft -= childSize.height;
-      }
-      childrenWithSizes.push({child:item, size:childSize});
-    });
-
-    // Allocate extra heights
-    if (0 < numMaxChildren)
-    {
-      var maxChildHeight = heightLeft / numMaxChildren;
-      for(let childIndex = 0; childIndex < childrenWithSizes.length ; ++childIndex) {
-        var childSize = childrenWithSizes[childIndex].size;
-        if (childSize.heightType === RenderLayoutSizeType.Max) {
-          childSize.height = maxChildHeight;
-        }
-      }
-    }
-
-    // Render
-    for(let childIndex = 0; childIndex < childrenWithSizes.length ; ++childIndex) {
-      var child = childrenWithSizes[childIndex];
-      this.renderElement(layoutData, child.child, left, top, width, child.size.height);
-      top += child.size.height + padding;
-    }
-  }
-
-  renderElementImage(layoutData: LayoutData, element: any, left: number, top: number, width: number, height: number)
-  {
-    var image: HTMLImageElement = layoutData.imageResources.get(element.res)!.imageElement!;
-    if (element.fit === "tiled") {
-      this.renderElementImageTiled(image, left, top, width, height);
+    var image: HTMLImageElement = this.layoutData!.imageResources.get(elementWithBounds.element.res)!.imageElement!;
+    if (elementWithBounds.element.fit === "Tiled") {
+      this.renderElementImageTiled(image, elementWithBounds);
     }
     else {
-      this.renderElementImageSimple(image, left, top, width, height);
+      this.renderElementImageSimple(image, elementWithBounds);
     }
   }
 
-  renderElementImageSimple(image: HTMLImageElement, left: number, top: number, width: number, height: number)
+  renderElementImageSimple(image: HTMLImageElement, elementWithBounds: LayoutElementWithBounds)
   {
-    this.context!.drawImage(image, 0, 0, width, height, left, top, width, height);
+    var width : number = elementWithBounds.right - elementWithBounds.left;
+    var height : number = elementWithBounds.bottom - elementWithBounds.top;
+    this.context!.drawImage(image, 0, 0, width, height, elementWithBounds.left, elementWithBounds.top, width, height);
   }
 
-  renderElementImageTiled(image: HTMLImageElement, left: number, top: number, width: number, height: number)
+  renderElementImageTiled(image: HTMLImageElement, elementWithBounds: LayoutElementWithBounds)
   {
     let imageWidth = image.width;
     let imageHeight = image.height;
@@ -333,6 +217,10 @@ export class RenderLayoutService {
       return;
     }
     let curTop = 0;
+    var left : number = elementWithBounds.left;
+    var top : number = elementWithBounds.top;
+    var width : number = elementWithBounds.right - elementWithBounds.left;
+    var height : number = elementWithBounds.bottom - elementWithBounds.top;
     while (curTop < height)
     {
       let drawHeight = (height < curTop + imageHeight) ? (height - curTop) : imageHeight;
@@ -347,31 +235,35 @@ export class RenderLayoutService {
     }
   }
 
-  renderElementText(layoutData: LayoutData, element: any, left: number, top: number, width: number, height: number)
+  renderElementText(elementWithBounds: LayoutElementWithBounds)
   {
-    var fontConfig: LayoutFontConfig = layoutData.fontConfigs.get(element.font)!;
+    var fontConfig: LayoutFontConfig = this.layoutData!.fontConfigs.get(elementWithBounds.element.font)!;
     this.context!.fillStyle = fontConfig.fontJson.colour;
     this.context!.font = fontConfig.fontJson.size + ' ' + fontConfig.fontJson.fontRes;
-    switch (element.textAlign)
+    switch (elementWithBounds.element.textAlign)
     {
-      case "center":
+      case "Center":
         this.context!.textAlign = 'center';
-        this.context!.fillText(this.getString(layoutData, element.text), left + (width / 2), top);
+        this.context!.fillText(this.getString(this.layoutData!, elementWithBounds.element.text), (elementWithBounds.left + elementWithBounds.right) / 2, elementWithBounds.top);
         break;
-      case "right":
+      case "Right":
         this.context!.textAlign = 'right';
-        this.context!.fillText(this.getString(layoutData, element.text), left + width, top);
+        this.context!.fillText(this.getString(this.layoutData!, elementWithBounds.element.text), elementWithBounds.right, elementWithBounds.top);
         break;
       default:
         this.context!.textAlign = 'left';
-        this.context!.fillText(this.getString(layoutData, element.text), left, top);
+        this.context!.fillText(this.getString(this.layoutData!, elementWithBounds.element.text), elementWithBounds.left, elementWithBounds.top);
         break;
     }
   }
 
-  renderElementColour(element: any, left: number, top: number, width: number, height: number)
+  renderElementColour(elementWithBounds: LayoutElementWithBounds)
   {
-    this.context!.fillStyle = element.colour;
+    var left : number = elementWithBounds.left;
+    var top : number = elementWithBounds.top;
+    var width : number = elementWithBounds.right - elementWithBounds.left;
+    var height : number = elementWithBounds.bottom - elementWithBounds.top;
+    this.context!.fillStyle = elementWithBounds.element.colour;
     this.context!.fillRect(left, top, width, height);
   }
 }

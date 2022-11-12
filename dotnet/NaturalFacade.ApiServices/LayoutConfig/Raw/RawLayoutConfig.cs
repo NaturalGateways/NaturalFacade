@@ -37,8 +37,6 @@ namespace NaturalFacade.LayoutConfig.Raw
 
     public class RawLayoutConfigElement
     {
-        public string ElementType { get; set; }
-
         public RawLayoutConfigElementStack Stack { get; set; }
         public RawLayoutConfigElementImage Image { get; set; }
     }
@@ -48,27 +46,35 @@ namespace NaturalFacade.LayoutConfig.Raw
         public RawLayoutConfigElementStackChild[] Children { get; set; }
     }
 
-    public enum RawLayoutConfigElementStackSizeType
+    public enum RawLayoutConfigElementStackHAlignment
     {
-        Max,
-        Min,
-        Fixed
+        Left,
+        Centre,
+        Right,
+        Fill
+    }
+
+    public enum RawLayoutConfigElementStackVAlignment
+    {
+        Start,
+        Centre,
+        End,
+        Fill
     }
 
     public class RawLayoutConfigElementStackChild
     {
-        public string WidthType { get; set; }
+        public string HAlign { get; set; }
         public int? WidthPixels { get; set; }
-        public string HeightType { get; set; }
+        public string VAlign { get; set; }
         public int? HeightPixels { get; set; }
-        public string MarginLeftType { get; set; }
-        public int? MarginLeftPixels { get; set; }
-        public string MarginRightType { get; set; }
-        public int? MarginRightPixels { get; set; }
-        public string MarginTopType { get; set; }
-        public int? MarginTopPixels { get; set; }
-        public string MarginBottomType { get; set; }
-        public int? MarginBottomPixels { get; set; }
+        public int? Margin { get; set; }
+        public int? MarginHorizontal { get; set; }
+        public int? MarginVertical { get; set; }
+        public int? MarginLeft { get; set; }
+        public int? MarginRight { get; set; }
+        public int? MarginTop { get; set; }
+        public int? MarginBottom { get; set; }
 
         public RawLayoutConfigElement Element { get; set; }
     }
