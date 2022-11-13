@@ -37,7 +37,11 @@ namespace NaturalFacade.LayoutConfig.Raw
 
     public class RawLayoutConfigElement
     {
+        // Layouts
         public RawLayoutConfigElementStack Stack { get; set; }
+        public RawLayoutConfigElementVFloat VFloat { get; set; }
+
+        // Elements
         public RawLayoutConfigElementImage Image { get; set; }
     }
 
@@ -77,6 +81,21 @@ namespace NaturalFacade.LayoutConfig.Raw
         public int? MarginBottom { get; set; }
 
         public RawLayoutConfigElement Element { get; set; }
+    }
+
+    public class RawLayoutConfigElementVFloat
+    {
+        public RawLayoutConfigElement Top { get; set; }
+        public RawLayoutConfigElement Middle { get; set; }
+        public RawLayoutConfigElement Bottom { get; set; }
+        public int? Spacing { get; set; }
+        public int? Margin { get; set; }
+        public int? MarginHorizontal { get; set; }
+        public int? MarginVertical { get; set; }
+        public int? MarginLeft { get; set; }
+        public int? MarginRight { get; set; }
+        public int? MarginTop { get; set; }
+        public int? MarginBottom { get; set; }
     }
 
     public enum RawLayoutConfigElementImageFit

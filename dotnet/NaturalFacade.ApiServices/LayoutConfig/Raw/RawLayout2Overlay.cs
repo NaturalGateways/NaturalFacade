@@ -52,6 +52,8 @@ namespace NaturalFacade.LayoutConfig.Raw
         {
             if (layoutElement.Stack != null)
                 return ConvertStackElement(layoutElement.Stack);
+            if (layoutElement.VFloat != null)
+                return ConvertVFloatElement(layoutElement.VFloat);
             if (layoutElement.Image != null)
                 return ConvertImageElement(layoutElement.Image);
             throw new Exception("Unrecognized element type.");
@@ -128,6 +130,37 @@ namespace NaturalFacade.LayoutConfig.Raw
                 overlayObject.Add("marginTop", marginTop);
             if (marginBottom != 0)
                 overlayObject.Add("marginBottom", marginBottom);
+            return overlayObject;
+        }
+
+        /// <summary>Creates an overlay element from a layout element.</summary>
+        private Dictionary<string, object> ConvertVFloatElement(RawLayoutConfigElementVFloat layoutVFloat)
+        {
+            int spacing = layoutVFloat.Spacing ?? 0;
+            int marginLeft = layoutVFloat.MarginLeft ?? layoutVFloat.MarginHorizontal ?? layoutVFloat.Margin ?? 0;
+            int marginRight = layoutVFloat.MarginRight ?? layoutVFloat.MarginHorizontal ?? layoutVFloat.Margin ?? 0;
+            int marginTop = layoutVFloat.MarginTop ?? layoutVFloat.MarginVertical ?? layoutVFloat.Margin ?? 0;
+            int marginBottom = layoutVFloat.MarginBottom ?? layoutVFloat.MarginVertical ?? layoutVFloat.Margin ?? 0;
+            Dictionary<string, object> overlayObject = new Dictionary<string, object>
+            {
+                { "elTyp", "VFloat" }
+            };
+            if (spacing != 0)
+                overlayObject.Add("spacing", spacing);
+            if (marginLeft != 0)
+                overlayObject.Add("marginLeft", marginLeft);
+            if (marginRight != 0)
+                overlayObject.Add("marginRight", marginRight);
+            if (marginTop != 0)
+                overlayObject.Add("marginTop", marginTop);
+            if (marginBottom != 0)
+                overlayObject.Add("marginBottom", marginBottom);
+            if (layoutVFloat.Top != null)
+                overlayObject.Add("top", ConvertElement(layoutVFloat.Top));
+            if (layoutVFloat.Top != null)
+                overlayObject.Add("middle", ConvertElement(layoutVFloat.Middle));
+            if (layoutVFloat.Top != null)
+                overlayObject.Add("bottom", ConvertElement(layoutVFloat.Bottom));
             return overlayObject;
         }
 

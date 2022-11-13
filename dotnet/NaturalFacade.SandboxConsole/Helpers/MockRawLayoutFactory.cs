@@ -25,6 +25,24 @@ namespace NaturalFacade.SandboxConsole.Helpers
                         Name = "BgLight",
                         Type = LayoutConfig.Raw.RawLayoutConfigResourceType.Image.ToString(),
                         Url = "https://httpsorigin.s3.amazonaws.com/https/Overlay/UIWoodLight.jpg"
+                    },
+                    new LayoutConfig.Raw.RawLayoutConfigResource
+                    {
+                        Name = "BgDark",
+                        Type = LayoutConfig.Raw.RawLayoutConfigResourceType.Image.ToString(),
+                        Url = "https://httpsorigin.s3.amazonaws.com/https/Overlay/UIWoodDark.jpg"
+                    },
+                    new LayoutConfig.Raw.RawLayoutConfigResource
+                    {
+                        Name = "GameCover",
+                        Type = LayoutConfig.Raw.RawLayoutConfigResourceType.Image.ToString(),
+                        Url = "https://httpsorigin.s3.amazonaws.com/https/Overlay/GameCover.jpg"
+                    },
+                    new LayoutConfig.Raw.RawLayoutConfigResource
+                    {
+                        Name = "FakeCam",
+                        Type = LayoutConfig.Raw.RawLayoutConfigResourceType.Image.ToString(),
+                        Url = "https://httpsorigin.s3.amazonaws.com/https/Overlay/FakeCam.png"
                     }
                 },
                 RootElement = new LayoutConfig.Raw.RawLayoutConfigElement
@@ -50,10 +68,57 @@ namespace NaturalFacade.SandboxConsole.Helpers
                                 WidthPixels = 500,
                                 Element = new LayoutConfig.Raw.RawLayoutConfigElement
                                 {
-                                    Image = new LayoutConfig.Raw.RawLayoutConfigElementImage
+                                    Stack = new LayoutConfig.Raw.RawLayoutConfigElementStack
                                     {
-                                        Fit = LayoutConfig.Raw.RawLayoutConfigElementImageFit.Tiled.ToString(),
-                                        Res = "BgLight"
+                                        Children = new LayoutConfig.Raw.RawLayoutConfigElementStackChild[]
+                                        {
+                                            new LayoutConfig.Raw.RawLayoutConfigElementStackChild
+                                            {
+                                                Element = new LayoutConfig.Raw.RawLayoutConfigElement
+                                                {
+                                                    Image = new LayoutConfig.Raw.RawLayoutConfigElementImage
+                                                    {
+                                                        Fit = LayoutConfig.Raw.RawLayoutConfigElementImageFit.Tiled.ToString(),
+                                                        Res = "BgLight"
+                                                    }
+                                                }
+                                            },
+                                            new LayoutConfig.Raw.RawLayoutConfigElementStackChild
+                                            {
+                                                Element = new LayoutConfig.Raw.RawLayoutConfigElement
+                                                {
+                                                    VFloat = new LayoutConfig.Raw.RawLayoutConfigElementVFloat
+                                                    {
+                                                        Spacing = 10,
+                                                        Margin = 10,
+                                                        Top = new LayoutConfig.Raw.RawLayoutConfigElement
+                                                        {
+                                                            Image = new LayoutConfig.Raw.RawLayoutConfigElementImage
+                                                            {
+                                                                Fit = LayoutConfig.Raw.RawLayoutConfigElementImageFit.None.ToString(),
+                                                                Res = "GameCover"
+                                                            }
+                                                        },
+                                                        Middle = new LayoutConfig.Raw.RawLayoutConfigElement
+                                                        {
+                                                            Image = new LayoutConfig.Raw.RawLayoutConfigElementImage
+                                                            {
+                                                                Fit = LayoutConfig.Raw.RawLayoutConfigElementImageFit.Tiled.ToString(),
+                                                                Res = "BgDark"
+                                                            }
+                                                        },
+                                                        Bottom = new LayoutConfig.Raw.RawLayoutConfigElement
+                                                        {
+                                                            Image = new LayoutConfig.Raw.RawLayoutConfigElementImage
+                                                            {
+                                                                Fit = LayoutConfig.Raw.RawLayoutConfigElementImageFit.None.ToString(),
+                                                                Res = "FakeCam"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
