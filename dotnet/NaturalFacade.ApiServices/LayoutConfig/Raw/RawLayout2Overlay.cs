@@ -123,13 +123,13 @@ namespace NaturalFacade.LayoutConfig.Raw
             if (heightPixels != 0)
                 overlayObject.Add("height", heightPixels);
             if (marginLeft != 0)
-                overlayObject.Add("marginLeft", marginLeft);
+                overlayObject.Add("stackMarginLeft", marginLeft);
             if (marginRight != 0)
-                overlayObject.Add("marginRight", marginRight);
+                overlayObject.Add("stackMarginRight", marginRight);
             if (marginTop != 0)
-                overlayObject.Add("marginTop", marginTop);
+                overlayObject.Add("stackMarginTop", marginTop);
             if (marginBottom != 0)
-                overlayObject.Add("marginBottom", marginBottom);
+                overlayObject.Add("stackMarginBottom", marginBottom);
             return overlayObject;
         }
 
