@@ -29,20 +29,37 @@ namespace NaturalFacade.LayoutConfig.Raw
         public string Url { get; set; }
     }
 
-    public enum RawLayoutConfigElementType
-    {
-        Stack,
-        Image
-    }
-
     public class RawLayoutConfigElement
     {
         // Layouts
+        public RawLayoutConfigElementHFloat HFloat { get; set; }
+        public RawLayoutConfigElementRows Rows { get; set; }
         public RawLayoutConfigElementStack Stack { get; set; }
         public RawLayoutConfigElementVFloat VFloat { get; set; }
 
         // Elements
+        public RawLayoutConfigElementColouredQuad ColouredQuad { get; set; }
         public RawLayoutConfigElementImage Image { get; set; }
+    }
+
+    public class RawLayoutConfigElementHFloat
+    {
+        public RawLayoutConfigElement Left { get; set; }
+        public RawLayoutConfigElement Middle { get; set; }
+        public RawLayoutConfigElement Right { get; set; }
+        public int? Spacing { get; set; }
+        public int? Margin { get; set; }
+        public int? MarginHorizontal { get; set; }
+        public int? MarginVertical { get; set; }
+        public int? MarginLeft { get; set; }
+        public int? MarginRight { get; set; }
+        public int? MarginTop { get; set; }
+        public int? MarginBottom { get; set; }
+    }
+
+    public class RawLayoutConfigElementRows
+    {
+        public RawLayoutConfigElement[] Children { get; set; }
     }
 
     public class RawLayoutConfigElementStack
@@ -96,6 +113,14 @@ namespace NaturalFacade.LayoutConfig.Raw
         public int? MarginRight { get; set; }
         public int? MarginTop { get; set; }
         public int? MarginBottom { get; set; }
+    }
+
+    public class RawLayoutConfigElementColouredQuad
+    {
+        public int? Width { get; set; }
+        public int? Height { get; set; }
+
+        public string Hex { get; set; }
     }
 
     public enum RawLayoutConfigElementImageFit

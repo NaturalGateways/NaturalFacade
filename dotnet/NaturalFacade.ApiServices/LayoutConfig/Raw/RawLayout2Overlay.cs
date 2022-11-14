@@ -50,13 +50,60 @@ namespace NaturalFacade.LayoutConfig.Raw
         /// <summary>Creates an overlay element from a layout element.</summary>
         private Dictionary<string, object> ConvertElement(RawLayoutConfigElement layoutElement)
         {
+            if (layoutElement.HFloat != null)
+                return ConvertHFloatElement(layoutElement.HFloat);
+            if (layoutElement.Rows != null)
+                return ConvertRowsElement(layoutElement.Rows);
             if (layoutElement.Stack != null)
                 return ConvertStackElement(layoutElement.Stack);
             if (layoutElement.VFloat != null)
                 return ConvertVFloatElement(layoutElement.VFloat);
+            if (layoutElement.ColouredQuad != null)
+                return ConvertColouredQuadElement(layoutElement.ColouredQuad);
             if (layoutElement.Image != null)
                 return ConvertImageElement(layoutElement.Image);
             throw new Exception("Unrecognized element type.");
+        }
+
+        /// <summary>Creates an overlay element from a layout element.</summary>
+        private Dictionary<string, object> ConvertHFloatElement(RawLayoutConfigElementHFloat layoutHFloat)
+        {
+            int spacing = layoutHFloat.Spacing ?? 0;
+            int marginLeft = layoutHFloat.MarginLeft ?? layoutHFloat.MarginHorizontal ?? layoutHFloat.Margin ?? 0;
+            int marginRight = layoutHFloat.MarginRight ?? layoutHFloat.MarginHorizontal ?? layoutHFloat.Margin ?? 0;
+            int marginTop = layoutHFloat.MarginTop ?? layoutHFloat.MarginVertical ?? layoutHFloat.Margin ?? 0;
+            int marginBottom = layoutHFloat.MarginBottom ?? layoutHFloat.MarginVertical ?? layoutHFloat.Margin ?? 0;
+            Dictionary<string, object> overlayObject = new Dictionary<string, object>
+            {
+                { "elTyp", "HFloat" }
+            };
+            if (spacing != 0)
+                overlayObject.Add("spacing", spacing);
+            if (marginLeft != 0)
+                overlayObject.Add("marginLeft", marginLeft);
+            if (marginRight != 0)
+                overlayObject.Add("marginRight", marginRight);
+            if (marginTop != 0)
+                overlayObject.Add("marginTop", marginTop);
+            if (marginBottom != 0)
+                overlayObject.Add("marginBottom", marginBottom);
+            if (layoutHFloat.Left != null)
+                overlayObject.Add("left", ConvertElement(layoutHFloat.Left));
+            if (layoutHFloat.Middle != null)
+                overlayObject.Add("middle", ConvertElement(layoutHFloat.Middle));
+            if (layoutHFloat.Right != null)
+                overlayObject.Add("right", ConvertElement(layoutHFloat.Right));
+            return overlayObject;
+        }
+
+        /// <summary>Creates an overlay element from a layout element.</summary>
+        private Dictionary<string, object> ConvertRowsElement(RawLayoutConfigElementRows layoutRows)
+        {
+            return new Dictionary<string, object>
+            {
+                { "elTyp", "Rows" },
+                { "children", layoutRows.Children.Select(x => ConvertElement(x)).ToArray() }
+            };
         }
 
         /// <summary>Creates an overlay element from a layout element.</summary>
@@ -157,9 +204,9 @@ namespace NaturalFacade.LayoutConfig.Raw
                 overlayObject.Add("marginBottom", marginBottom);
             if (layoutVFloat.Top != null)
                 overlayObject.Add("top", ConvertElement(layoutVFloat.Top));
-            if (layoutVFloat.Top != null)
+            if (layoutVFloat.Middle != null)
                 overlayObject.Add("middle", ConvertElement(layoutVFloat.Middle));
-            if (layoutVFloat.Top != null)
+            if (layoutVFloat.Bottom != null)
                 overlayObject.Add("bottom", ConvertElement(layoutVFloat.Bottom));
             return overlayObject;
         }
@@ -177,6 +224,26 @@ namespace NaturalFacade.LayoutConfig.Raw
                 return fitEnum;
             }
             throw new Exception($"Unrecognised image fit: '{fitString}'");
+        }
+
+        /// <summary>Creates an overlay element from a layout element.</summary>
+        private Dictionary<string, object> ConvertColouredQuadElement(RawLayoutConfigElementColouredQuad layoutColouredQuad)
+        {
+            // Work out defaults
+            int width = layoutColouredQuad.Width ?? 0;
+            int height = layoutColouredQuad.Height ?? 0;
+
+            // Create and return
+            Dictionary<string, object> data = new Dictionary<string, object>
+            {
+                { "elTyp", "ColouredQuad" },
+                { "hex", layoutColouredQuad.Hex }
+            };
+            if (width != 0)
+                data.Add("width", width);
+            if (height != 0)
+                data.Add("height", height);
+            return data;
         }
 
         /// <summary>Creates an overlay element from a layout element.</summary>

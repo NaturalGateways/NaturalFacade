@@ -1,0 +1,148 @@
+﻿{
+  "RequestType": "PutLayout",
+  "PutLayout": {
+    "LayoutId": "Layout-55e23f3a-2db9-44c3-ab38-9e457ffbfeae",
+    "Config": {
+      "LayoutType": "Raw",
+      "Name": "Twitch",
+      "Raw": {
+        "Resources": [
+          {
+            "Name": "StaticBacking",
+            "Type": "Image",
+            "Url": "https://httpsorigin.s3.amazonaws.com/https/Overlay/StaticBacking.webp"
+          },
+          {
+            "Name": "BgLight",
+            "Type": "Image",
+            "Url": "https://httpsorigin.s3.amazonaws.com/https/Overlay/UIWoodLight.jpg"
+          },
+          {
+            "Name": "BgDark",
+            "Type": "Image",
+            "Url": "https://httpsorigin.s3.amazonaws.com/https/Overlay/UIWoodDark.jpg"
+          },
+          {
+            "Name": "GameCover",
+            "Type": "Image",
+            "Url": "https://httpsorigin.s3.amazonaws.com/https/Overlay/GameCover.jpg"
+          },
+          {
+            "Name": "FakeCam",
+            "Type": "Image",
+            "Url": "https://httpsorigin.s3.amazonaws.com/https/Overlay/FakeCam.png"
+          }
+        ],
+        "RootElement": {
+          "Stack": {
+            "Children": [
+              {
+                "Element": {
+                  "Image": {
+                    "Fit": "None",
+                    "Res": "StaticBacking"
+                  }
+                }
+              },
+              {
+                "HAlign": "Right",
+                "Element": {
+                  "Stack": {
+                    "Children": [
+                      {
+                        "Element": {
+                          "Image": {
+                            "Fit": "Tiled",
+                            "Res": "BgLight"
+                          }
+                        }
+                      },
+                      {
+                        "Element": {
+                          "VFloat": {
+                            "Spacing": 10,
+                            "Margin": 10,
+                            "Top": {
+                              "Image": {
+                                "Fit": "None",
+                                "Res": "GameCover"
+                              }
+                            },
+                            "Middle": {
+                              "Stack": {
+                                "Children": [
+                                  {
+                                    "Element": {
+                                      "Image": {
+                                        "Fit": "Tiled",
+                                        "Res": "BgDark"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "Element": {
+                                      "Rows": {
+                                        "Children": [
+                                          {
+                                            "HFloat": {
+                                              "Left": {
+                                                "ColouredQuad": {
+                                                  "Width": 30,
+                                                  "Height": 30,
+                                                  "Hex": "#003366"
+                                                }
+                                              },
+                                              "Right": {
+                                                "ColouredQuad": {
+                                                  "Width": 30,
+                                                  "Height": 30,
+                                                  "Hex": "#006633"
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "HFloat": {
+                                              "Left": {
+                                                "ColouredQuad": {
+                                                  "Width": 30,
+                                                  "Height": 30,
+                                                  "Hex": "#660033"
+                                                }
+                                              },
+                                              "Right": {
+                                                "ColouredQuad": {
+                                                  "Width": 30,
+                                                  "Height": 30,
+                                                  "Hex": "#663300"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "Bottom": {
+                              "Image": {
+                                "Fit": "None",
+                                "Res": "FakeCam"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}
