@@ -39,20 +39,29 @@ export class RenderLayoutService {
   {
     var elementWithBounds: LayoutElementWithBounds = new LayoutElementWithBounds();
     elementWithBounds.element = element;
-    if (element.elTyp === "VFloat")
+    switch (element.elTyp)
     {
-      if (element.top !== undefined)
-        elementWithBounds.children.push(this.createElementWithBounds(layoutData, element.top));
-      if (element.middle !== undefined)
-        elementWithBounds.children.push(this.createElementWithBounds(layoutData, element.middle));
-      if (element.bottom !== undefined)
-        elementWithBounds.children.push(this.createElementWithBounds(layoutData, element.bottom));
-    }
-    else
-    {
-      element.children?.forEach((item: any) => {
-        elementWithBounds.children.push(this.createElementWithBounds(layoutData, item));
-      });
+      case "HFloat":
+        if (element.left !== undefined)
+          elementWithBounds.children.push(this.createElementWithBounds(layoutData, element.left));
+        if (element.middle !== undefined)
+          elementWithBounds.children.push(this.createElementWithBounds(layoutData, element.middle));
+        if (element.right !== undefined)
+          elementWithBounds.children.push(this.createElementWithBounds(layoutData, element.right));
+        break;
+      case "VFloat":
+        if (element.top !== undefined)
+          elementWithBounds.children.push(this.createElementWithBounds(layoutData, element.top));
+        if (element.middle !== undefined)
+          elementWithBounds.children.push(this.createElementWithBounds(layoutData, element.middle));
+        if (element.bottom !== undefined)
+          elementWithBounds.children.push(this.createElementWithBounds(layoutData, element.bottom));
+        break;
+      default:
+        element.children?.forEach((item: any) => {
+          elementWithBounds.children.push(this.createElementWithBounds(layoutData, item));
+        });
+        break;
     }
     return elementWithBounds;
   }
@@ -88,15 +97,24 @@ export class RenderLayoutService {
     this.measureElementMinimumSize(this.rootElementWithBounds!);
     //console.log("Min: " + JSON.stringify(this.rootElementWithBounds!));
     this.measureElementBounds(this.rootElementWithBounds!);
-    console.log("Bounds: " + JSON.stringify(this.rootElementWithBounds!));
+    //console.log("Bounds: " + JSON.stringify(this.rootElementWithBounds!));
   }
 
   measureElementMinimumSize(element: LayoutElementWithBounds)
   {
     switch (element.element.elTyp)
     {
+      case "ColouredQuad":
+        this.measureColouredQuadElementMinimumSize(element);
+        break;
+      case "HFloat":
+        this.measureHFloatElementMinimumSize(element);
+        break;
       case "Image":
         this.measureImageElementMinimumSize(element);
+        break;
+      case "Rows":
+        this.measureRowsElementMinimumSize(element);
         break;
       case "Stack":
         this.measureStackElementMinimumSize(element);
@@ -105,6 +123,46 @@ export class RenderLayoutService {
         this.measureVFloatElementMinimumSize(element);
         break;
     }
+  }
+
+  measureColouredQuadElementMinimumSize(elementWithBounds: LayoutElementWithBounds)
+  {
+    if (typeof elementWithBounds.element.width == "number")
+      elementWithBounds.minWidth = elementWithBounds.element.width;
+    else
+      elementWithBounds.minWidth = 0;
+    if (typeof elementWithBounds.element.height == "number")
+      elementWithBounds.minHeight = elementWithBounds.element.height;
+    else
+      elementWithBounds.minHeight = 0;
+  }
+
+  measureHFloatElementMinimumSize(element: LayoutElementWithBounds)
+  {
+    var parentMinWidth = 0;
+    var parentMinHeight = 0;
+    // Apply children
+    element.children.forEach((child: LayoutElementWithBounds) => {
+      this.measureElementMinimumSize(child);
+      parentMinWidth += child.minWidth;
+      if (parentMinHeight < child.minHeight)
+        parentMinHeight = child.minHeight;
+    });
+    // Apply spacing
+    if (typeof element.element.spacing == "number" && 1 < element.children.length)
+      parentMinWidth = element.element.spacing * (element.children.length - 1);
+    // Apply margins
+    if (typeof element.element.marginLeft == "number")
+      parentMinWidth += element.element.marginLeft;
+    if (typeof element.element.marginRight == "number")
+      parentMinWidth += element.element.marginRight;
+    if (typeof element.element.marginTop == "number")
+      parentMinHeight += element.element.marginTop;
+    if (typeof element.element.marginBottom == "number")
+      parentMinHeight += element.element.marginBottom;
+    // Set measurements
+    element.minWidth = parentMinWidth;
+    element.minHeight = parentMinHeight;
   }
 
   measureImageElementMinimumSize(elementWithBounds: LayoutElementWithBounds)
@@ -119,6 +177,31 @@ export class RenderLayoutService {
     }
     elementWithBounds.minWidth = minWidth;
     elementWithBounds.minHeight = minHeight;
+  }
+
+  measureRowsElementMinimumSize(element: LayoutElementWithBounds)
+  {
+    var parentMinWidth = 0;
+    var parentMinHeight = 0;
+    var isFirst: boolean = true;
+    element.children.forEach((child: LayoutElementWithBounds) => {
+      this.measureElementMinimumSize(child);
+      // Apply spacing
+      if (isFirst)
+      {
+        isFirst = false;
+      }
+      else if (typeof element.element.spacing == "number")
+      {
+        parentMinHeight += element.element.spacing;
+      }
+      // Apply widths and heights
+      if (parentMinWidth < child.minWidth)
+        parentMinWidth = child.minWidth;
+      parentMinHeight = child.minHeight;
+    });
+    element.minWidth = parentMinWidth;
+    element.minHeight = parentMinHeight;
   }
 
   measureStackElementMinimumSize(element: LayoutElementWithBounds)
@@ -189,6 +272,15 @@ export class RenderLayoutService {
   {
     switch (element.element.elTyp)
     {
+      case "ColouredQuad":
+        this.measureColouredQuadElementBounds(element);
+        break;
+      case "HFloat":
+        this.measureHFloatElementBounds(element);
+        break;
+      case "Rows":
+        this.measureRowsElementBounds(element);
+        break;
       case "Stack":
         this.measureStackElementBounds(element);
         break;
@@ -196,6 +288,117 @@ export class RenderLayoutService {
         this.measureVFloatElementBounds(element);
         break;
     }
+  }
+
+  measureColouredQuadElementBounds(element: LayoutElementWithBounds)
+  {
+    if (typeof element.element.width == "number")
+    {
+      var oldWidth: number = element.right - element.left;
+      var newWidth: number = element.element.width;
+      if (newWidth < oldWidth)
+        element.right = element.left + newWidth;
+    }
+    if (typeof element.element.height == "number")
+    {
+      var oldHeight: number = element.bottom - element.top;
+      var newHeight: number = element.element.height;
+      if (newHeight < oldHeight)
+        element.bottom = element.top + newHeight;
+    }
+  }
+
+  measureHFloatElementBounds(element: LayoutElementWithBounds)
+  {
+    // Work out child indices
+    var leftIndex: number = -1;
+    var middleIndex: number = -1;
+    var rightIndex: number = -1;
+    if (element.element.left !== undefined)
+      leftIndex = 0;
+    if (element.element.middle !== undefined)
+      middleIndex = leftIndex + 1;
+    if (element.element.right !== undefined)
+      rightIndex = (middleIndex === -1) ? (leftIndex + 1) : (middleIndex + 1);
+    // Get bounds
+    var parentLeft: number = element.left;
+    var parentRight: number = element.right;
+    var parentTop: number = element.top;
+    var parentBottom: number = element.bottom;
+    // Apply margins
+    if (typeof element.element.marginLeft == "number")
+      parentLeft += element.element.marginLeft;
+    if (typeof element.element.marginRight == "number")
+      parentRight -= element.element.marginRight;
+    if (typeof element.element.marginTop == "number")
+      parentTop += element.element.marginTop;
+    if (typeof element.element.marginBottom == "number")
+      parentBottom -= element.element.marginBottom;
+    // Apply top element
+    if (0 <= leftIndex)
+    {
+      var child: LayoutElementWithBounds = element.children[leftIndex];
+      child.left = parentLeft;
+      parentLeft += child.minWidth;
+      child.right = parentLeft;
+      child.top = parentTop;
+      child.bottom = parentBottom;
+    }
+    // Apply right element
+    if (0 <= rightIndex)
+    {
+      var child: LayoutElementWithBounds = element.children[rightIndex];
+      child.right = parentRight;
+      parentRight -= child.minWidth;
+      child.left = parentRight;
+      child.top = parentTop;
+      child.bottom = parentBottom;
+    }
+    // Apply spacing
+    if (typeof element.element.spacing == "number")
+    {
+      if (0 <= leftIndex)
+        parentLeft += element.element.spacing;
+      if (0 <= rightIndex)
+        parentRight -= element.element.spacing;
+    }
+    // Apply middle
+    if (0 <= middleIndex)
+    {
+      var child: LayoutElementWithBounds = element.children[middleIndex];
+      child.left = parentLeft;
+      child.right = parentRight;
+      child.top = parentTop;
+      child.bottom = parentBottom;
+    }
+    // Traverse down
+    if (0 <= leftIndex)
+      this.measureElementBounds(element.children[leftIndex]);
+    if (0 <= middleIndex)
+      this.measureElementBounds(element.children[middleIndex]);
+    if (0 <= rightIndex)
+      this.measureElementBounds(element.children[rightIndex]);
+  }
+
+  measureRowsElementBounds(element: LayoutElementWithBounds)
+  {
+    var curTop: number = element.top;
+    var isFirst: boolean = true;
+    element.children.forEach((child: LayoutElementWithBounds) => {
+      // Apply spacing
+      if (isFirst)
+        isFirst = false;
+      else if (typeof element.element.spacing == "number")
+        curTop += element.element.spacing;
+      // Set from parent
+      child.left = element.left;
+      child.top = curTop;
+      child.right = element.right;
+      child.bottom = curTop + child.minHeight;
+      curTop = child.bottom;
+      // Layout child
+      this.measureElementBounds(child);
+    });
   }
 
   measureStackElementBounds(element: LayoutElementWithBounds)
@@ -361,11 +564,16 @@ export class RenderLayoutService {
     switch (elementWithBounds.element.elTyp)
     {
       // Layouts
+      case "HFloat":
+      case "Rows":
       case "Stack":
       case "VFloat":
         this.renderElementStack(elementWithBounds);
         break;
       // Elements
+      case "ColouredQuad":
+        this.renderElementColouredQuad(elementWithBounds);
+        break;
       case "Image":
         this.renderElementImage(elementWithBounds);
         break;
@@ -383,6 +591,14 @@ export class RenderLayoutService {
     elementWithBounds.children.forEach((item: any) => {
       this.renderElement(item);
     });
+  }
+
+  renderElementColouredQuad(elementWithBounds: LayoutElementWithBounds)
+  {
+    var width : number = elementWithBounds.right - elementWithBounds.left;
+    var height : number = elementWithBounds.bottom - elementWithBounds.top;
+    this.context!.fillStyle = elementWithBounds.element.hex;
+    this.context!.fillRect(elementWithBounds.left, elementWithBounds.top, width, height);
   }
 
   renderElementImage(elementWithBounds: LayoutElementWithBounds)

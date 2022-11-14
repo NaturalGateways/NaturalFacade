@@ -80,8 +80,10 @@
                                     }
                                   },
                                   {
+                                    "Margin": 10,
                                     "Element": {
                                       "Rows": {
+                                        "Spacing": 10,
                                         "Children": [
                                           {
                                             "HFloat": {
