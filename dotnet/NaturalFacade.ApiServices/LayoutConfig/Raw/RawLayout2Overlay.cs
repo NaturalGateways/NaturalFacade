@@ -99,11 +99,17 @@ namespace NaturalFacade.LayoutConfig.Raw
         /// <summary>Creates an overlay element from a layout element.</summary>
         private Dictionary<string, object> ConvertRowsElement(RawLayoutConfigElementRows layoutRows)
         {
-            return new Dictionary<string, object>
+            // Get defaults
+            int spacing = layoutRows.Spacing ?? 0;
+            // Create data
+            Dictionary<string, object> data = new Dictionary<string, object>
             {
                 { "elTyp", "Rows" },
                 { "children", layoutRows.Children.Select(x => ConvertElement(x)).ToArray() }
             };
+            if (spacing != 0)
+                data.Add("spacing", spacing);
+            return data;
         }
 
         /// <summary>Creates an overlay element from a layout element.</summary>
@@ -229,20 +235,15 @@ namespace NaturalFacade.LayoutConfig.Raw
         /// <summary>Creates an overlay element from a layout element.</summary>
         private Dictionary<string, object> ConvertColouredQuadElement(RawLayoutConfigElementColouredQuad layoutColouredQuad)
         {
-            // Work out defaults
-            int width = layoutColouredQuad.Width ?? 0;
-            int height = layoutColouredQuad.Height ?? 0;
-
-            // Create and return
             Dictionary<string, object> data = new Dictionary<string, object>
             {
                 { "elTyp", "ColouredQuad" },
                 { "hex", layoutColouredQuad.Hex }
             };
-            if (width != 0)
-                data.Add("width", width);
-            if (height != 0)
-                data.Add("height", height);
+            if (layoutColouredQuad.Width.HasValue)
+                data.Add("width", layoutColouredQuad.Width.Value);
+            if (layoutColouredQuad.Height.HasValue)
+                data.Add("height", layoutColouredQuad.Height.Value);
             return data;
         }
 

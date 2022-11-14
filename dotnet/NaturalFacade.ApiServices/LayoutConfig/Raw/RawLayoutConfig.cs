@@ -59,6 +59,7 @@ namespace NaturalFacade.LayoutConfig.Raw
 
     public class RawLayoutConfigElementRows
     {
+        public int? Spacing { get; set; }
         public RawLayoutConfigElement[] Children { get; set; }
     }
 
