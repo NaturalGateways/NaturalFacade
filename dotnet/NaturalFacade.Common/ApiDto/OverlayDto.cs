@@ -8,21 +8,23 @@ namespace NaturalFacade.ApiDto
     {
         public Dictionary<string, string> parameters { get; set; }
 
-        public Dictionary<string, string> imageResources { get; set; }
+        public string[] imageResources { get; set; }
 
-        public Dictionary<string, string> fontResources { get; set; }
+        public string[] fontResources { get; set; }
 
-        public Dictionary<string, OverlayDtoFont> fonts { get; set; }
+        public OverlayDtoFont[] fonts { get; set; }
 
         public object rootElement { get; set; }
     }
 
     public class OverlayDtoFont
     {
-        public string fontRes { get; set; }
+        public int res { get; set; }
 
         public string size { get; set; }
 
         public string colour { get; set; }
+
+        public string align { get; set; }
     }
 }

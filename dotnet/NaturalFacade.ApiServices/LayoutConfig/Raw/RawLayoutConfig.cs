@@ -12,6 +12,8 @@ namespace NaturalFacade.LayoutConfig.Raw
 
         public RawLayoutConfigResource[] Resources { get; set; }
 
+        public RawLayoutConfigFont[] Fonts { get; set; }
+
         public RawLayoutConfigElement RootElement { get; set; }
     }
 
@@ -29,6 +31,19 @@ namespace NaturalFacade.LayoutConfig.Raw
         public string Url { get; set; }
     }
 
+    public class RawLayoutConfigFont
+    {
+        public string Name { get; set; }
+
+        public string FontRes { get; set; }
+
+        public string Size { get; set; }
+
+        public string Colour { get; set; }
+
+        public string Align { get; set; }
+    }
+
     public class RawLayoutConfigElement
     {
         // Layouts
@@ -40,6 +55,7 @@ namespace NaturalFacade.LayoutConfig.Raw
         // Elements
         public RawLayoutConfigElementColouredQuad ColouredQuad { get; set; }
         public RawLayoutConfigElementImage Image { get; set; }
+        public RawLayoutConfigElementText Text { get; set; }
     }
 
     public class RawLayoutConfigElementHFloat
@@ -136,5 +152,12 @@ namespace NaturalFacade.LayoutConfig.Raw
         public string Fit { get; set; }
 
         public string Res { get; set; }
+    }
+
+    public class RawLayoutConfigElementText
+    {
+        public string Font { get; set; }
+
+        public string Text { get; set; }
     }
 }

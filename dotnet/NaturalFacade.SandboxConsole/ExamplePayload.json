@@ -31,6 +31,34 @@
             "Name": "FakeCam",
             "Type": "Image",
             "Url": "https://httpsorigin.s3.amazonaws.com/https/Overlay/FakeCam.png"
+          },
+          {
+            "name": "NorseFont",
+            "type": "Font",
+            "url": "https://httpsorigin.s3.amazonaws.com/https/Overlay/Norse.otf"
+          }
+        ],
+        "Fonts": [
+          {
+            "Name": "AttTitle",
+            "FontRes": "NorseFont",
+            "Size": "38px",
+            "Colour": "#e9d26c",
+            "Align": "Centre"
+          },
+          {
+            "Name": "AttLabel",
+            "FontRes": "NorseFont",
+            "Size": "28px",
+            "Colour": "#e9d26c",
+            "Align": "Left"
+          },
+          {
+            "Name": "AttValue",
+            "FontRes": "NorseFont",
+            "Size": "28px",
+            "Colour": "#e9d26c",
+            "Align": "Right"
           }
         ],
         "RootElement": {
@@ -86,19 +114,23 @@
                                         "Spacing": 10,
                                         "Children": [
                                           {
+                                            "Text": {
+                                              "Font": "AttTitle",
+                                              "Text": "Valheim"
+                                            }
+                                          },
+                                          {
                                             "HFloat": {
                                               "Left": {
-                                                "ColouredQuad": {
-                                                  "Width": 30,
-                                                  "Height": 30,
-                                                  "Hex": "#003366"
+                                                "Text": {
+                                                  "Font": "AttLabel",
+                                                  "Text": "Alpha"
                                                 }
                                               },
                                               "Right": {
-                                                "ColouredQuad": {
-                                                  "Width": 30,
-                                                  "Height": 30,
-                                                  "Hex": "#006633"
+                                                "Text": {
+                                                  "Font": "AttValue",
+                                                  "Text": "Beta"
                                                 }
                                               }
                                             }
@@ -106,17 +138,15 @@
                                           {
                                             "HFloat": {
                                               "Left": {
-                                                "ColouredQuad": {
-                                                  "Width": 30,
-                                                  "Height": 30,
-                                                  "Hex": "#660033"
+                                                "Text": {
+                                                  "Font": "AttLabel",
+                                                  "Text": "Gamma"
                                                 }
                                               },
                                               "Right": {
-                                                "ColouredQuad": {
-                                                  "Width": 30,
-                                                  "Height": 30,
-                                                  "Hex": "#663300"
+                                                "Text": {
+                                                  "Font": "AttValue",
+                                                  "Text": "Delta"
                                                 }
                                               }
                                             }

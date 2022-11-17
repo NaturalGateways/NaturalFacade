@@ -18,20 +18,46 @@ namespace NaturalFacade.LayoutConfig.Raw
             object rootElement = instance.ConvertElement(layoutConfig.RootElement);
 
             // Return
-            return new ApiDto.OverlayDto
+            ApiDto.OverlayDto overlay = new ApiDto.OverlayDto
             {
-                imageResources = instance.m_resourcesByName.Values.Where(x => x.IsUsed && x.ResConfig.Type == "Image").ToDictionary(x => x.ResConfig.Name, y => y.ResConfig.Url),
                 rootElement = rootElement
             };
+            if (instance.m_imageResourcesUsedList.Any())
+                overlay.imageResources = instance.m_imageResourcesUsedList.Select(x => x.ResConfig.Url).ToArray();
+            if (instance.m_fontResourcesUsedList.Any())
+                overlay.fontResources = instance.m_fontResourcesUsedList.Select(x => x.ResConfig.Url).ToArray();
+            if (instance.m_fontObjUsedList.Any())
+                overlay.fonts = instance.m_fontObjUsedList.Select(x => new ApiDto.OverlayDtoFont
+                {
+                    res = x.ResIndex.Value,
+                    size = x.Font.Size,
+                    colour = x.Font.Colour,
+                    align = x.Font.Align
+                }).ToArray();
+            return overlay;
         }
 
-        /// <summary>The resources indexed by name and with an is-used boolean</summary>
-        private Dictionary<string, Resource> m_resourcesByName = null;
+        /// <summary>The resources indexed.</summary>
+        private Dictionary<string, ResourceRef> m_imageResourcesByName = null;
+        /// <summary>The resources indexed.</summary>
+        private List<ResourceRef> m_imageResourcesUsedList = new List<ResourceRef>();
+
+        /// <summary>The resources indexed.</summary>
+        private Dictionary<string, ResourceRef> m_fontResourcesByName = null;
+        /// <summary>The resources indexed.</summary>
+        private List<ResourceRef> m_fontResourcesUsedList = new List<ResourceRef>();
+        
+        /// <summary>The font definitions.</summary>
+        private Dictionary<string, FontObjResource> m_fontObjsByName = null;
+        /// <summary>The font definitions.</summary>
+        private List<FontObjResource> m_fontObjUsedList = new List<FontObjResource>();
 
         /// <summary>Constructor.</summary>
         private RawLayout2Overlay(RawLayoutConfig layoutConfig)
         {
-            m_resourcesByName = layoutConfig.Resources.ToDictionary(x => x.Name, y => new Resource(y));
+            m_imageResourcesByName = layoutConfig.Resources.Where(x => x.Type == "Image").Select(x => new ResourceRef(x)).ToDictionary(x => x.ResConfig.Name);
+            m_fontResourcesByName = layoutConfig.Resources.Where(x => x.Type == "Font").Select(x => new ResourceRef(x)).ToDictionary(x => x.ResConfig.Name);
+            m_fontObjsByName = layoutConfig.Fonts.Select(x => new FontObjResource(x)).ToDictionary(x => x.Font.Name);
         }
 
         /// <summary>A resource with a boolean flag for whether it is used or not.</summary>
@@ -44,6 +70,34 @@ namespace NaturalFacade.LayoutConfig.Raw
             public Resource(RawLayoutConfigResource resConfig)
             {
                 this.ResConfig = resConfig;
+            }
+        }
+
+        /// <summary>A resource with a boolean flag for whether it is used or not.</summary>
+        private class ResourceRef
+        {
+            public RawLayoutConfigResource ResConfig { get; private set; }
+
+            public int? ResIndex { get; set; }
+
+            public ResourceRef(RawLayoutConfigResource resConfig)
+            {
+                this.ResConfig = resConfig;
+            }
+        }
+
+        /// <summary>A resource with a boolean flag for whether it is used or not.</summary>
+        private class FontObjResource
+        {
+            public RawLayoutConfigFont Font { get; private set; }
+
+            public int? FontIndex { get; set; }
+
+            public int? ResIndex { get; set; }
+
+            public FontObjResource(RawLayoutConfigFont font)
+            {
+                this.Font = font;
             }
         }
 
@@ -62,6 +116,8 @@ namespace NaturalFacade.LayoutConfig.Raw
                 return ConvertColouredQuadElement(layoutElement.ColouredQuad);
             if (layoutElement.Image != null)
                 return ConvertImageElement(layoutElement.Image);
+            if (layoutElement.Text != null)
+                return ConvertTextElement(layoutElement.Text);
             throw new Exception("Unrecognized element type.");
         }
 
@@ -250,19 +306,64 @@ namespace NaturalFacade.LayoutConfig.Raw
         /// <summary>Creates an overlay element from a layout element.</summary>
         private Dictionary<string, object> ConvertImageElement(RawLayoutConfigElementImage layoutImage)
         {
-            // Check resources exists
-            if (m_resourcesByName.ContainsKey(layoutImage.Res) == false)
+            // Check font res exists
+            if (m_imageResourcesByName.ContainsKey(layoutImage.Res) == false)
             {
-                throw new Exception($"Resource '{layoutImage.Res}' is not defined.");
+                throw new Exception($"Image resource '{layoutImage.Res}' is not defined.");
             }
-            m_resourcesByName[layoutImage.Res].IsUsed = true;
+            ResourceRef imageFile = m_imageResourcesByName[layoutImage.Res];
+            // Check if we mark font as used
+            if (imageFile.ResIndex.HasValue == false)
+            {
+                imageFile.ResIndex = m_imageResourcesUsedList.Count;
+                m_imageResourcesUsedList.Add(imageFile);
+            }
 
             // Return object
             return new Dictionary<string, object>
             {
                 { "elTyp", "Image" },
                 { "fit", ConvertStringToImageFit(layoutImage.Fit).ToString() },
-                { "res", layoutImage.Res }
+                { "res", imageFile.ResIndex.Value }
+            };
+        }
+
+        /// <summary>Creates an overlay element from a layout element.</summary>
+        private Dictionary<string, object> ConvertTextElement(RawLayoutConfigElementText layoutText)
+        {
+            // Check font exists
+            if (m_fontObjsByName.ContainsKey(layoutText.Font) == false)
+            {
+                throw new Exception($"Font '{layoutText.Font}' is not defined.");
+            }
+            FontObjResource fontObj = m_fontObjsByName[layoutText.Font];
+            // Check if we mark font as used
+            if (fontObj.FontIndex.HasValue == false)
+            {
+                fontObj.FontIndex = m_fontObjUsedList.Count;
+                m_fontObjUsedList.Add(fontObj);
+            }
+
+            // Check font res exists
+            if (m_fontResourcesByName.ContainsKey(fontObj.Font.FontRes) == false)
+            {
+                throw new Exception($"Font resource '{fontObj.Font.FontRes}' is not defined.");
+            }
+            ResourceRef fontFile = m_fontResourcesByName[fontObj.Font.FontRes];
+            // Check if we mark font as used
+            if (fontFile.ResIndex.HasValue == false)
+            {
+                fontFile.ResIndex = m_fontResourcesUsedList.Count;
+                m_fontResourcesUsedList.Add(fontFile);
+            }
+            fontObj.ResIndex = fontFile.ResIndex;
+
+            // Return object
+            return new Dictionary<string, object>
+            {
+                { "elTyp", "Text" },
+                { "font", fontObj.FontIndex.Value },
+                { "text", layoutText.Text }
             };
         }
     }
