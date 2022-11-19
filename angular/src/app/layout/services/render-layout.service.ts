@@ -119,6 +119,9 @@ export class RenderLayoutService {
       case "Stack":
         this.measureStackElementMinimumSize(element);
         break;
+      case "Text":
+        this.measureTextElementMinimumSize(element);
+        break;
       case "VFloat":
         this.measureVFloatElementMinimumSize(element);
         break;
@@ -171,7 +174,7 @@ export class RenderLayoutService {
     var minHeight = 0;
     if (elementWithBounds.element.fit === "None")
     {
-      var image: HTMLImageElement = this.layoutData!.imageResources.get(elementWithBounds.element.res)!.imageElement!;
+      var image: HTMLImageElement = this.layoutData!.imageResources[elementWithBounds.element.res]!.imageElement!;
       minWidth = image.width;
       minHeight = image.height;
     }
@@ -238,6 +241,15 @@ export class RenderLayoutService {
     });
     element.minWidth = parentMinWidth;
     element.minHeight = parentMinHeight;
+  }
+
+  measureTextElementMinimumSize(element: LayoutElementWithBounds)
+  {
+    var fontConfig: LayoutFontConfig = this.layoutData!.fontConfigs[element.element.font];
+    this.context!.font = fontConfig.fontName;
+    var metrics: TextMetrics = this.context!.measureText(element.element.text);
+    element.minWidth = metrics.width;
+    element.minHeight = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
   }
 
   measureVFloatElementMinimumSize(element: LayoutElementWithBounds)
@@ -603,7 +615,7 @@ export class RenderLayoutService {
 
   renderElementImage(elementWithBounds: LayoutElementWithBounds)
   {
-    var image: HTMLImageElement = this.layoutData!.imageResources.get(elementWithBounds.element.res)!.imageElement!;
+    var image: HTMLImageElement = this.layoutData!.imageResources[elementWithBounds.element.res]!.imageElement!;
     if (elementWithBounds.element.fit === "Tiled") {
       this.renderElementImageTiled(image, elementWithBounds);
     }
@@ -648,22 +660,22 @@ export class RenderLayoutService {
 
   renderElementText(elementWithBounds: LayoutElementWithBounds)
   {
-    var fontConfig: LayoutFontConfig = this.layoutData!.fontConfigs.get(elementWithBounds.element.font)!;
+    var fontConfig: LayoutFontConfig = this.layoutData!.fontConfigs[elementWithBounds.element.font];
     this.context!.fillStyle = fontConfig.fontJson.colour;
-    this.context!.font = fontConfig.fontJson.size + ' ' + fontConfig.fontJson.fontRes;
-    switch (elementWithBounds.element.textAlign)
+    this.context!.font = fontConfig.fontName;
+    switch (fontConfig.fontJson.align)
     {
-      case "Center":
+      case "Centre":
         this.context!.textAlign = 'center';
-        this.context!.fillText(this.getString(this.layoutData!, elementWithBounds.element.text), (elementWithBounds.left + elementWithBounds.right) / 2, elementWithBounds.top);
+        this.context!.fillText(this.getString(this.layoutData!, elementWithBounds.element.text), (elementWithBounds.left + elementWithBounds.right) / 2, elementWithBounds.bottom);
         break;
       case "Right":
         this.context!.textAlign = 'right';
-        this.context!.fillText(this.getString(this.layoutData!, elementWithBounds.element.text), elementWithBounds.right, elementWithBounds.top);
+        this.context!.fillText(this.getString(this.layoutData!, elementWithBounds.element.text), elementWithBounds.right, elementWithBounds.bottom);
         break;
       default:
         this.context!.textAlign = 'left';
-        this.context!.fillText(this.getString(this.layoutData!, elementWithBounds.element.text), elementWithBounds.left, elementWithBounds.top);
+        this.context!.fillText(this.getString(this.layoutData!, elementWithBounds.element.text), elementWithBounds.left, elementWithBounds.bottom);
         break;
     }
   }

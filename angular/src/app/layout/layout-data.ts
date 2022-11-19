@@ -3,11 +3,11 @@ export class LayoutData {
 
   parametersLoaded: boolean = false;
 
-  imageResources: Map<string, LayoutImageResource> = new Map<string, LayoutImageResource>();
+  imageResources: Array<LayoutImageResource> = new Array<LayoutImageResource>();
 
-  fontResources: Map<string, LayoutFontResource> = new Map<string, LayoutFontResource>();
+  fontResources: Array<LayoutFontResource> = new Array<LayoutFontResource>();
 
-  fontConfigs: Map<string, LayoutFontConfig> = new Map<string, LayoutFontConfig>();
+  fontConfigs: Array<LayoutFontConfig> = new Array<LayoutFontConfig>();
 
   rootElement: any;
 }
@@ -27,11 +27,16 @@ export class LayoutImageResource {
 export class LayoutFontResource {
   loaded: boolean = false;
 
-  constructor(public url: string) { }
+  constructor(public fontName: string, public url: string) { }
 }
 
 export class LayoutFontConfig {
   isCustom: boolean = false;
 
-  constructor(public fontJson: any) { }
+  fontName: string = '';
+
+  constructor(public fontRes: LayoutFontResource, public fontJson: any)
+  {
+    this.fontName = this.fontJson.size + ' ' + this.fontRes.fontName;
+  }
 }

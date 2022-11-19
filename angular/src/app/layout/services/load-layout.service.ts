@@ -19,19 +19,22 @@ export class LoadLayoutService {
     if (apiDto.Payload.imageResources !== undefined)
     {
       for (var key in apiDto.Payload.imageResources) {
-        layoutData.imageResources.set(key, new LayoutImageResource(apiDto.Payload.imageResources[key]));
+        layoutData.imageResources.push(new LayoutImageResource(apiDto.Payload.imageResources[key]));
       }
     }
     if (apiDto.Payload.fontResources !== undefined)
     {
-      for (var key in apiDto.Payload.fontResources) {
-        layoutData.fontResources.set(key, new LayoutFontResource(apiDto.Payload.fontResources[key]));
+      for (var fontResIndex in apiDto.Payload.fontResources) {
+        var fontName: string = 'overFont' + fontResIndex;
+        var fontUrl = apiDto.Payload.fontResources[fontResIndex];
+        layoutData.fontResources.push(new LayoutFontResource(fontName, fontUrl));
       }
     }
     if (apiDto.Payload.fonts !== undefined)
     {
-      for (var key in apiDto.Payload.fonts) {
-        layoutData.fontConfigs.set(key, new LayoutFontConfig(apiDto.Payload.fonts[key]));
+      for (var fontJsonIndex in apiDto.Payload.fonts) {
+        var fontJson: any = apiDto.Payload.fonts[fontJsonIndex];
+        layoutData.fontConfigs.push(new LayoutFontConfig(layoutData.fontResources[fontJson.res], fontJson));
       }
     }
     layoutData.rootElement = apiDto.Payload.rootElement;

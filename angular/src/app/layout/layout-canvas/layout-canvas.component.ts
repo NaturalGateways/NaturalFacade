@@ -76,9 +76,9 @@ export class LayoutCanvasComponent implements OnInit {
       }
 
       // Run http fetches in parallel
-      for (const fontResKey of this.layoutData.fontResources.keys()) {
-        var fontRes: LayoutFontResource = this.layoutData.fontResources.get(fontResKey)!;
-        var fontFace = new FontFace(fontResKey, 'url(' + fontRes.url + ')');
+      for (const fontIndex in this.layoutData.fontResources) {
+        var fontRes: LayoutFontResource = this.layoutData.fontResources[fontIndex];
+        var fontFace = new FontFace(fontRes.fontName, 'url(' + fontRes.url + ')');
         fontFace.load().then((font) => {
           document.fonts.add(font);
           fontRes.loaded = true;

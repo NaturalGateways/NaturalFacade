@@ -5,11 +5,11 @@ export class LayoutApiDtoContainer {
 export class LayoutApiDto {
   parameters: { [key: string]: any } = {};
 
-  imageResources: { [key: string]: string } = {};
+  imageResources: any = [];
 
-  fontResources: { [key: string]: string } = {};
+  fontResources: any = [];
 
-  fonts: { [key: string]: any } = {};
+  fonts: any = [];
 
   rootElement: any;
 }
