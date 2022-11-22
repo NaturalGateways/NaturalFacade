@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 
+import {MenuItem} from 'primeng/api';
+
+import { CognitoService, CognitoServiceAuthStatus } from '../auth/cognito.service';
+
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
@@ -7,9 +11,31 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MainComponent implements OnInit {
 
-  constructor() { }
+  isAuthenticated: boolean = false;
 
-  ngOnInit(): void {
+  navItems: MenuItem[] = [];
+  navActiveItem: MenuItem | undefined;
+
+  constructor(public cognitoService: CognitoService) {
+    // Create nav items
+    this.navItems = [
+      { label: 'Home', icon: 'pi pi-fw pi-home', routerLink: "/main/dashboard" },
+      { label: 'Layouts', icon: 'pi pi-fw pi-file', routerLink: "/main/layouts" }
+    ];
+    this.navActiveItem = this.navItems[0];
   }
 
+  ngOnInit(): void {
+    // Initialise from service
+    this.isAuthenticated = this.cognitoService.authentication === CognitoServiceAuthStatus.Authenticated;
+
+    // Subscribe to auth service
+    this.cognitoService.authEmitter.subscribe(() =>
+    {
+      setTimeout(() =>
+      {
+        this.isAuthenticated = this.cognitoService.authentication === CognitoServiceAuthStatus.Authenticated;
+      });
+    });
+  }
 }

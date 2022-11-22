@@ -17,7 +17,7 @@ export class AppComponent {
 
   ngOnInit()
   {
-    // Initialise form service
+    // Initialise from service
     this.isAuthOut = this.cognitoService.authentication === CognitoServiceAuthStatus.None;
     this.isAuthIn = this.cognitoService.authentication === CognitoServiceAuthStatus.Authenticated;
 
@@ -32,8 +32,19 @@ export class AppComponent {
     });
   }
 
+  onRegisterClicked()
+  {
+    location.href = this.cognitoService.registerUrl;
+  }
+
+  onLoginClicked()
+  {
+    location.href = this.cognitoService.signInUrl;
+  }
+
   onLogoutClicked()
   {
     this.cognitoService.logout();
+    location.href = "/";
   }
 }

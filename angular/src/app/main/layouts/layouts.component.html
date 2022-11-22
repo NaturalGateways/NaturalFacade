@@ -1,0 +1,25 @@
+<p-dataView #dv [value]="layouts" [paginator]="true" [rows]="9" filterBy="name" layout="grid">
+    <ng-template pTemplate="header">
+        <div class="flex flex-column md:flex-row md:justify-content-between">
+            <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
+        </div>
+    </ng-template>
+    <ng-template let-item pTemplate="listItem">
+        <div class="col-12">
+            <div class="layout-list-item">
+                <div class="layout-list-detail">
+                    <div class="layout-name">{{item.layoutName}}</div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+    <ng-template let-item pTemplate="gridItem">
+        <div class="col-12 md:col-4 xl:col-2">
+            <div class="layout-grid-item card">
+                <div class="layout-grid-item-content">
+                    <div class="layout-name">{{item.layoutName}}</div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</p-dataView>

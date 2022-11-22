@@ -17,7 +17,7 @@ export class LoginComponent implements OnInit
   ngOnInit(): void
   {
     this.route.queryParams.subscribe(params => {
-      this.cognitoService.authenticate(params['code'], ( ) : void => { this.router.navigate(['/']); });
+      this.cognitoService.authenticate(params['code'], ( ) : void => { this.router.navigate(['/main/dashboard']); });
     });
   }
 }
