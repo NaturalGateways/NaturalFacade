@@ -1,0 +1,17 @@
+.attHeader {
+    font-size: xx-large;
+    font-weight: bolder;
+}
+
+.attGroup {
+    margin-top: 1em;
+}
+
+.attLabel {
+    font-size: x-large;
+    font-weight: bold;
+}
+
+.attValue {
+    font-size: x-large;
+}

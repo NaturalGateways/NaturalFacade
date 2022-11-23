@@ -1,5 +1,9 @@
 import { Component } from '@angular/core';
 
+import {ContextMenu} from 'primeng/contextmenu';
+import {MenuItem} from 'primeng/api';
+
+import { ApiService } from './api/api.service';
 import { CognitoService, CognitoServiceAuthStatus } from './auth/cognito.service';
 
 @Component({
@@ -13,7 +17,26 @@ export class AppComponent {
   isAuthOut: boolean = true;
   isAuthIn: boolean = false;
 
-  constructor(public cognitoService: CognitoService) { }
+  contextMenuItems: MenuItem[] = [];
+
+  constructor(public cognitoService: CognitoService, public apiService: ApiService)
+  {
+    this.contextMenuItems = [
+      {
+        label: 'Profile',
+        icon: 'pi pi-fw pi-user',
+        routerLink: '/admin/viewCurrentUser'
+      },
+      {
+         separator:true
+      },
+      {
+        label: 'Logout',
+        icon: 'pi pi-fw pi-sign-out',
+        command: (event) => { this.onLogoutClicked(); }
+      }
+    ];
+  }
 
   ngOnInit()
   {
@@ -42,9 +65,15 @@ export class AppComponent {
     location.href = this.cognitoService.signInUrl;
   }
 
+  onUserClicked(event: MouseEvent, contextMenu: ContextMenu): void {
+    event.stopPropagation();
+    event.preventDefault();
+    contextMenu.show(event);
+  }
+
   onLogoutClicked()
   {
-    this.cognitoService.logout();
+    this.cognitoService.logout(this.apiService);
     location.href = "/";
   }
 }

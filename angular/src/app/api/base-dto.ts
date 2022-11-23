@@ -1,6 +1,5 @@
 export class BaseResponseDto<PayloadType> {
-    Success: boolean = false;
+  Success: boolean = false;
   
-    Payload: PayloadType | undefined;
-  }
-  
+  Payload: PayloadType | undefined;
+}

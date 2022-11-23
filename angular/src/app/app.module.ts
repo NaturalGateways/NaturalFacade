@@ -4,8 +4,10 @@ import { HttpClientModule } from '@angular/common/http';
 
 import {ButtonModule} from 'primeng/button';
 import {CardModule} from 'primeng/card';
+import {ContextMenuModule} from 'primeng/contextmenu';
 import {DataViewModule} from 'primeng/dataview';
 import {MenubarModule} from 'primeng/menubar';
+import {PanelModule} from 'primeng/panel';
 import {TabMenuModule} from 'primeng/tabmenu';
 import {TabViewModule} from 'primeng/tabview';
 
@@ -18,6 +20,8 @@ import { LayoutModule } from './layout/layout.module';
 import { LoginComponent } from './auth/login/login.component';
 import { LayoutsComponent } from './main/layouts/layouts.component';
 import { DashboardComponent } from './main/dashboard/dashboard.component';
+import { AdminComponent } from './admin/admin.component';
+import { ViewCurrentUserComponent } from './admin/view-current-user/view-current-user.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +30,9 @@ import { DashboardComponent } from './main/dashboard/dashboard.component';
     TestCanvasComponent,
     LoginComponent,
     LayoutsComponent,
-    DashboardComponent
+    DashboardComponent,
+    AdminComponent,
+    ViewCurrentUserComponent
   ],
   imports: [
     BrowserModule,
@@ -35,8 +41,10 @@ import { DashboardComponent } from './main/dashboard/dashboard.component';
     LayoutModule,
     ButtonModule,
     CardModule,
+    ContextMenuModule,
     DataViewModule,
     MenubarModule,
+    PanelModule,
     TabMenuModule,
     TabViewModule
   ],
