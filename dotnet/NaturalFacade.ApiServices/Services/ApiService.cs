@@ -75,11 +75,9 @@ namespace NaturalFacade.Services
                 switch (Enum.Parse<ApiDto.AuthRequestType>(requestDto.payload.RequestType))
                 {
                     case ApiDto.AuthRequestType.GetCurrentUser:
-                        return await HandleAuthGetCurrentUserAsync(dynamoService, requestDto);
-                    case ApiDto.AuthRequestType.GetLayoutOverlay:
-                        return await HandleAuthGetLayoutOverlayAsync(dynamoService, requestDto);
-                    case ApiDto.AuthRequestType.PutLayout:
-                        return await HandleAuthPutLayoutAsync(dynamoService, requestDto);
+                        return ApiDto.ApiResponseDto.CreateSuccess(await HandleAuthGetCurrentUserAsync(dynamoService, requestDto));
+                    case ApiDto.AuthRequestType.UpdateCurrentUser:
+                        return ApiDto.ApiResponseDto.CreateSuccess(await HandleAuthUpdateCurrentUserAsync(dynamoService, requestDto));
                     default:
                         return ApiDto.ApiResponseDto.CreateError($"Unrecognised request type: {requestDto.payload.RequestType}");
                 }
@@ -91,7 +89,7 @@ namespace NaturalFacade.Services
         }
 
         /// <summary>Handle the request.</summary>
-        private static async Task<ApiDto.ApiResponseDto> HandleAuthGetCurrentUserAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
+        private static async Task<object> HandleAuthGetCurrentUserAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
         {
             // Get existing layout ID
             string userId = $"User-{requestDto.context.userId}";
@@ -99,66 +97,44 @@ namespace NaturalFacade.Services
             // Get user
             ItemModel.ItemUser userItem = await dynamoService.GetUserAsync(userId);
 
-            // Check create user
-            if (userItem == null || userItem.Email != requestDto.context.email)
+            // Check return existing
+            if (userItem != null)
             {
-                userItem = new ItemModel.ItemUser
-                {
-                    UserId = userId,
-                    Email = requestDto.context.email,
-                    Name = "New User"
-                };
-                await dynamoService.PutUserAsync(userItem);
+                return userItem;
             }
 
-            // Return response
-            return ApiDto.ApiResponseDto.CreateSuccess(new ApiDto.AuthGetCurrentUserResponseDto
-            {
-                userId = userItem.UserId,
-                email = userItem.Email,
-                name = userItem.Name
-            });
-        }
-
-        /// <summary>Handle the request.</summary>
-        private static async Task<ApiDto.ApiResponseDto> HandleAuthGetLayoutOverlayAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
-        {
-            string userId = $"User-{requestDto.context.userId}";
-            object overlayObject = await dynamoService.GetLayoutOverlayAsync(userId, requestDto.payload.LayoutId);
-            return ApiDto.ApiResponseDto.CreateSuccess(new ApiDto.AuthGetLayoutOverlayResponseDto
-            {
-                LayoutId = requestDto.payload.LayoutId,
-                Overlay = overlayObject
-            });
-        }
-
-        /// <summary>Handle the request.</summary>
-        private static async Task<ApiDto.ApiResponseDto> HandleAuthPutLayoutAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
-        {
-            // Get existing layout ID
-            string userId = $"User-{requestDto.context.userId}";
-            string layoutId = requestDto.payload.PutLayout.LayoutId ?? $"Layout-{Guid.NewGuid().ToString()}";
-
-            // Create action
+            // Run action
             ActionModel.Action action = new ActionModel.Action
             {
-                AuthType = ActionModel.ActionType.PutLayout,
-                Layout = new ActionModel.ActionLayout
+                AuthType = ActionModel.ActionType.CreateUser,
+                CreateUser = new ActionModel.ActionCreateUser
                 {
                     UserId = userId,
-                    LayoutId = layoutId,
-                    Config = requestDto.payload.PutLayout.Config
+                    Email = requestDto.context.email
                 }
             };
+            await dynamoService.PutActionAsync(userId, userId, action);
+            return await ActionService.ProcessActionAsync(dynamoService, action, true);
+        }
 
-            // Write action
-            await dynamoService.PutActionAsync(userId, $"PutLayout-{layoutId}", action);
+        /// <summary>Handle the request.</summary>
+        private static async Task<ApiDto.ApiResponseDto> HandleAuthUpdateCurrentUserAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
+        {
+            // Get user
+            string userId = $"User-{requestDto.context.userId}";
 
-            // Process action
-            await ActionService.ProcessActionAsync(dynamoService, userId, action);
-
-            // Return
-            return ApiDto.ApiResponseDto.CreateSuccess(new ApiDto.AuthPutLayoutResponseDto { LayoutId = layoutId });
+            // Run action
+            ActionModel.Action action = new ActionModel.Action
+            {
+                AuthType = ActionModel.ActionType.UpdateUser,
+                UpdateUser = new ActionModel.ActionUpdateUser
+                {
+                    UserId = userId,
+                    Name = requestDto.payload.UpdateCurrentUser.Name
+                }
+            };
+            await dynamoService.PutActionAsync(userId, userId, action);
+            return ApiDto.ApiResponseDto.CreateSuccess(await ActionService.ProcessActionAsync(dynamoService, action, true));
         }
     }
 }

@@ -8,40 +8,51 @@ namespace NaturalFacade.Services
 {
     public static class ActionService
     {
-        public static async Task ProcessActionAsync(DynamoService dynamoService, string userId, ActionModel.Action action)
+        public static async Task<object> ProcessActionAsync(DynamoService dynamoService, ActionModel.Action action, bool createResponse)
         {
             switch (action.AuthType)
             {
-                case ActionModel.ActionType.PutLayout:
-                    {
-                        await ProcessPutLayoutActionAsync(dynamoService, userId, action.Layout);
-                        break;
-                    }
+                case ActionModel.ActionType.CreateUser:
+                    return await ProcessCreateUserActionAsync(dynamoService, action.CreateUser, createResponse);
+                case ActionModel.ActionType.UpdateUser:
+                    return await ProcessUpdateUserActionAsync(dynamoService, action.UpdateUser, createResponse);
+                default:
+                    throw new Exception($"Cannot handle action type '{action.AuthType.ToString()}'.");
             }
         }
 
-        private static async Task ProcessPutLayoutActionAsync(DynamoService dynamoService, string userId, ActionModel.ActionLayout actionLayout)
+        private static async Task<object> ProcessCreateUserActionAsync(DynamoService dynamoService, ActionModel.ActionCreateUser action, bool createResponse)
         {
-            // convert config to layout
-            object overlayObject = LayoutConfig.Config2Layout.Convert(actionLayout.Config);
-
-            // Create summary and detail
-            ItemModel.ItemLayoutSummary summaryItemData = new ItemModel.ItemLayoutSummary
+            // Create summary
+            ItemModel.ItemUser userItem = new ItemModel.ItemUser
             {
-                UserId = userId,
-                LayoutId = actionLayout.LayoutId,
-                Name = actionLayout.Config.Name
-            };
-            ItemModel.ItemLayoutConfig configItemData = new ItemModel.ItemLayoutConfig
-            {
-                UserId = userId,
-                LayoutId = actionLayout.LayoutId,
-                Name = actionLayout.Config.Name,
-                Config = actionLayout.Config
+                UserId = action.UserId,
+                Email = action.Email,
+                Name = "New User"
             };
 
             // Write
-            await dynamoService.PutLayoutAsync(userId, actionLayout.LayoutId, summaryItemData, configItemData, overlayObject);
+            await dynamoService.PutUserAsync(userItem);
+
+            // Return
+            if (createResponse)
+                return userItem;
+            return null;
+        }
+
+        private static async Task<object> ProcessUpdateUserActionAsync(DynamoService dynamoService, ActionModel.ActionUpdateUser action, bool createResponse)
+        {
+            // Get
+            ItemModel.ItemUser userItem = await dynamoService.GetUserAsync(action.UserId);
+            // Update
+            userItem.Name = action.Name;
+            // Set
+            await dynamoService.PutUserAsync(userItem);
+
+            // Return
+            if (createResponse)
+                return userItem;
+            return null;
         }
     }
 }

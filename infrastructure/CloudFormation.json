@@ -414,7 +414,7 @@
               }
             },
             {
-              "Sid": "ItemDynamoDbAccess",
+              "Sid": "ItemDataDynamoDbAccess",
               "Effect": "Allow",
               "Action": [
                 "dynamodb:GetItem",
@@ -423,13 +423,13 @@
               ],
               "Resource": {
                 "Fn::GetAtt": [
-                  "DynamicTableItem",
+                  "DynamicTableItemData",
                   "Arn"
                 ]
               }
             },
             {
-              "Sid": "LogDynamoDbAccess",
+              "Sid": "ItemLinkDynamoDbAccess",
               "Effect": "Allow",
               "Action": [
                 "dynamodb:GetItem",
@@ -438,7 +438,7 @@
               ],
               "Resource": {
                 "Fn::GetAtt": [
-                  "DynamicTableLog",
+                  "DynamicTableItemLink",
                   "Arn"
                 ]
               }
@@ -542,11 +542,11 @@
             "DbTableAction": {
               "Ref": "DynamicTableAction"
             },
-            "DbTableItem": {
-              "Ref": "DynamicTableItem"
+            "DbTableItemData": {
+              "Ref": "DynamicTableItemData"
             },
-            "DbTableLog": {
-              "Ref": "DynamicTableLog"
+            "DbTableItemLink": {
+              "Ref": "DynamicTableItemLink"
             }
           }
         },
@@ -618,11 +618,11 @@
             "DbTableAction": {
               "Ref": "DynamicTableAction"
             },
-            "DbTableItem": {
-              "Ref": "DynamicTableItem"
+            "DbTableItemData": {
+              "Ref": "DynamicTableItemData"
             },
-            "DbTableLog": {
-              "Ref": "DynamicTableLog"
+            "DbTableItemLink": {
+              "Ref": "DynamicTableItemLink"
             }
           }
         },
@@ -639,79 +639,79 @@
         "Timeout": 15
       }
     },
-    "DynamicTableAction": {
+    "DynamicTableAction": { 
+      "Type": "AWS::DynamoDB::Table", 
+      "Properties": { 
+        "AttributeDefinitions": [ 
+          { 
+            "AttributeName": "UserId", 
+            "AttributeType": "S" 
+          }, 
+          { 
+            "AttributeName": "DateTimeUtc", 
+            "AttributeType": "S" 
+          } 
+        ], 
+        "BillingMode": "PAY_PER_REQUEST", 
+        "KeySchema": [ 
+          { 
+            "AttributeName": "UserId", 
+            "KeyType": "HASH" 
+          }, 
+          { 
+            "AttributeName": "DateTimeUtc", 
+            "KeyType": "RANGE" 
+          } 
+        ] 
+      } 
+    },
+    "DynamicTableItemData": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "AttributeDefinitions": [
           {
-            "AttributeName": "UserId",
+            "AttributeName": "ItemId",
             "AttributeType": "S"
           },
           {
-            "AttributeName": "DateTimeUtc",
+            "AttributeName": "DataId",
             "AttributeType": "S"
           }
         ],
         "BillingMode": "PAY_PER_REQUEST",
         "KeySchema": [
           {
-            "AttributeName": "UserId",
+            "AttributeName": "ItemId",
             "KeyType": "HASH"
           },
           {
-            "AttributeName": "DateTimeUtc",
+            "AttributeName": "ComponentId",
             "KeyType": "RANGE"
           }
         ]
       }
     },
-    "DynamicTableItem": {
+    "DynamicTableItemLink": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "AttributeDefinitions": [
           {
-            "AttributeName": "ItemId",
+            "AttributeName": "ParentId",
             "AttributeType": "S"
           },
           {
-            "AttributeName": "ComponentName",
+            "AttributeName": "ChildId",
             "AttributeType": "S"
           }
         ],
         "BillingMode": "PAY_PER_REQUEST",
         "KeySchema": [
           {
-            "AttributeName": "ItemId",
+            "AttributeName": "ParentId",
             "KeyType": "HASH"
           },
           {
-            "AttributeName": "ComponentName",
-            "KeyType": "RANGE"
-          }
-        ]
-      }
-    },
-    "DynamicTableLog": {
-      "Type": "AWS::DynamoDB::Table",
-      "Properties": {
-        "AttributeDefinitions": [
-          {
-            "AttributeName": "ItemId",
-            "AttributeType": "S"
-          },
-          {
-            "AttributeName": "EntryDateTimeUtc",
-            "AttributeType": "S"
-          }
-        ],
-        "BillingMode": "PAY_PER_REQUEST",
-        "KeySchema": [
-          {
-            "AttributeName": "ItemId",
-            "KeyType": "HASH"
-          },
-          {
-            "AttributeName": "EntryDateTimeUtc",
+            "AttributeName": "ChildId",
             "KeyType": "RANGE"
           }
         ]

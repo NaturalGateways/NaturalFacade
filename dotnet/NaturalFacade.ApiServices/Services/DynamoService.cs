@@ -10,66 +10,67 @@ namespace NaturalFacade.Services
     {
         string ActionTableName { get; }
 
-        string ItemTableName { get; }
+        string ItemDataTableName { get; }
+
+        string ItemLinkTableName { get; }
     }
 
     public class DynamoService
     {
         #region Base
 
-        /// <summary>The action table.</summary>
+        /// <summary>The item table.</summary>
         private Natural.Aws.DynamoDB.IDynamoTable m_actionTable = null;
         /// <summary>The item table.</summary>
-        private Natural.Aws.DynamoDB.IDynamoTable m_itemTable = null;
+        private Natural.Aws.DynamoDB.IDynamoTable m_itemDataTable = null;
+        /// <summary>The link table.</summary>
+        private Natural.Aws.DynamoDB.IDynamoTable m_itemLinkTable = null;
 
         /// <summary>Constructor.</summary>
         public DynamoService(Natural.Aws.DynamoDB.IDynamoService dynamo, IDynamoServiceTableNames tableNames)
         {
             // Get tables
             m_actionTable = dynamo.GetTable(tableNames?.ActionTableName ?? "Actions", "UserId", "DateTimeUtc");
-            m_itemTable = dynamo.GetTable(tableNames?.ItemTableName ?? "Items", "ItemId", "ComponentName");
+            m_itemDataTable = dynamo.GetTable(tableNames?.ItemDataTableName ?? "Items", "ItemId", "ComponentId");
+            m_itemLinkTable = dynamo.GetTable(tableNames?.ItemLinkTableName ?? "Links", "ParentId", "ChildId");
         }
 
         #endregion
 
         #region Generic getters and setters
 
-        /// <summary>Puts an action.</summary>
-        public async Task PutActionAsync(string itemId, string description, ActionModel.Action action)
+        /// <summary>Puts an action.</summary> 
+        public async Task PutActionAsync(string userId, string itemId, ActionModel.Action action)
         {
-            await m_actionTable.PutItemAsync(itemId, DateTime.UtcNow.ToString("o"), new Natural.Aws.DynamoDB.ItemUpdate
+            await m_actionTable.PutItemAsync(userId, DateTime.UtcNow.ToString("o"), new Natural.Aws.DynamoDB.ItemUpdate
             {
                 ObjectAttributes = new Dictionary<string, object>
                 {
-                    { "DataJson", action }
+                    { "ModelJson", action.AsMinimalObject() }
                 },
                 StringAttributes = new Dictionary<string, string>
                 {
-                    { "Description", description }
+                    { "ItemId", itemId },
+                    { "ActionType", action.AuthType.ToString() }
                 }
             });
         }
 
         /// <summary>Gets an item.</summary>
-        public async Task<ItemType> GetItemDataAsync<ItemType>(string userId, string partitionId, string sortId)
+        public async Task<ItemType> GetItemDataAsync<ItemType>(string itemId, string componentId)
         {
-            Natural.Aws.DynamoDB.IDynamoItem item = await m_itemTable.GetItemByKeyAsync(partitionId, sortId, "UserId,DataJson");
+            Natural.Aws.DynamoDB.IDynamoItem item = await m_itemDataTable.GetItemByKeyAsync(itemId, componentId, "DataJson");
             if (item == null)
             {
                 return default(ItemType);
-            }
-            string recordUserId = item.GetString("UserId");
-            if (userId != recordUserId)
-            {
-                throw new Exception("Cannot access record by other user.");
             }
             return item.GetStringAsObject<ItemType>("DataJson");
         }
 
         /// <summary>Puts an item.</summary>
-        public async Task PutItemAsync(string userId, string partitionId, string sortId, object data)
+        public async Task PutItemAsync(string itemId, string componentId, object data)
         {
-            await m_itemTable.PutItemAsync(partitionId, sortId, new Natural.Aws.DynamoDB.ItemUpdate
+            await m_itemDataTable.PutItemAsync(itemId, componentId, new Natural.Aws.DynamoDB.ItemUpdate
             {
                 ObjectAttributes = new Dictionary<string, object>
                 {
@@ -77,7 +78,22 @@ namespace NaturalFacade.Services
                 },
                 StringAttributes = new Dictionary<string, string>
                 {
-                    { "UserId", userId },
+                    { "LastModifiedUtc", DateTime.UtcNow.ToString("o") }
+                }
+            });
+        }
+
+        /// <summary>Puts a link.</summary>
+        public async Task PutLinkAsync(string parentItemId, string childItemId, object data)
+        {
+            await m_itemLinkTable.PutItemAsync(parentItemId, childItemId, new Natural.Aws.DynamoDB.ItemUpdate
+            {
+                ObjectAttributes = new Dictionary<string, object>
+                {
+                    { "DataJson", data }
+                },
+                StringAttributes = new Dictionary<string, string>
+                {
                     { "LastModifiedUtc", DateTime.UtcNow.ToString("o") }
                 }
             });
@@ -90,28 +106,29 @@ namespace NaturalFacade.Services
         /// <summary>Gets a user.</summary>
         public async Task<ItemModel.ItemUser> GetUserAsync(string userId)
         {
-            return await GetItemDataAsync<ItemModel.ItemUser>(userId, "Users", userId);
+            return await GetItemDataAsync<ItemModel.ItemUser>(userId, "Summary");
         }
 
         /// <summary>Puts a user.</summary>
         public async Task PutUserAsync(ItemModel.ItemUser itemUser)
         {
-            await PutItemAsync(itemUser.UserId, "Users", itemUser.UserId, itemUser);
+            await PutItemAsync(itemUser.UserId, "Summary", itemUser);
+            await PutLinkAsync("App", itemUser.UserId, itemUser);
         }
 
         /// <summary>Gets a layout overlay.</summary>
         public async Task<object> GetLayoutOverlayAsync(string userId, string layoutId)
         {
-            return await GetItemDataAsync<object>(userId, layoutId, "Overlay");
+            return await GetItemDataAsync<object>(layoutId, "Overlay");
         }
 
         /// <summary>Gets a layout overlay.</summary>
-        public async Task PutLayoutAsync(string userId, string layoutId, ItemModel.ItemLayoutSummary summaryData, ItemModel.ItemLayoutConfig configData, object overlayObject)
+        public async Task PutLayoutAsync(string userId, string layoutId, ItemModel.ItemLayoutSummary summaryData, LayoutConfig.LayoutConfig configData, object overlayObject)
         {
-            await PutItemAsync(userId, userId, layoutId, summaryData);
-            await PutItemAsync(userId, layoutId, "Summary", summaryData);
-            await PutItemAsync(userId, layoutId, "Config", configData);
-            await PutItemAsync(userId, layoutId, "Overlay", overlayObject);
+            await PutItemAsync(layoutId, "Summary", summaryData);
+            await PutItemAsync(layoutId, "Config", configData);
+            await PutItemAsync(layoutId, "Overlay", overlayObject);
+            await PutLinkAsync(userId, layoutId, summaryData);
         }
 
         #endregion

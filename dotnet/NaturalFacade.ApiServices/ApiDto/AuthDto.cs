@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace NaturalFacade.ApiDto
 {
+    #region Base
+
     public class AuthRequestDto : CommonDto<AuthRequestPayloadDto>
     {
         //
@@ -14,16 +16,24 @@ namespace NaturalFacade.ApiDto
     public enum AuthRequestType
     {
         GetCurrentUser,
-        GetLayoutOverlay,
-        PutLayout
+        UpdateCurrentUser
     }
 
     public class AuthRequestPayloadDto
     {
         public string RequestType { get; set; }
 
-        public string LayoutId { get; set; }
-
-        public AuthPutLayoutRequestDto PutLayout { get; set; }
+        public AuthUpdateCurrentUserRequestDto UpdateCurrentUser { get; set; }
     }
+
+    #endregion
+
+    #region UpdateCurrentUser
+
+    public class AuthUpdateCurrentUserRequestDto
+    {
+        public string Name { get; set; }
+    }
+
+    #endregion
 }

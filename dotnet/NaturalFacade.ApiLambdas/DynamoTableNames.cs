@@ -25,13 +25,17 @@ namespace NaturalFacade.ApiLambdas
         public DynamoTableNames()
         {
             this.ActionTableName = Environment.GetEnvironmentVariable("DbTableAction");
-            this.ItemTableName = Environment.GetEnvironmentVariable("DbTableItem");
+            this.ItemDataTableName = Environment.GetEnvironmentVariable("DbTableItemData");
+            this.ItemLinkTableName = Environment.GetEnvironmentVariable("DbTableItemLink");
         }
 
         /// <summary>Services.IDynamoServiceTableNames implentation.</summary>
         public string ActionTableName { get; private set; }
 
         /// <summary>Services.IDynamoServiceTableNames implentation.</summary>
-        public string ItemTableName { get; private set; }
+        public string ItemDataTableName { get; private set; }
+
+        /// <summary>Services.IDynamoServiceTableNames implentation.</summary>
+        public string ItemLinkTableName { get; private set; }
     }
 }

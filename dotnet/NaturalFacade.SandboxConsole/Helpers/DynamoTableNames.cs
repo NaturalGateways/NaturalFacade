@@ -12,6 +12,9 @@ namespace NaturalFacade.SandboxConsole.Helpers
         public string ActionTableName { get { return "Actions"; } }
 
         /// <summary>Services.IDynamoServiceTableNames implentation.</summary>
-        public string ItemTableName { get { return "Items"; } }
+        public string ItemDataTableName { get { return "ItemData"; } }
+
+        /// <summary>Services.IDynamoServiceTableNames implentation.</summary>
+        public string ItemLinkTableName { get { return "ItemLinks"; } }
     }
 }
