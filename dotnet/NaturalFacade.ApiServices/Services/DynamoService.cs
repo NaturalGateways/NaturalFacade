@@ -39,7 +39,7 @@ namespace NaturalFacade.Services
 
         #region Generic getters and setters
 
-        /// <summary>Puts an action.</summary> 
+        /// <summary>Puts an action.</summary>
         public async Task PutActionAsync(string userId, string itemId, ActionModel.Action action)
         {
             await m_actionTable.PutItemAsync(userId, DateTime.UtcNow.ToString("o"), new Natural.Aws.DynamoDB.ItemUpdate

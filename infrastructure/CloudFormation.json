@@ -674,7 +674,7 @@
             "AttributeType": "S"
           },
           {
-            "AttributeName": "DataId",
+            "AttributeName": "ComponentId",
             "AttributeType": "S"
           }
         ],

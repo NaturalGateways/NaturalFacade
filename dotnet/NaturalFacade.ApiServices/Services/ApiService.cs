@@ -54,7 +54,7 @@ namespace NaturalFacade.Services
             return ApiDto.ApiResponseDto.CreateSuccess(new Dictionary<string, string>
             {
                 { "Project", "Natural Façade" },
-                { "Environment", configStringsByName["environment"] },
+                { "Environment", Environment.GetEnvironmentVariable("Environment") ?? "None" },
                 { "Version", configStringsByName["version"] }
             });
         }

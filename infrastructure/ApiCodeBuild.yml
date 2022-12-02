@@ -12,7 +12,7 @@ phases:
       - "chmod +x /usr/bin/jq"
   pre_build:
     commands:
-      - "json=$(jq -n --arg env \"$ENVIRONMENT\" --arg ver \"$VERSION\" '{environment:$env, version: $ver}')"
+      - "json=$(jq -n --arg ver \"$VERSION\" '{version: $ver}')"
       - echo $json > dotnet/NaturalFacade.ApiServices/AppConfig.json
       - cat dotnet/NaturalFacade.ApiServices/AppConfig.json
   build:
