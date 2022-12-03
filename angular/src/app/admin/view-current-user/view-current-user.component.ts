@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { timeStamp } from 'console';
 
 import { ApiService } from '../../api/api.service';
 
@@ -9,12 +10,39 @@ import { ApiService } from '../../api/api.service';
 })
 export class ViewCurrentUserComponent {
 
-  username: string = "Alpha";
-  email: string = "Beta";
+  username: string = "";
+  email: string = "";
+
+  usernameEditState: number = 0;
+  usernameEdit: string = "";
 
   constructor(private apiService: ApiService)
   {
-    this.username = apiService.apiAuthModel?.user.name!;
-    this.email = apiService.apiAuthModel?.user.email!;
+    this.username = this.apiService.apiAuthModel?.user.Name!;
+    this.email = this.apiService.apiAuthModel?.user.Email!;
+  }
+
+  onEditUsername()
+  {
+    this.usernameEdit = this.username;
+    this.usernameEditState = 1;
+  }
+
+  onSaveUsername()
+  {
+    this.usernameEditState = 2;
+    this.apiService.updateCurrentUser(this.usernameEdit, (userResponse) =>
+    {
+      this.username = this.usernameEdit;
+      this.usernameEditState = 0;
+    }, () =>
+    {
+      this.usernameEditState = 1;
+    });
+  }
+
+  onCancelUsername()
+  {
+    this.usernameEditState = 0;
   }
 }

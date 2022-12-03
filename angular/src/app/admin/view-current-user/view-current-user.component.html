@@ -1,10 +1,27 @@
 <p-card>
     <form>
-        <div><label class="attHeader">User</label></div>
-        <!--<h5>User</h5>-->
+        <div><label class="attHeader">Profile</label></div>
         <div class="attGroup">
             <div><label class="attLabel">Username</label></div>
-            <div><label class="attValue">{{username}}</label></div>
+            <div *ngIf="usernameEditState === 0">
+                <span>
+                    <label class="attValue">{{username}}</label>
+                    <button pButton pRipple type="button" icon="pi pi-pencil" class="p-button-rounded p-button-secondary p-button-outlined editButton" (click)="onEditUsername()"></button>
+                </span>
+            </div>
+            <div *ngIf="usernameEditState === 1">
+                <span>
+                    <input name="editUsername" type="text" pInputText [(ngModel)]="usernameEdit">
+                    <button pButton pRipple type="button" icon="pi pi-check" class="p-button-rounded p-button-success p-button-outlined saveButton" (click)="onSaveUsername()"></button>
+                    <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-outlined cancelButton" (click)="onCancelUsername()"></button>
+                </span>
+            </div>
+            <div *ngIf="usernameEditState === 2">
+                <span>
+                    <label class="attValue">{{usernameEdit}}</label>
+                    <p-progressSpinner [style]="{width: '40px', height: '40px'}" styleClass="custom-spinner" strokeWidth="6"></p-progressSpinner>
+                </span>
+            </div>
         </div>
         <div class="attGroup">
             <div><label class="attLabel">Email</label></div>

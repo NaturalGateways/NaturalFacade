@@ -1,8 +1,8 @@
 export class CurrentUserApiDto
 {
-  userId: string | undefined;
+  UserId: string | undefined;
   
-  email: string | undefined;
+  Email: string | undefined;
   
-  name: string | undefined;
+  Name: string | undefined;
 }

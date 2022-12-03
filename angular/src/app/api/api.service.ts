@@ -38,4 +38,25 @@ export class ApiService {
       errorCallback();
     });
   }
+
+  updateCurrentUser(newName: string, successCallback: (response: CurrentUserApiDto) => void, errorCallback: () => void)
+  {
+    let url: string = environment.apiUrl + "/auth";
+    const headers = new HttpHeaders().set("Content-Type", "application/json").set("Authorization", this.apiAuthModel?.access.idToken!);
+    var reqBody = {RequestType: "UpdateCurrentUser", UpdateCurrentUser: {Name:newName}};
+    this.http.post<BaseResponseDto<CurrentUserApiDto>>(url, reqBody, {headers}).subscribe(resp => {
+      if (resp.Success && resp.Payload !== undefined)
+      {
+        successCallback(resp.Payload);
+      }
+      else
+      {
+        console.log("Error: " + JSON.stringify(resp));
+        errorCallback();
+      }
+    }, error => {
+      console.log("Error: " + JSON.stringify(error));
+      errorCallback();
+    });
+  }
 }

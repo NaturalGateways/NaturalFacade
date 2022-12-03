@@ -15,6 +15,7 @@ export class AdminComponent {
   constructor() {
     // Create nav items
     this.navItems = [
+      { icon: 'pi pi-fw pi-arrow-left', routerLink: "/main/dashboard" },
       { label: 'Profile', icon: 'pi pi-fw pi-home', routerLink: "/admin/viewCurrentUser" }
     ];
     this.navActiveItem = this.navItems[0];

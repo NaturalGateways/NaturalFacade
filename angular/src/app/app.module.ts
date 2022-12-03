@@ -1,13 +1,16 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 
 import {ButtonModule} from 'primeng/button';
 import {CardModule} from 'primeng/card';
 import {ContextMenuModule} from 'primeng/contextmenu';
 import {DataViewModule} from 'primeng/dataview';
+import {InputTextModule} from 'primeng/inputtext';
 import {MenubarModule} from 'primeng/menubar';
 import {PanelModule} from 'primeng/panel';
+import {ProgressSpinnerModule} from 'primeng/progressspinner';
 import {TabMenuModule} from 'primeng/tabmenu';
 import {TabViewModule} from 'primeng/tabview';
 
@@ -37,14 +40,17 @@ import { ViewCurrentUserComponent } from './admin/view-current-user/view-current
   imports: [
     BrowserModule,
     HttpClientModule,
+    FormsModule,
     AppRoutingModule,
     LayoutModule,
     ButtonModule,
     CardModule,
     ContextMenuModule,
     DataViewModule,
+    InputTextModule,
     MenubarModule,
     PanelModule,
+    ProgressSpinnerModule,
     TabMenuModule,
     TabViewModule
   ],
