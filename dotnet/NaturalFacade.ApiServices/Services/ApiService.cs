@@ -8,6 +8,8 @@ namespace NaturalFacade.Services
 {
     public static class ApiService
     {
+        #region Anon endpoint
+
         /// <summary>Handle the request.</summary>
         public static async Task<ApiDto.ApiResponseDto> HandleAnonRequestAsync(DynamoService dynamoService, ApiDto.AnonRequestPayloadDto requestDto)
         {
@@ -66,6 +68,10 @@ namespace NaturalFacade.Services
             return ApiDto.ApiResponseDto.CreateSuccess(overlayObject);
         }
 
+        #endregion
+
+        #region Auth endpoint
+
         /// <summary>Handle the request.</summary>
         public static async Task<ApiDto.ApiResponseDto> HandleAuthRequestAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
         {
@@ -78,6 +84,10 @@ namespace NaturalFacade.Services
                         return ApiDto.ApiResponseDto.CreateSuccess(await HandleAuthGetCurrentUserAsync(dynamoService, requestDto));
                     case ApiDto.AuthRequestType.UpdateCurrentUser:
                         return ApiDto.ApiResponseDto.CreateSuccess(await HandleAuthUpdateCurrentUserAsync(dynamoService, requestDto));
+                    case ApiDto.AuthRequestType.GetLayoutSummaryPage:
+                        return ApiDto.ApiResponseDto.CreateSuccess(await HandleAuthGetLayoutSummaryPageAsync(dynamoService, requestDto));
+                    case ApiDto.AuthRequestType.CreateLayout:
+                        return ApiDto.ApiResponseDto.CreateSuccess(await HandleAuthCreateLayoutAsync(dynamoService, requestDto));
                     default:
                         return ApiDto.ApiResponseDto.CreateError($"Unrecognised request type: {requestDto.payload.RequestType}");
                 }
@@ -120,7 +130,7 @@ namespace NaturalFacade.Services
         /// <summary>Handle the request.</summary>
         private static async Task<ApiDto.ApiResponseDto> HandleAuthUpdateCurrentUserAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
         {
-            // Get user
+            // Get IDs
             string userId = $"User-{requestDto.context.userId}";
 
             // Run action
@@ -136,5 +146,50 @@ namespace NaturalFacade.Services
             await dynamoService.PutActionAsync(userId, userId, action);
             return ApiDto.ApiResponseDto.CreateSuccess(await ActionService.ProcessActionAsync(dynamoService, action, true));
         }
+
+        /// <summary>Handle the request.</summary>
+        private static async Task<ApiDto.ApiResponseDto> HandleAuthGetLayoutSummaryPageAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
+        {
+            // Get IDs
+            string userId = $"User-{requestDto.context.userId}";
+
+            // Get IDs
+            List<string> layoutIdList = await dynamoService.GetLayoutIdsAsync(userId);
+
+            // Get summaries
+            List<ItemModel.ItemLayoutSummary> summaryList = new List<ItemModel.ItemLayoutSummary>();
+            foreach (string layoutId in layoutIdList)
+            {
+                ItemModel.ItemLayoutSummary summary = await dynamoService.GetLayoutSummaryAsync(layoutId);
+                summaryList.Add(summary);
+            }
+
+            // Return
+            return ApiDto.ApiResponseDto.CreateSuccess(summaryList.OrderBy(x => x.CreatedDateTime));
+        }
+
+        /// <summary>Handle the request.</summary>
+        private static async Task<ApiDto.ApiResponseDto> HandleAuthCreateLayoutAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
+        {
+            // Get IDs
+            string userId = $"User-{requestDto.context.userId}";
+            string layoutId = $"Layout-{Guid.NewGuid().ToString()}";
+
+            // Run action
+            ActionModel.Action action = new ActionModel.Action
+            {
+                AuthType = ActionModel.ActionType.CreateLayout,
+                CreateLayout = new ActionModel.ActionCreateLayout
+                {
+                    UserId = userId,
+                    LayoutId = layoutId,
+                    Name = requestDto.payload.CreateLayout.Name
+                }
+            };
+            await dynamoService.PutActionAsync(userId, layoutId, action);
+            return ApiDto.ApiResponseDto.CreateSuccess(await ActionService.ProcessActionAsync(dynamoService, action, true));
+        }
+
+        #endregion
     }
 }

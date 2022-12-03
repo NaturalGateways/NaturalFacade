@@ -16,6 +16,8 @@ namespace NaturalFacade.Services
                     return await ProcessCreateUserActionAsync(dynamoService, action.CreateUser, createResponse);
                 case ActionModel.ActionType.UpdateUser:
                     return await ProcessUpdateUserActionAsync(dynamoService, action.UpdateUser, createResponse);
+                case ActionModel.ActionType.CreateLayout:
+                    return await ProcessCreateLayoutActionAsync(dynamoService, action.CreateLayout, createResponse);
                 default:
                     throw new Exception($"Cannot handle action type '{action.AuthType.ToString()}'.");
             }
@@ -52,6 +54,25 @@ namespace NaturalFacade.Services
             // Return
             if (createResponse)
                 return userItem;
+            return null;
+        }
+
+        private static async Task<object> ProcessCreateLayoutActionAsync(DynamoService dynamoService, ActionModel.ActionCreateLayout action, bool createResponse)
+        {
+            // Create object
+            ItemModel.ItemLayoutSummary summary = new ItemModel.ItemLayoutSummary
+            {
+                CreatorUserId = action.UserId,
+                CreatedDateTime = DateTime.UtcNow,
+                LayoutId = action.LayoutId,
+                Name = action.Name
+            };
+            // Save
+            await dynamoService.PutBlankLayoutAsync(action.UserId, summary);
+
+            // Return
+            if (createResponse)
+                return summary;
             return null;
         }
     }

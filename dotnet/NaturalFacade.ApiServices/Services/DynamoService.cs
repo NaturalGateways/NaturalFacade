@@ -116,6 +116,23 @@ namespace NaturalFacade.Services
             await PutLinkAsync("App", itemUser.UserId, itemUser);
         }
 
+        /// <summary>Gets a set of layout IDs.</summary>
+        public async Task<List<string>> GetLayoutIdsAsync(string userId)
+        {
+            List<string> layoutIdList = new List<string>();
+            foreach (Natural.Aws.DynamoDB.IDynamoItem item in await m_itemLinkTable.GetItemsAsync(userId, "Layout-", "ChildId"))
+            {
+                layoutIdList.Add(item.GetString("ChildId"));
+            }
+            return layoutIdList;
+        }
+
+        /// <summary>Gets a layout summary.</summary>
+        public async Task<ItemModel.ItemLayoutSummary> GetLayoutSummaryAsync(string layoutId)
+        {
+            return await GetItemDataAsync<ItemModel.ItemLayoutSummary>(layoutId, "Summary");
+        }
+
         /// <summary>Gets a layout overlay.</summary>
         public async Task<object> GetLayoutOverlayAsync(string userId, string layoutId)
         {
@@ -123,12 +140,10 @@ namespace NaturalFacade.Services
         }
 
         /// <summary>Gets a layout overlay.</summary>
-        public async Task PutLayoutAsync(string userId, string layoutId, ItemModel.ItemLayoutSummary summaryData, LayoutConfig.LayoutConfig configData, object overlayObject)
+        public async Task PutBlankLayoutAsync(string userId, ItemModel.ItemLayoutSummary summaryData)
         {
-            await PutItemAsync(layoutId, "Summary", summaryData);
-            await PutItemAsync(layoutId, "Config", configData);
-            await PutItemAsync(layoutId, "Overlay", overlayObject);
-            await PutLinkAsync(userId, layoutId, summaryData);
+            await PutItemAsync(summaryData.LayoutId, "Summary", summaryData);
+            await PutLinkAsync(userId, summaryData.LayoutId, null);
         }
 
         #endregion

@@ -9,7 +9,8 @@ namespace NaturalFacade.ActionModel
     public enum ActionType
     {
         CreateUser,
-        UpdateUser
+        UpdateUser,
+        CreateLayout
     }
 
     public class Action
@@ -19,6 +20,8 @@ namespace NaturalFacade.ActionModel
         public ActionCreateUser CreateUser { get; set; }
 
         public ActionUpdateUser UpdateUser { get; set; }
+
+        public ActionCreateLayout CreateLayout { get; set; }
 
         public object AsMinimalObject()
         {
@@ -30,6 +33,9 @@ namespace NaturalFacade.ActionModel
                     break;
                 case ActionType.UpdateUser:
                     props.Add("UpdateUser", this.UpdateUser);
+                    break;
+                case ActionType.CreateLayout:
+                    props.Add("CreateLayout", this.CreateLayout);
                     break;
                 default:
                     throw new Exception("Cannot create minimal object of action.");
@@ -48,6 +54,15 @@ namespace NaturalFacade.ActionModel
     public class ActionUpdateUser
     {
         public string UserId { get; set; }
+
+        public string Name { get; set; }
+    }
+
+    public class ActionCreateLayout
+    {
+        public string UserId { get; set; }
+
+        public string LayoutId { get; set; }
 
         public string Name { get; set; }
     }

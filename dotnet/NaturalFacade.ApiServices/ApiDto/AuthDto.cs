@@ -16,7 +16,9 @@ namespace NaturalFacade.ApiDto
     public enum AuthRequestType
     {
         GetCurrentUser,
-        UpdateCurrentUser
+        UpdateCurrentUser,
+        GetLayoutSummaryPage,
+        CreateLayout
     }
 
     public class AuthRequestPayloadDto
@@ -24,6 +26,8 @@ namespace NaturalFacade.ApiDto
         public string RequestType { get; set; }
 
         public AuthUpdateCurrentUserRequestDto UpdateCurrentUser { get; set; }
+
+        public AuthCreateLayoutRequestDto CreateLayout { get; set; }
     }
 
     #endregion
@@ -31,6 +35,15 @@ namespace NaturalFacade.ApiDto
     #region UpdateCurrentUser
 
     public class AuthUpdateCurrentUserRequestDto
+    {
+        public string Name { get; set; }
+    }
+
+    #endregion
+
+    #region CreateLayout
+
+    public class AuthCreateLayoutRequestDto
     {
         public string Name { get; set; }
     }
