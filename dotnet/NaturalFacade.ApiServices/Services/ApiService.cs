@@ -26,6 +26,8 @@ namespace NaturalFacade.Services
                         return HandleAnonGetInfo();
                     case ApiDto.AnonRequestType.GetLayoutOverlay:
                         return await HandleAnonGetLayoutOverlayAsync(dynamoService, requestDto);
+                    case ApiDto.AnonRequestType.ConvertLayoutToOverlay:
+                        return await HandleAnoConvertLayoutToOverlayAsync(requestDto);
                     default:
                         return ApiDto.ApiResponseDto.CreateError($"Unrecognised request type: {requestDto.RequestType}");
                 }
@@ -65,6 +67,13 @@ namespace NaturalFacade.Services
         private static async Task<ApiDto.ApiResponseDto> HandleAnonGetLayoutOverlayAsync(DynamoService dynamoService, ApiDto.AnonRequestPayloadDto requestDto)
         {
             object overlayObject = await dynamoService.GetLayoutOverlayAsync(requestDto.UserId, requestDto.LayoutId);
+            return ApiDto.ApiResponseDto.CreateSuccess(overlayObject);
+        }
+
+        /// <summary>Handle the request.</summary>
+        private static async Task<ApiDto.ApiResponseDto> HandleAnoConvertLayoutToOverlayAsync(ApiDto.AnonRequestPayloadDto requestDto)
+        {
+            object overlayObject = LayoutConfig.Config2Layout.Convert(requestDto.LayoutConfig);
             return ApiDto.ApiResponseDto.CreateSuccess(overlayObject);
         }
 

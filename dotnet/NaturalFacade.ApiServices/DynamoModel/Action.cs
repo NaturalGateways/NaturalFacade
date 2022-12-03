@@ -25,22 +25,17 @@ namespace NaturalFacade.ActionModel
 
         public object AsMinimalObject()
         {
-            Dictionary<string, object> props = new Dictionary<string, object>();
             switch (this.AuthType)
             {
                 case ActionType.CreateUser:
-                    props.Add("CreateUser", this.CreateUser);
-                    break;
+                    return this.CreateUser;
                 case ActionType.UpdateUser:
-                    props.Add("UpdateUser", this.UpdateUser);
-                    break;
+                    return this.UpdateUser;
                 case ActionType.CreateLayout:
-                    props.Add("CreateLayout", this.CreateLayout);
-                    break;
+                    return this.CreateLayout;
                 default:
                     throw new Exception("Cannot create minimal object of action.");
             }
-            return props;
         }
     }
 

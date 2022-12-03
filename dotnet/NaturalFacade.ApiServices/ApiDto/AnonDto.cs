@@ -14,7 +14,8 @@ namespace NaturalFacade.ApiDto
     public enum AnonRequestType
     {
         GetInfo,
-        GetLayoutOverlay
+        GetLayoutOverlay,
+        ConvertLayoutToOverlay
     }
 
     public class AnonRequestPayloadDto
@@ -24,5 +25,7 @@ namespace NaturalFacade.ApiDto
         public string UserId { get; set; }
 
         public string LayoutId { get; set; }
+
+        public LayoutConfig.LayoutConfig LayoutConfig { get; set; }
     }
 }
