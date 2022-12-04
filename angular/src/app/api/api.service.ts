@@ -6,7 +6,7 @@ import { environment } from '../../environments/environment';
 import { CognitoService } from '../auth/cognito.service';
 import { CognitoAccessModel } from '../auth/cognito-model';
 
-import { BaseResponseDto } from './base-dto';
+import { BaseResponseDto, BlankResponseDto } from './base-dto';
 import { ApiAuthModel } from './api-auth-model';
 import { CurrentUserApiDto } from './api-auth-dto/current-user-api-dto';
 
@@ -47,6 +47,27 @@ export class ApiService {
       if (resp.Success && resp.Payload !== undefined)
       {
         successCallback(resp.Payload);
+      }
+      else
+      {
+        console.log("Error: " + JSON.stringify(resp));
+        errorCallback();
+      }
+    }, error => {
+      console.log("Error: " + JSON.stringify(error));
+      errorCallback();
+    });
+  }
+
+  createLayout(layoutName: string, successCallback: () => void, errorCallback: () => void)
+  {
+    let url: string = environment.apiUrl + "/auth";
+    const headers = new HttpHeaders().set("Content-Type", "application/json").set("Authorization", this.cognitoService.apiAuthModel?.access.idToken!);
+    var reqBody = {RequestType: "CreateLayout", CreateLayout: {Name:layoutName}};
+    this.http.post<BlankResponseDto>(url, reqBody, {headers}).subscribe(resp => {
+      if (resp.Success)
+      {
+        successCallback();
       }
       else
       {

@@ -6,7 +6,7 @@
     <ng-template pTemplate="end">
       <p-button *ngIf="isAuthOut" label="Register" styleClass="p-button-link" (click)="onRegisterClicked()"></p-button>
       <p-button *ngIf="isAuthOut" label="Login" styleClass="p-button-link" (click)="onLoginClicked()"></p-button>
-      <button *ngIf="isAuthIn" pButton pRipple type="button" icon="pi pi-user" class="p-button-rounded p-button-info p-button-outlined" (click)="onUserClicked($event,userContextMenu)"></button>
+      <button *ngIf="isAuthIn" pButton pRipple type="button" icon="pi pi-user" class="p-button-rounded p-button-outlined" (click)="onUserClicked($event,userContextMenu)"></button>
       <p-contextMenu #userContextMenu [model]="contextMenuItems"></p-contextMenu>
     </ng-template>
   </p-menubar>

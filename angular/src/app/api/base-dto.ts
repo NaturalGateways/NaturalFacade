@@ -3,3 +3,7 @@ export class BaseResponseDto<PayloadType> {
   
   Payload: PayloadType | undefined;
 }
+
+export class BlankResponseDto {
+  Success: boolean = false;
+}

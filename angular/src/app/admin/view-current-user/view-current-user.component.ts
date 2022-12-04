@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { timeStamp } from 'console';
 
 import { ApiService } from '../../api/api.service';
 import { CognitoService, CognitoServiceAuthStatus } from '../../auth/cognito.service';

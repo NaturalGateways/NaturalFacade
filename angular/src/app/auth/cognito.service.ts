@@ -1,5 +1,6 @@
 import { Injectable, EventEmitter  } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 import { environment } from '../../environments/environment';
 
@@ -36,7 +37,7 @@ export class CognitoService {
   apiAuthModel: ApiAuthModel | null = null;
   authentication: CognitoServiceAuthStatus = CognitoServiceAuthStatus.None;
 
-  constructor(private http: HttpClient)
+  constructor(private http: HttpClient, private router: Router)
   {
     this.registerUrl = environment.cognitoUrl + "/signup?client_id=" + environment.cognitoClientId + "&response_type=code&scope=openid&redirect_uri=" + environment.callbackUrl;
     this.signInUrl = environment.cognitoUrl + "/login?response_type=code&scope=openid&client_id=" + environment.cognitoClientId + "&redirect_uri=" + environment.callbackUrl;
@@ -47,6 +48,10 @@ export class CognitoService {
     {
       this.apiAuthModel = JSON.parse(authJson);
       this.authentication = CognitoServiceAuthStatus.Authenticated;
+      if (environment.production)
+      {
+        this.router.navigate(['/main/dashboard']);
+      }
     }
   }
 
