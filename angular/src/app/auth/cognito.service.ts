@@ -33,12 +33,21 @@ export class CognitoService {
   registerUrl: string;
   signInUrl: string;
 
+  apiAuthModel: ApiAuthModel | null = null;
   authentication: CognitoServiceAuthStatus = CognitoServiceAuthStatus.None;
 
   constructor(private http: HttpClient)
   {
     this.registerUrl = environment.cognitoUrl + "/signup?client_id=" + environment.cognitoClientId + "&response_type=code&scope=openid&redirect_uri=" + environment.callbackUrl;
     this.signInUrl = environment.cognitoUrl + "/login?response_type=code&scope=openid&client_id=" + environment.cognitoClientId + "&redirect_uri=" + environment.callbackUrl;
+
+    // Check auth from storage
+    var authJson: string | null = localStorage.getItem('auth');
+    if (authJson !== null)
+    {
+      this.apiAuthModel = JSON.parse(authJson);
+      this.authentication = CognitoServiceAuthStatus.Authenticated;
+    }
   }
 
   authenticate(apiService: ApiService, code: string, callback: () => void)
@@ -54,7 +63,8 @@ export class CognitoService {
       let cognitoAccess = new CognitoAccessModel(resp.id_token!, resp.refresh_token!, resp.access_token!, resp.expires_in!);
       apiService.getCurrentUser(cognitoAccess, (userResponse) =>
       {
-        apiService.apiAuthModel = new ApiAuthModel(userResponse, cognitoAccess);
+        this.apiAuthModel = new ApiAuthModel(userResponse, cognitoAccess);
+        localStorage.setItem('auth', JSON.stringify(this.apiAuthModel));
         this.authentication = CognitoServiceAuthStatus.Authenticated;
         this.authEmitter.emit();
         callback();
@@ -72,9 +82,10 @@ export class CognitoService {
     });
   }
 
-  logout(apiService: ApiService)
+  logout()
   {
-    apiService.apiAuthModel = null;
+    localStorage.removeItem('auth');
+    this.apiAuthModel = null;
     this.authentication = CognitoServiceAuthStatus.None;
     this.authEmitter.emit();
   }

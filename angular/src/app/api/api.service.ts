@@ -14,7 +14,6 @@ import { CurrentUserApiDto } from './api-auth-dto/current-user-api-dto';
   providedIn: 'root'
 })
 export class ApiService {
-  apiAuthModel: ApiAuthModel | null = null;
 
   constructor(public cognitoService: CognitoService, private http: HttpClient) { }
 
@@ -42,7 +41,7 @@ export class ApiService {
   updateCurrentUser(newName: string, successCallback: (response: CurrentUserApiDto) => void, errorCallback: () => void)
   {
     let url: string = environment.apiUrl + "/auth";
-    const headers = new HttpHeaders().set("Content-Type", "application/json").set("Authorization", this.apiAuthModel?.access.idToken!);
+    const headers = new HttpHeaders().set("Content-Type", "application/json").set("Authorization", this.cognitoService.apiAuthModel?.access.idToken!);
     var reqBody = {RequestType: "UpdateCurrentUser", UpdateCurrentUser: {Name:newName}};
     this.http.post<BaseResponseDto<CurrentUserApiDto>>(url, reqBody, {headers}).subscribe(resp => {
       if (resp.Success && resp.Payload !== undefined)

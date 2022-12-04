@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { timeStamp } from 'console';
 
 import { ApiService } from '../../api/api.service';
+import { CognitoService, CognitoServiceAuthStatus } from '../../auth/cognito.service';
 
 @Component({
   selector: 'app-view-current-user',
@@ -16,10 +17,10 @@ export class ViewCurrentUserComponent {
   usernameEditState: number = 0;
   usernameEdit: string = "";
 
-  constructor(private apiService: ApiService)
+  constructor(private cognitoService: CognitoService, private apiService: ApiService)
   {
-    this.username = this.apiService.apiAuthModel?.user.Name!;
-    this.email = this.apiService.apiAuthModel?.user.Email!;
+    this.username = this.cognitoService.apiAuthModel?.user.Name!;
+    this.email = this.cognitoService.apiAuthModel?.user.Email!;
   }
 
   onEditUsername()
@@ -33,7 +34,7 @@ export class ViewCurrentUserComponent {
     this.usernameEditState = 2;
     this.apiService.updateCurrentUser(this.usernameEdit, (userResponse) =>
     {
-      this.username = this.usernameEdit;
+      this.username = userResponse.Name!;
       this.usernameEditState = 0;
     }, () =>
     {

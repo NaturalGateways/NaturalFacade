@@ -73,7 +73,7 @@ export class AppComponent {
 
   onLogoutClicked()
   {
-    this.cognitoService.logout(this.apiService);
+    this.cognitoService.logout();
     location.href = "/";
   }
 }
