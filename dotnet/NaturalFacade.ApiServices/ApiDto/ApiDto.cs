@@ -32,6 +32,17 @@ namespace NaturalFacade.ApiDto
             }
             return new ApiResponseDto { Success = false, Exception = exceptionList.ToArray() };
         }
+
+        public static ApiResponseDto CreateError(string message, Exception ex)
+        {
+            List<ApiResponseExceptionDto> exceptionList = new List<ApiResponseExceptionDto>();
+            while (ex != null)
+            {
+                exceptionList.Add(new ApiResponseExceptionDto(ex));
+                ex = ex.InnerException;
+            }
+            return new ApiResponseDto { Success = false, Error = message, Exception = exceptionList.ToArray() };
+        }
     }
 
     public class ApiResponseExceptionDto

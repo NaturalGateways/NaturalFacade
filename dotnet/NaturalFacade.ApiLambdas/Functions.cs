@@ -14,8 +14,20 @@ public class Functions
         Natural.Aws.IAwsService awsService = new Natural.Aws.LambdaAwsService();
         using (Natural.Aws.DynamoDB.IDynamoService? dynamoDb = awsService.CreateDynamoService())
         {
-            Services.DynamoService dynamoService = new Services.DynamoService(dynamoDb, DynamoTableNames.Singleton);
-            return await Services.ApiService.HandleAnonRequestAsync(dynamoService, request.payload);
+            try
+            {
+                Services.DynamoService dynamoService = new Services.DynamoService(dynamoDb, DynamoTableNames.Singleton);
+                object responseObj = await Services.ApiService.HandleAnonRequestAsync(dynamoService, request.payload);
+                return ApiDto.ApiResponseDto.CreateSuccess(responseObj);
+            }
+            catch (FacadeApiException rae)
+            {
+                return ApiDto.ApiResponseDto.CreateError(rae.UserMessage, rae);
+            }
+            catch (Exception ex)
+            {
+                return ApiDto.ApiResponseDto.CreateError("Internal error.", ex);
+            }
         }
     }
 
@@ -26,8 +38,20 @@ public class Functions
         Natural.Aws.IAwsService awsService = new Natural.Aws.LambdaAwsService();
         using (Natural.Aws.DynamoDB.IDynamoService? dynamoDb = awsService.CreateDynamoService())
         {
-            Services.DynamoService dynamoService = new Services.DynamoService(dynamoDb, DynamoTableNames.Singleton);
-            return await Services.ApiService.HandleAuthRequestAsync(dynamoService, request);
+            try
+            {
+                Services.DynamoService dynamoService = new Services.DynamoService(dynamoDb, DynamoTableNames.Singleton);
+                object responseObj = await Services.ApiService.HandleAuthRequestAsync(dynamoService, request);
+                return ApiDto.ApiResponseDto.CreateSuccess(responseObj);
+            }
+            catch (FacadeApiException rae)
+            {
+                return ApiDto.ApiResponseDto.CreateError(rae.UserMessage, rae);
+            }
+            catch (Exception ex)
+            {
+                return ApiDto.ApiResponseDto.CreateError("Internal error.", ex);
+            }
         }
     }
 }
