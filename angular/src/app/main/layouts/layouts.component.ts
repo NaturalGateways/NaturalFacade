@@ -1,8 +1,14 @@
 import { Component } from '@angular/core';
 
-export class LayoutTestItem {
-  layoutId: string | undefined;
-  layoutName: string | undefined;
+import { ApiService } from '../../api/api.service';
+
+import { LayoutSummaryApiDto } from '../../api/api-auth-dto/layout-summary-api-dto';
+
+export class LayoutItem {
+  LayoutId: string = "";
+  Name: string = "";
+  CreatedDate: string = "";
+  CreatedTime: string = "";
 }
 
 @Component({
@@ -12,20 +18,25 @@ export class LayoutTestItem {
 })
 export class LayoutsComponent {
 
-  layouts: any = [];
+  layouts: LayoutItem[] = [];
 
-  constructor() {
-    var item1: LayoutTestItem = new LayoutTestItem();
-    item1.layoutId = "alpha";
-    item1.layoutName = "Alpha";
-    var item2: LayoutTestItem = new LayoutTestItem();
-    item2.layoutId = "beta";
-    item2.layoutName = "Beta";
-    var item3: LayoutTestItem = new LayoutTestItem();
-    item3.layoutId = "gamma";
-    item3.layoutName = "Gamma";
-    this.layouts.push(item1);
-    this.layouts.push(item2);
-    this.layouts.push(item3);
+  constructor(private apiService: ApiService) {
+    this.apiService.getLayoutPage((layouts) =>
+    {
+      var layoutItems: LayoutItem[] = [];
+      layouts.forEach((element) => {
+        var layoutItem = new LayoutItem();
+        layoutItem.LayoutId = element.LayoutId;
+        layoutItem.Name = element.Name;
+        var dateTime = new Date(element.CreatedDateTime);
+        layoutItem.CreatedDate = dateTime.toLocaleDateString();
+        layoutItem.CreatedTime = dateTime.toLocaleTimeString();
+        layoutItems.push(layoutItem);
+      });
+      this.layouts = layoutItems;
+    }, () =>
+    {
+      //
+    });
   }
 }

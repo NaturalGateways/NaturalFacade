@@ -8,8 +8,18 @@
     <ng-template let-item pTemplate="listItem">
         <div class="col-12">
             <div class="layout-list-item">
-                <div class="layout-list-detail">
-                    <div class="layout-name">{{item.layoutName}}</div>
+                <div class="layout-list-title">
+                    <div class="layout-name">{{item.Name}}</div>
+                </div>
+                <div class="layout-list-spacer"></div>
+                <div class="layout-list-datetime">
+                    <div class="layout-datetime">{{item.CreatedDate}}</div>
+                    <div class="layout-datetime">{{item.CreatedTime}}</div>
+                </div>
+                <div class="layout-list-spacer"></div>
+                <div class="layout-list-actions">
+                    <button pButton pRipple type="button" icon="pi pi-pencil" class="p-button-rounded action-button"></button>
+                    <button pButton pRipple type="button" icon="pi pi-trash" class="p-button-rounded p-button-danger action-button"></button>
                 </div>
             </div>
         </div>
@@ -18,7 +28,13 @@
         <div class="col-12 md:col-4 xl:col-2">
             <div class="layout-grid-item card">
                 <div class="layout-grid-item-content">
-                    <div class="layout-name">{{item.layoutName}}</div>
+                    <div class="layout-name">{{item.Name}}</div>
+                    <div class="layout-datetime">{{item.CreatedDate}}</div>
+                    <div class="layout-datetime">{{item.CreatedTime}}</div>
+                    <div class="layout-grid-actions">
+                        <button pButton pRipple type="button" icon="pi pi-pencil" class="p-button-rounded action-button"></button>
+                        <button pButton pRipple type="button" icon="pi pi-trash" class="p-button-rounded p-button-danger action-button"></button>
+                    </div>
                 </div>
             </div>
         </div>

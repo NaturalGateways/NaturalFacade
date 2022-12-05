@@ -10,7 +10,30 @@
     font-weight: 700;
 }
 
-.layout-list-detail {
+.layout-datetime {
+    font-size: 1.0rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.layout-list-title {
+    flex: 0 1 0;
+}
+
+.layout-list-datetime {
+    flex: 0 1 0;
+}
+
+.layout-list-actions {
+    display: flex;
+    flex: 0 1 0;
+}
+
+.layout-list-actions .action-button {
+    flex: auto 1 0;
+}
+
+.layout-list-spacer {
     flex: 1 1 0;
 }
 
@@ -21,6 +44,17 @@
 
 .layout-grid-item-content {
     text-align: center;
+}
+
+.layout-grid-actions {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1em;
+}
+
+.action-button {
+    margin-left: 0.5em;
+    margin-right: 0.5em;
 }
 
 .card {

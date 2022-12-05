@@ -7,8 +7,8 @@ import { CognitoService } from '../auth/cognito.service';
 import { CognitoAccessModel } from '../auth/cognito-model';
 
 import { BaseResponseDto, BlankResponseDto } from './base-dto';
-import { ApiAuthModel } from './api-auth-model';
 import { CurrentUserApiDto } from './api-auth-dto/current-user-api-dto';
+import { LayoutSummaryApiDto } from './api-auth-dto/layout-summary-api-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -44,6 +44,27 @@ export class ApiService {
     const headers = new HttpHeaders().set("Content-Type", "application/json").set("Authorization", this.cognitoService.apiAuthModel?.access.idToken!);
     var reqBody = {RequestType: "UpdateCurrentUser", UpdateCurrentUser: {Name:newName}};
     this.http.post<BaseResponseDto<CurrentUserApiDto>>(url, reqBody, {headers}).subscribe(resp => {
+      if (resp.Success && resp.Payload !== undefined)
+      {
+        successCallback(resp.Payload);
+      }
+      else
+      {
+        console.log("Error: " + JSON.stringify(resp));
+        errorCallback();
+      }
+    }, error => {
+      console.log("Error: " + JSON.stringify(error));
+      errorCallback();
+    });
+  }
+
+  getLayoutPage(successCallback: (layouts: LayoutSummaryApiDto[]) => void, errorCallback: () => void)
+  {
+    let url: string = environment.apiUrl + "/auth";
+    const headers = new HttpHeaders().set("Content-Type", "application/json").set("Authorization", this.cognitoService.apiAuthModel?.access.idToken!);
+    var reqBody = {RequestType: "GetLayoutSummaryPage"};
+    this.http.post<BaseResponseDto<LayoutSummaryApiDto[]>>(url, reqBody, {headers}).subscribe(resp => {
       if (resp.Success && resp.Payload !== undefined)
       {
         successCallback(resp.Payload);
