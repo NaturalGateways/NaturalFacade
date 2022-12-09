@@ -1,31 +1,33 @@
-<p-card>
-    <form>
-        <div><label class="attHeader">New Layout</label></div>
-        <div class="attGroup">
-            <div><label class="attLabel">Layout Name</label></div>
-            <input id="layoutName" name="layoutName" type="text" pInputText [(ngModel)]="layoutName" [disabled]="isSubmitting" [ngClass]="(layoutNameError === null) ? '' : 'ng-invalid ng-dirty'">
-            <small *ngIf="layoutNameError !== null" id="layoutNameError" class="p-error block">{{layoutNameError}}</small>
-        </div>
-
-        <p-divider></p-divider>
-
-        <div class="submitGroup" *ngIf="isSubmitting === false">
-            <div>
+<div class="mt-2">
+    <p-card>
+        <form>
+            <div><label class="attHeader">New Layout</label></div>
+            <div class="attGroup">
+                <div><label class="attLabel">Layout Name</label></div>
+                <input id="layoutName" name="layoutName" type="text" pInputText [(ngModel)]="layoutName" [disabled]="isSubmitting" [ngClass]="(layoutNameError === null) ? '' : 'ng-invalid ng-dirty'">
+                <small *ngIf="layoutNameError !== null" id="layoutNameError" class="p-error block">{{layoutNameError}}</small>
+            </div>
+    
+            <p-divider></p-divider>
+    
+            <div class="submitGroup" *ngIf="isSubmitting === false">
+                <div>
+                    <span>
+                        <button pButton pRipple type="button" label="Save" (click)="onSaveLayout()"></button>
+                        <button pButton pRipple type="button" label="Cancel" class="p-button-secondary nextButton" routerLink="/main/layouts"></button>
+                    </span>
+                </div>
+                <div>
+                    <small *ngIf="submitError !== null" id="submitError" class="p-error block">{{submitError}}</small>
+                </div>
+            </div>
+    
+            <div class="submitGroup" *ngIf="isSubmitting === true">
                 <span>
-                    <button pButton pRipple type="button" label="Save" (click)="onSaveLayout()"></button>
-                    <button pButton pRipple type="button" label="Cancel" class="p-button-secondary nextButton" routerLink="/main/layouts"></button>
+                    <p-progressSpinner [style]="{width: '40px', height: '40px'}" styleClass="custom-spinner" strokeWidth="6"></p-progressSpinner>
+                    <label class="attValue">Saving</label>
                 </span>
             </div>
-            <div>
-                <small *ngIf="submitError !== null" id="submitError" class="p-error block">{{submitError}}</small>
-            </div>
-        </div>
-
-        <div class="submitGroup" *ngIf="isSubmitting === true">
-            <span>
-                <p-progressSpinner [style]="{width: '40px', height: '40px'}" styleClass="custom-spinner" strokeWidth="6"></p-progressSpinner>
-                <label class="attValue">Saving</label>
-            </span>
-        </div>
-    </form>
-</p-card>
+        </form>
+    </p-card>
+</div>

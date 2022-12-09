@@ -8,6 +8,7 @@ import {CardModule} from 'primeng/card';
 import {ContextMenuModule} from 'primeng/contextmenu';
 import {DataViewModule} from 'primeng/dataview';
 import {DividerModule} from 'primeng/divider';
+import {InputTextareaModule} from 'primeng/inputtextarea';
 import {InputTextModule} from 'primeng/inputtext';
 import {MenubarModule} from 'primeng/menubar';
 import {PanelModule} from 'primeng/panel';
@@ -27,6 +28,7 @@ import { DashboardComponent } from './main/dashboard/dashboard.component';
 import { AdminComponent } from './admin/admin.component';
 import { ViewCurrentUserComponent } from './admin/view-current-user/view-current-user.component';
 import { CreateLayoutComponent } from './main/layouts/create-layout/create-layout.component';
+import { EditLayoutComponent } from './main/layouts/edit-layout/edit-layout.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +40,8 @@ import { CreateLayoutComponent } from './main/layouts/create-layout/create-layou
     DashboardComponent,
     AdminComponent,
     ViewCurrentUserComponent,
-    CreateLayoutComponent
+    CreateLayoutComponent,
+    EditLayoutComponent
   ],
   imports: [
     BrowserModule,
@@ -51,6 +54,7 @@ import { CreateLayoutComponent } from './main/layouts/create-layout/create-layou
     ContextMenuModule,
     DataViewModule,
     DividerModule,
+    InputTextareaModule,
     InputTextModule,
     MenubarModule,
     PanelModule,

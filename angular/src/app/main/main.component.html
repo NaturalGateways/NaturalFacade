@@ -1,7 +1,5 @@
-<div *ngIf="isAuthenticated">
+<div *ngIf="isAuthenticated" class="mt-2">
   <p-tabMenu [model]="navItems" [activeItem]="navActiveItem!"></p-tabMenu>
     
-  <div class="mt-2">
-    <router-outlet></router-outlet>
-  </div>
+  <router-outlet></router-outlet>
 </div>

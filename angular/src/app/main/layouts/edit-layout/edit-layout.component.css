@@ -1,0 +1,45 @@
+.flexSpacer {
+    flex: 0 0 0.5em;
+}
+
+.panel {
+    background-color: #2a323d;
+}
+
+.rightColumn {
+    flex: 0 0 960px;
+}
+
+.outputPanel {
+    flex: 0 0 540px;
+}
+
+.previewCanvas {
+    width: 100%;
+    height: 100%;
+}
+
+.updatePanel {
+    flex: 0 0 auto;
+}
+
+.inputPanel {
+    flex: 0 0 auto;
+    padding: 0.5em;
+}
+
+.inputTextArea {
+    width: 100%;
+    height: 20em;
+    min-height: 20em;
+    max-height: 20em;
+    overflow-y: auto;
+}
+
+.submitPanel {
+    flex: 0 0 auto;
+}
+
+.marginedButton {
+    margin: 0.5em 0em;
+}

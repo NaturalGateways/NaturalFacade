@@ -1,3 +1,4 @@
+import { Console } from 'console';
 import { LayoutData, LayoutFontConfig } from '../layout-data';
 
 enum RenderLayoutSizeType { Pixel, Min, Max }
@@ -21,12 +22,16 @@ class LayoutElementWithBounds {
 }
 
 export class RenderLayoutService {
-  context: CanvasRenderingContext2D | undefined;
+  canvas: HTMLCanvasElement;
+  context: CanvasRenderingContext2D;
   layoutData: LayoutData | undefined;
   rootElementWithBounds: LayoutElementWithBounds | undefined;
 
-  constructor(context: CanvasRenderingContext2D) {
-    this.context = context;
+  constructor(element: HTMLElement) {
+    this.canvas = element as HTMLCanvasElement;
+    this.context = this.canvas.getContext("2d")!;
+
+    this.render(false);
   }
 
   setLayout(layoutData: LayoutData)
@@ -548,24 +553,32 @@ export class RenderLayoutService {
 
   render(isLoaded: boolean) : void
   {
-    var canvasWidth = 1920;
-    var canvasHeight = 1080;
+    // Sizes
+    var width = this.canvas.width;
+    var height = this.canvas.height;
+
+    // Clear
+    this.context.resetTransform();
+    this.context!.clearRect(0, 0, width, height);
+
+    // Render
     if (isLoaded === false || this.rootElementWithBounds === undefined)
     {
-      this.renderLoading(canvasWidth, canvasHeight);
+      this.renderLoading(width, height);
     }
     else
     {
+      var canvasWidth = 1920;
+      var canvasHeight = 1080;
       this.measureRootElementWithBounds(canvasWidth, canvasHeight);
       this.context!.clearRect(0, 0, canvasWidth, canvasHeight);
       this.renderElement(this.rootElementWithBounds!);
     }
   }
 
-  renderLoading(canvasWidth: number, canvasHeight: number)
+  renderLoading(width: number, height: number)
   {
-    this.context!.fillStyle = '#003366';
-    this.context!.fillRect(0, 0, canvasWidth, canvasHeight);
+    this.context!.clearRect(0, 0, width, height);
     this.context!.fillStyle = '#FFFFFF';
     this.context!.font = '28px Helvetica';
     this.context!.fillText('Loading...', 20, 50);

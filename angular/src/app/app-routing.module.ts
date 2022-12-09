@@ -11,6 +11,7 @@ import { DashboardComponent } from './main/dashboard/dashboard.component';
 
 import { LayoutsComponent } from './main/layouts/layouts.component';
 import { CreateLayoutComponent } from './main/layouts/create-layout/create-layout.component';
+import { EditLayoutComponent } from './main/layouts/edit-layout/edit-layout.component';
 import { TestCanvasComponent } from './test-canvas/test-canvas.component';
 
 const routes: Routes = [
@@ -24,6 +25,7 @@ const routes: Routes = [
     { path: 'layouts', component: LayoutsComponent }
   ]},
   { path: 'main/layouts/create', component: CreateLayoutComponent },
+  { path: 'main/layouts/edit', component: EditLayoutComponent },
   { path: '**', component: MainComponent }
 ];
 

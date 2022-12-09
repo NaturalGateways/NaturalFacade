@@ -21,11 +21,7 @@ export class LayoutCanvasComponent implements OnInit {
   constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
-    var canvas: HTMLCanvasElement = document.getElementById('overlayCanvas') as HTMLCanvasElement;
-    var context: CanvasRenderingContext2D = canvas!.getContext("2d")!;
-    this.layoutRender = new RenderLayoutService(context);
-
-    this.layoutRender?.render(false);
+    this.layoutRender = new RenderLayoutService(document.getElementById('overlayCanvas')!);
   }
 
   isFullyLoaded(): boolean

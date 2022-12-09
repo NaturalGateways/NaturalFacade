@@ -1,0 +1,33 @@
+<div class="h-full flex flex-column">
+    <div class="flex-1"></div>
+    <div class="flex-auto flex flex-row">
+        <div class="flex-1"></div>
+        <div class="rightColumn flex flex-column">
+            <div class="panel outputPanel">
+                <canvas id="overlayCanvas" class="canvas" class="previewCanvas" width="960" height="540">
+                    <p>Your browser doesn't support canvas.</p>
+                </canvas>
+            </div>
+            <div class="flexSpacer"></div>
+            <div class="panel updatePanel flex flex-row">
+                <div class="flex-1"></div>
+                <button pButton pRipple type="button" label="Update" icon="pi pi-angle-double-up" class="marginedButton" [disabled]="previewLayoutJson == editedLayoutJson" (click)="onPreviewLayout()"></button>
+                <div class="flex-1"></div>
+            </div>
+            <div class="flexSpacer"></div>
+            <div class="panel inputPanel">
+                <textarea pInputTextarea [autoResize]="true" class="inputTextArea" [(ngModel)]="editedLayoutJson"></textarea>
+            </div>
+            <div class="flexSpacer"></div>
+            <div class="panel submitPanel flex flex-row">
+                <div class="flex-1"></div>
+                <button pButton pRipple type="button" label="Save" class="marginedButton"></button>
+                <div class="flexSpacer"></div>
+                <button pButton pRipple type="button" label="Cancel" class="p-button-secondary marginedButton" routerLink="/main/layouts"></button>
+                <div class="flexSpacer"></div>
+            </div>
+        </div>
+        <div class="flex-1"></div>
+    </div>
+    <div class="flex-1"></div>
+</div>
