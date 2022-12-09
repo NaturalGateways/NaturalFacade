@@ -6,6 +6,8 @@ namespace NaturalFacade.ApiDto
 {
     public class OverlayDto
     {
+        public int[] canvasSize { get; set; }
+
         public Dictionary<string, string> parameters { get; set; }
 
         public string[] imageResources { get; set; }

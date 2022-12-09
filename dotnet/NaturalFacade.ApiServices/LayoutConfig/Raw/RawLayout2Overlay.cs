@@ -9,19 +9,15 @@ namespace NaturalFacade.LayoutConfig.Raw
     public class RawLayout2Overlay
     {
         /// <summary>Converts the data.</summary>
-        public static ApiDto.OverlayDto Convert(RawLayoutConfig layoutConfig)
+        public static void Convert(ApiDto.OverlayDto overlay, RawLayoutConfig layoutConfig)
         {
             // Create an instance
             RawLayout2Overlay instance = new RawLayout2Overlay(layoutConfig);
 
             // Get root element
-            object rootElement = instance.ConvertElement(layoutConfig.RootElement);
+            overlay.rootElement = instance.ConvertElement(layoutConfig.RootElement);
 
-            // Return
-            ApiDto.OverlayDto overlay = new ApiDto.OverlayDto
-            {
-                rootElement = rootElement
-            };
+            // Set resources
             if (instance.m_imageResourcesUsedList.Any())
                 overlay.imageResources = instance.m_imageResourcesUsedList.Select(x => x.ResConfig.Url).ToArray();
             if (instance.m_fontResourcesUsedList.Any())
@@ -34,7 +30,6 @@ namespace NaturalFacade.LayoutConfig.Raw
                     colour = x.Font.Colour,
                     align = x.Font.Align
                 }).ToArray();
-            return overlay;
         }
 
         /// <summary>The resources indexed.</summary>

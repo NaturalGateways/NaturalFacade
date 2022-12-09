@@ -10,13 +10,28 @@ namespace NaturalFacade.LayoutConfig
     {
         public static object Convert(LayoutConfig layoutConfig)
         {
+            // Create overlay
+            ApiDto.OverlayDto overlay = new ApiDto.OverlayDto
+            {
+                canvasSize = new int[]
+                {
+                    layoutConfig.Width ?? 1980,
+                    layoutConfig.Height ?? 1080
+                }
+            };
+
+            // Read specific type
             switch (layoutConfig.LayoutType)
             {
                 case Raw.RawLayoutConfig.TYPENAME:
-                    return Raw.RawLayout2Overlay.Convert(layoutConfig.Raw);
+                    Raw.RawLayout2Overlay.Convert(overlay, layoutConfig.Raw);
+                    break;
                 default:
                     throw new Exception($"Cannot convert layout of type '{layoutConfig.LayoutType}'.");
             }
+
+            // Return
+            return overlay;
         }
     }
 }
