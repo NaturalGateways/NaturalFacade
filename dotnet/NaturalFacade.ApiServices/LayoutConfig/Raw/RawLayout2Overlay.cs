@@ -50,9 +50,24 @@ namespace NaturalFacade.LayoutConfig.Raw
         /// <summary>Constructor.</summary>
         private RawLayout2Overlay(RawLayoutConfig layoutConfig)
         {
-            m_imageResourcesByName = layoutConfig.Resources.Where(x => x.Type == "Image").Select(x => new ResourceRef(x)).ToDictionary(x => x.ResConfig.Name);
-            m_fontResourcesByName = layoutConfig.Resources.Where(x => x.Type == "Font").Select(x => new ResourceRef(x)).ToDictionary(x => x.ResConfig.Name);
-            m_fontObjsByName = layoutConfig.Fonts.Select(x => new FontObjResource(x)).ToDictionary(x => x.Font.Name);
+            if (layoutConfig.Resources == null)
+            {
+                m_imageResourcesByName = new Dictionary<string, ResourceRef>();
+                m_fontResourcesByName = new Dictionary<string, ResourceRef>();
+            }
+            else
+            {
+                m_imageResourcesByName = layoutConfig.Resources.Where(x => x.Type == "Image").Select(x => new ResourceRef(x)).ToDictionary(x => x.ResConfig.Name);
+                m_fontResourcesByName = layoutConfig.Resources.Where(x => x.Type == "Font").Select(x => new ResourceRef(x)).ToDictionary(x => x.ResConfig.Name);
+            }
+            if (layoutConfig.Fonts == null)
+            {
+                m_fontObjsByName = new Dictionary<string, FontObjResource>();
+            }
+            else
+            {
+                m_fontObjsByName = layoutConfig.Fonts.Select(x => new FontObjResource(x)).ToDictionary(x => x.Font.Name);
+            }
         }
 
         /// <summary>A resource with a boolean flag for whether it is used or not.</summary>
