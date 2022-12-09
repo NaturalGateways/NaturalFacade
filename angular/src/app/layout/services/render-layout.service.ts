@@ -1,4 +1,5 @@
 import { Console } from 'console';
+
 import { LayoutData, LayoutFontConfig } from '../layout-data';
 
 enum RenderLayoutSizeType { Pixel, Min, Max }
@@ -26,6 +27,8 @@ export class RenderLayoutService {
   context: CanvasRenderingContext2D;
   layoutData: LayoutData | undefined;
   rootElementWithBounds: LayoutElementWithBounds | undefined;
+
+  loadingMessage: string | null = null;
 
   constructor(element: HTMLElement) {
     this.canvas = element as HTMLCanvasElement;
@@ -93,16 +96,36 @@ export class RenderLayoutService {
     return object;
   }
 
-  measureRootElementWithBounds(width: number, height: number)
+  setTransform(actWidth: number, actHeight: number)
+  {
+    var canWidth: number = this.layoutData!.canvasSize[0];
+    var canHeight: number = this.layoutData!.canvasSize[1];
+    var widthActOverCan: number = actWidth / canWidth;
+    var heightActOverCan: number = actHeight / canHeight;
+    if (widthActOverCan === heightActOverCan)
+    {
+      this.context.scale(widthActOverCan, widthActOverCan);
+    }
+    else if (widthActOverCan < heightActOverCan)
+    {
+      this.context.scale(widthActOverCan, widthActOverCan);
+      this.context.translate(0.0, (actHeight - widthActOverCan * canHeight) / (2.0 * widthActOverCan));
+    }
+    else
+    {
+      this.context.scale(heightActOverCan, heightActOverCan);
+      this.context.translate((actWidth - heightActOverCan * canWidth) / (2.0 * heightActOverCan), 0.0);
+    }
+  }
+
+  measureRootElementWithBounds()
   {
     this.rootElementWithBounds!.left = 0;
     this.rootElementWithBounds!.top = 0;
-    this.rootElementWithBounds!.right = width;
-    this.rootElementWithBounds!.bottom = height;
+    this.rootElementWithBounds!.right = this.layoutData!.canvasSize[0];
+    this.rootElementWithBounds!.bottom = this.layoutData!.canvasSize[1];
     this.measureElementMinimumSize(this.rootElementWithBounds!);
-    //console.log("Min: " + JSON.stringify(this.rootElementWithBounds!));
     this.measureElementBounds(this.rootElementWithBounds!);
-    //console.log("Bounds: " + JSON.stringify(this.rootElementWithBounds!));
   }
 
   measureElementMinimumSize(element: LayoutElementWithBounds)
@@ -562,26 +585,27 @@ export class RenderLayoutService {
     this.context!.clearRect(0, 0, width, height);
 
     // Render
-    if (isLoaded === false || this.rootElementWithBounds === undefined)
+    if (isLoaded === false || this.rootElementWithBounds === undefined || this.layoutData === undefined)
     {
       this.renderLoading(width, height);
     }
     else
     {
-      var canvasWidth = 1920;
-      var canvasHeight = 1080;
-      this.measureRootElementWithBounds(canvasWidth, canvasHeight);
-      this.context!.clearRect(0, 0, canvasWidth, canvasHeight);
+      this.setTransform(width, height);
+      this.measureRootElementWithBounds();
       this.renderElement(this.rootElementWithBounds!);
     }
   }
 
   renderLoading(width: number, height: number)
   {
-    this.context!.clearRect(0, 0, width, height);
-    this.context!.fillStyle = '#FFFFFF';
-    this.context!.font = '28px Helvetica';
-    this.context!.fillText('Loading...', 20, 50);
+    this.context.clearRect(0, 0, width, height);
+    if (this.loadingMessage !== null)
+    {
+      this.context.fillStyle = '#FFFFFF';
+      this.context.font = '28px Helvetica';
+      this.context.fillText(this.loadingMessage, 20, 50);
+    }
   }
 
   renderElement(elementWithBounds: LayoutElementWithBounds)

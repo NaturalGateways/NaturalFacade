@@ -1,4 +1,6 @@
 export class LayoutData {
+  canvasSize: any = [];
+  
   parameters: Map<string, LayoutParameter> = new Map<string, LayoutParameter>();
 
   parametersLoaded: boolean = false;

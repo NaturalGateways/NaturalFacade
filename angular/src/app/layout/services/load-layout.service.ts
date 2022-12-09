@@ -7,37 +7,93 @@ export class LoadLayoutService {
 
   constructor() { }
 
-  fromJson(apiDto: LayoutApiDtoContainer) : LayoutData
+  loadAllFromJson(apiDto: LayoutApiDto, successCallback: (layoutData: LayoutData) => void, errorCallback: () => void)
+  {
+    // Load data
+    var layoutData: LayoutData = this.fromJson(apiDto);
+
+    // Count resources to load
+    var resourcesToLoad: number = 0;
+    var isErrored: boolean = false;
+    if (layoutData.imageResources !== undefined && layoutData.imageResources !== null)
+    {
+      resourcesToLoad += layoutData.imageResources.length;
+    }
+    if (layoutData.fontResources !== undefined && layoutData.fontResources !== null)
+    {
+      resourcesToLoad += layoutData.fontResources.length;
+    }
+
+    // Load images in parallel
+    if (layoutData.imageResources !== undefined && layoutData.imageResources !== null)
+    {
+      for (const imageRes of layoutData.imageResources.values()) {
+        imageRes.imageElement = new Image();
+        imageRes.imageElement.addEventListener('load', () => {
+          --resourcesToLoad;
+          if (resourcesToLoad === 0 && isErrored === false)
+          {
+            successCallback(layoutData);
+          }
+        });
+        imageRes.imageElement.src = imageRes.url;
+      }
+    }
+    if (layoutData.fontResources !== undefined && layoutData.fontResources !== null)
+    {
+      for (const fontIndex in layoutData.fontResources) {
+        var fontRes: LayoutFontResource = layoutData.fontResources[fontIndex];
+        var fontFace = new FontFace(fontRes.fontName, 'url(' + fontRes.url + ')');
+        fontFace.load().then((font) => {
+          document.fonts.add(font);
+          fontRes.loaded = true;
+          --resourcesToLoad;
+          if (resourcesToLoad === 0 && isErrored === false)
+          {
+            successCallback(layoutData);
+          }
+        });
+      }
+    }
+  }
+
+  fromJsonContainer(apiDto: LayoutApiDtoContainer) : LayoutData
+  {
+    return this.fromJson(apiDto.Payload);
+  }
+
+  fromJson(apiDto: LayoutApiDto) : LayoutData
   {
     var layoutData : LayoutData = new LayoutData();
-    if (apiDto.Payload.parameters !== undefined)
+    layoutData.canvasSize = apiDto.canvasSize;
+    if (apiDto.parameters !== undefined)
     {
-      for (var key in apiDto.Payload.parameters) {
+      for (var key in apiDto.parameters) {
         layoutData.parameters.set(key, new LayoutParameter());
       }
     }
-    if (apiDto.Payload.imageResources !== undefined)
+    if (apiDto.imageResources !== undefined)
     {
-      for (var key in apiDto.Payload.imageResources) {
-        layoutData.imageResources.push(new LayoutImageResource(apiDto.Payload.imageResources[key]));
+      for (var key in apiDto.imageResources) {
+        layoutData.imageResources.push(new LayoutImageResource(apiDto.imageResources[key]));
       }
     }
-    if (apiDto.Payload.fontResources !== undefined)
+    if (apiDto.fontResources !== undefined)
     {
-      for (var fontResIndex in apiDto.Payload.fontResources) {
+      for (var fontResIndex in apiDto.fontResources) {
         var fontName: string = 'overFont' + fontResIndex;
-        var fontUrl = apiDto.Payload.fontResources[fontResIndex];
+        var fontUrl = apiDto.fontResources[fontResIndex];
         layoutData.fontResources.push(new LayoutFontResource(fontName, fontUrl));
       }
     }
-    if (apiDto.Payload.fonts !== undefined)
+    if (apiDto.fonts !== undefined)
     {
-      for (var fontJsonIndex in apiDto.Payload.fonts) {
-        var fontJson: any = apiDto.Payload.fonts[fontJsonIndex];
+      for (var fontJsonIndex in apiDto.fonts) {
+        var fontJson: any = apiDto.fonts[fontJsonIndex];
         layoutData.fontConfigs.push(new LayoutFontConfig(layoutData.fontResources[fontJson.res], fontJson));
       }
     }
-    layoutData.rootElement = apiDto.Payload.rootElement;
+    layoutData.rootElement = apiDto.rootElement;
     return layoutData;
   }
 

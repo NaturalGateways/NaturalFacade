@@ -3,6 +3,8 @@ export class LayoutApiDtoContainer {
 }
 
 export class LayoutApiDto {
+  canvasSize: any = [];
+
   parameters: { [key: string]: any } = {};
 
   imageResources: any = [];

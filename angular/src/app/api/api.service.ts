@@ -6,6 +6,8 @@ import { environment } from '../../environments/environment';
 import { CognitoService } from '../auth/cognito.service';
 import { CognitoAccessModel } from '../auth/cognito-model';
 
+import { LayoutApiDto } from '../layout/model/layout-api-dto';
+
 import { BaseResponseDto, BlankResponseDto } from './base-dto';
 import { CurrentUserApiDto } from './api-auth-dto/current-user-api-dto';
 import { LayoutSummaryApiDto } from './api-auth-dto/layout-summary-api-dto';
@@ -65,6 +67,27 @@ export class ApiService {
     const headers = new HttpHeaders().set("Content-Type", "application/json").set("Authorization", this.cognitoService.apiAuthModel?.access.idToken!);
     var reqBody = {RequestType: "GetLayoutSummaryPage"};
     this.http.post<BaseResponseDto<LayoutSummaryApiDto[]>>(url, reqBody, {headers}).subscribe(resp => {
+      if (resp.Success && resp.Payload !== undefined)
+      {
+        successCallback(resp.Payload);
+      }
+      else
+      {
+        console.log("Error: " + JSON.stringify(resp));
+        errorCallback();
+      }
+    }, error => {
+      console.log("Error: " + JSON.stringify(error));
+      errorCallback();
+    });
+  }
+
+  convertLayout(layoutObj: any, successCallback: (overlayObj: LayoutApiDto) => void, errorCallback: () => void)
+  {
+    let url: string = environment.apiUrl + "/anon";
+    const headers = new HttpHeaders().set("Content-Type", "application/json");
+    var reqBody = {RequestType: "ConvertLayoutToOverlay", LayoutConfig: layoutObj};
+    this.http.post<BaseResponseDto<LayoutApiDto>>(url, reqBody, {headers}).subscribe(resp => {
       if (resp.Success && resp.Payload !== undefined)
       {
         successCallback(resp.Payload);

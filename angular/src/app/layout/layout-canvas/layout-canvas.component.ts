@@ -59,7 +59,7 @@ export class LayoutCanvasComponent implements OnInit {
     this.http.get<any>(layoutUrl).subscribe(data => {
       // Load data
       var loadLayoutService : LoadLayoutService = new LoadLayoutService();
-      this.layoutData = loadLayoutService.fromJson(data);
+      this.layoutData = loadLayoutService.fromJsonContainer(data);
       this.layoutRender?.setLayout(this.layoutData);
 
       // Run http fetches in parallel
