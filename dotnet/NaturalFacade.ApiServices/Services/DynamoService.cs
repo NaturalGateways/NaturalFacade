@@ -140,7 +140,7 @@ namespace NaturalFacade.Services
         }
         
         /// <summary>Gets a layout overlay.</summary>
-        public async Task<object> GetLayoutOverlayAsync(string userId, string layoutId)
+        public async Task<object> GetLayoutOverlayAsync(string layoutId)
         {
             return await GetItemDataAsync<object>(layoutId, "Overlay");
         }

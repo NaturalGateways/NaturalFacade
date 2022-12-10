@@ -59,7 +59,14 @@ namespace NaturalFacade.Services
         /// <summary>Handle the request.</summary>
         private static async Task<object> HandleAnonGetLayoutOverlayAsync(DynamoService dynamoService, ApiDto.AnonRequestPayloadDto requestDto)
         {
-            return await dynamoService.GetLayoutOverlayAsync(requestDto.UserId, requestDto.LayoutId);
+            // Check params
+            if (string.IsNullOrEmpty(requestDto.LayoutId))
+                throw new Exception("Layout ID is needed for fetching a layout overlay.");
+            // Fetch
+            object layoutOverlay = await dynamoService.GetLayoutOverlayAsync(requestDto.LayoutId);
+            if (layoutOverlay == null)
+                throw new Exception($"Layout ID '{requestDto.LayoutId}' doesn't match a saved overlay.");
+            return layoutOverlay;
         }
 
         /// <summary>Handle the request.</summary>
