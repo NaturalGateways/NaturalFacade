@@ -10,7 +10,8 @@ namespace NaturalFacade.ActionModel
     {
         CreateUser,
         UpdateUser,
-        CreateLayout
+        CreateLayout,
+        PutLayout
     }
 
     public class Action
@@ -22,6 +23,8 @@ namespace NaturalFacade.ActionModel
         public ActionUpdateUser UpdateUser { get; set; }
 
         public ActionCreateLayout CreateLayout { get; set; }
+
+        public ActionPutLayout PutLayout { get; set; }
 
         public object AsMinimalObject()
         {
@@ -60,5 +63,12 @@ namespace NaturalFacade.ActionModel
         public string LayoutId { get; set; }
 
         public string Name { get; set; }
+    }
+
+    public class ActionPutLayout
+    {
+        public string LayoutId { get; set; }
+
+        public LayoutConfig.LayoutConfig LayoutConfig { get; set; }
     }
 }

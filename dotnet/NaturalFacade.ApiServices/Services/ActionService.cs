@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,6 +18,9 @@ namespace NaturalFacade.Services
                     return await ProcessUpdateUserActionAsync(dynamoService, action.UpdateUser, createResponse);
                 case ActionModel.ActionType.CreateLayout:
                     return await ProcessCreateLayoutActionAsync(dynamoService, action.CreateLayout, createResponse);
+                case ActionModel.ActionType.PutLayout:
+                    await ProcessPutLayoutActionAsync(dynamoService, action.PutLayout);
+                    return null;
                 default:
                     throw new Exception($"Cannot handle action type '{action.AuthType.ToString()}'.");
             }
@@ -74,6 +77,15 @@ namespace NaturalFacade.Services
             if (createResponse)
                 return summary;
             return null;
+        }
+
+        private static async Task ProcessPutLayoutActionAsync(DynamoService dynamoService, ActionModel.ActionPutLayout action)
+        {
+            // Convert layout
+            object overlay = LayoutConfig.Config2Layout.Convert(action.LayoutConfig);
+
+            // Save
+            await dynamoService.PutNewLayoutConfigAsync(action.LayoutId, action.LayoutConfig, overlay);
         }
     }
 }

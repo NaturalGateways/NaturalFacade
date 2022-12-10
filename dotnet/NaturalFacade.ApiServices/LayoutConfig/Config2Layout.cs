@@ -15,7 +15,7 @@ namespace NaturalFacade.LayoutConfig
             {
                 canvasSize = new int[]
                 {
-                    layoutConfig.Width ?? 1980,
+                    layoutConfig.Width ?? 1920,
                     layoutConfig.Height ?? 1080
                 }
             };

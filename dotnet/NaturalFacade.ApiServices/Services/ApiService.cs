@@ -88,6 +88,10 @@ namespace NaturalFacade.Services
                         return await HandleAuthGetLayoutSummaryPageAsync(dynamoService, requestDto);
                     case ApiDto.AuthRequestType.CreateLayout:
                         return await HandleAuthCreateLayoutAsync(dynamoService, requestDto);
+                    case ApiDto.AuthRequestType.GetLayout:
+                        return await HandleAuthGetLayoutAsync(dynamoService, requestDto);
+                    case ApiDto.AuthRequestType.PutLayout:
+                        return await HandleAuthPutLayoutAsync(dynamoService, requestDto);
                     default:
                         return ApiDto.ApiResponseDto.CreateError($"Unrecognised request type: {requestDto.payload.RequestType}");
                 }
@@ -102,7 +106,7 @@ namespace NaturalFacade.Services
         private static async Task<object> HandleAuthGetCurrentUserAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
         {
             // Get existing layout ID
-            string userId = $"User-{requestDto.context.userId}";
+            string userId = requestDto.context.userId;
 
             // Get user
             ItemModel.ItemUser userItem = await dynamoService.GetUserAsync(userId);
@@ -131,7 +135,7 @@ namespace NaturalFacade.Services
         private static async Task<object> HandleAuthUpdateCurrentUserAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
         {
             // Get IDs
-            string userId = $"User-{requestDto.context.userId}";
+            string userId = requestDto.context.userId;
 
             // Run action
             ActionModel.Action action = new ActionModel.Action
@@ -151,7 +155,7 @@ namespace NaturalFacade.Services
         private static async Task<object> HandleAuthGetLayoutSummaryPageAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
         {
             // Get IDs
-            string userId = $"User-{requestDto.context.userId}";
+            string userId = requestDto.context.userId;
 
             // Get IDs
             List<string> layoutIdList = await dynamoService.GetLayoutIdsAsync(userId);
@@ -172,7 +176,7 @@ namespace NaturalFacade.Services
         private static async Task<object> HandleAuthCreateLayoutAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
         {
             // Get IDs
-            string userId = $"User-{requestDto.context.userId}";
+            string userId = requestDto.context.userId;
             string layoutId = $"Layout-{Guid.NewGuid().ToString()}";
 
             // Run action
@@ -184,6 +188,54 @@ namespace NaturalFacade.Services
                     UserId = userId,
                     LayoutId = layoutId,
                     Name = requestDto.payload.CreateLayout.Name
+                }
+            };
+            await dynamoService.PutActionAsync(userId, layoutId, action);
+            return await ActionService.ProcessActionAsync(dynamoService, action, true);
+        }
+
+        /// <summary>Handle the request.</summary>
+        private static async Task<object> HandleAuthGetLayoutAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
+        {
+            // Get IDs
+            string userId = requestDto.context.userId;
+            string layoutId = requestDto.payload.GetLayout.LayoutId;
+
+            // Fetch summary
+            ItemModel.ItemLayoutSummary summary = await dynamoService.GetLayoutSummaryAsync(layoutId);
+            // Check creator
+            if (summary.CreatorUserId != userId)
+            {
+                throw new Exception("User is not authorised to view layout.");
+            }
+
+            // Get layout config
+            return await dynamoService.GetLayoutConfigAsync(layoutId);
+        }
+
+        /// <summary>Handle the request.</summary>
+        private static async Task<object> HandleAuthPutLayoutAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
+        {
+            // Get IDs
+            string userId = requestDto.context.userId;
+            string layoutId = requestDto.payload.PutLayout.LayoutId;
+
+            // Fetch summary
+            ItemModel.ItemLayoutSummary summary = await dynamoService.GetLayoutSummaryAsync(layoutId);
+            // Check creator
+            if (summary.CreatorUserId != userId)
+            {
+                throw new Exception("User is not authorised to view layout.");
+            }
+
+            // Run action
+            ActionModel.Action action = new ActionModel.Action
+            {
+                AuthType = ActionModel.ActionType.PutLayout,
+                PutLayout = new ActionModel.ActionPutLayout
+                {
+                    LayoutId = layoutId,
+                    LayoutConfig = requestDto.payload.PutLayout.LayoutConfig
                 }
             };
             await dynamoService.PutActionAsync(userId, layoutId, action);

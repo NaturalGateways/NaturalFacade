@@ -133,6 +133,12 @@ namespace NaturalFacade.Services
             return await GetItemDataAsync<ItemModel.ItemLayoutSummary>(layoutId, "Summary");
         }
 
+        /// <summary>Gets a layout summary.</summary>
+        public async Task<LayoutConfig.LayoutConfig> GetLayoutConfigAsync(string layoutId)
+        {
+            return await GetItemDataAsync<LayoutConfig.LayoutConfig>(layoutId, "LayoutConfig");
+        }
+        
         /// <summary>Gets a layout overlay.</summary>
         public async Task<object> GetLayoutOverlayAsync(string userId, string layoutId)
         {
@@ -144,6 +150,13 @@ namespace NaturalFacade.Services
         {
             await PutItemAsync(summaryData.LayoutId, "Summary", summaryData);
             await PutLinkAsync(userId, summaryData.LayoutId, null);
+        }
+
+        /// <summary>Puts a layout config and overlay.</summary>
+        public async Task PutNewLayoutConfigAsync(string layoutId, LayoutConfig.LayoutConfig layoutConfig, object overlay)
+        {
+            await PutItemAsync(layoutId, "LayoutConfig", layoutConfig);
+            await PutItemAsync(layoutId, "Overlay", overlay);
         }
 
         #endregion

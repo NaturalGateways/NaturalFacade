@@ -18,7 +18,9 @@ namespace NaturalFacade.ApiDto
         GetCurrentUser,
         UpdateCurrentUser,
         GetLayoutSummaryPage,
-        CreateLayout
+        CreateLayout,
+        GetLayout,
+        PutLayout
     }
 
     public class AuthRequestPayloadDto
@@ -28,6 +30,10 @@ namespace NaturalFacade.ApiDto
         public AuthUpdateCurrentUserRequestDto UpdateCurrentUser { get; set; }
 
         public AuthCreateLayoutRequestDto CreateLayout { get; set; }
+
+        public AuthGetLayoutRequestDto GetLayout { get; set; }
+
+        public AuthPutLayoutRequestDto PutLayout { get; set; }
     }
 
     #endregion
@@ -46,6 +52,26 @@ namespace NaturalFacade.ApiDto
     public class AuthCreateLayoutRequestDto
     {
         public string Name { get; set; }
+    }
+
+    #endregion
+
+    #region GetLayout
+
+    public class AuthGetLayoutRequestDto
+    {
+        public string LayoutId { get; set; }
+    }
+
+    #endregion
+
+    #region PutLayout
+
+    public class AuthPutLayoutRequestDto
+    {
+        public string LayoutId { get; set; }
+
+        public LayoutConfig.LayoutConfig LayoutConfig { get; set; }
     }
 
     #endregion
