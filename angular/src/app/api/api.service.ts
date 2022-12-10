@@ -103,11 +103,53 @@ export class ApiService {
     });
   }
 
+  getLayout(layoutId: string, successCallback: (layoutObj: any) => void, errorCallback: () => void)
+  {
+    let url: string = environment.apiUrl + "/auth";
+    const headers = new HttpHeaders().set("Content-Type", "application/json").set("Authorization", this.cognitoService.apiAuthModel?.access.idToken!);
+    var reqBody = {RequestType: "GetLayout", GetLayout: {LayoutId:layoutId}};
+    this.http.post<BaseResponseDto<any>>(url, reqBody, {headers}).subscribe(resp => {
+      if (resp.Success && resp.Payload !== undefined)
+      {
+        successCallback(resp.Payload);
+      }
+      else
+      {
+        console.log("Error: " + JSON.stringify(resp));
+        errorCallback();
+      }
+    }, error => {
+      console.log("Error: " + JSON.stringify(error));
+      errorCallback();
+    });
+  }
+
   createLayout(layoutName: string, successCallback: () => void, errorCallback: () => void)
   {
     let url: string = environment.apiUrl + "/auth";
     const headers = new HttpHeaders().set("Content-Type", "application/json").set("Authorization", this.cognitoService.apiAuthModel?.access.idToken!);
     var reqBody = {RequestType: "CreateLayout", CreateLayout: {Name:layoutName}};
+    this.http.post<BlankResponseDto>(url, reqBody, {headers}).subscribe(resp => {
+      if (resp.Success)
+      {
+        successCallback();
+      }
+      else
+      {
+        console.log("Error: " + JSON.stringify(resp));
+        errorCallback();
+      }
+    }, error => {
+      console.log("Error: " + JSON.stringify(error));
+      errorCallback();
+    });
+  }
+
+  putLayout(layoutId: string, layoutConfigString: string, successCallback: () => void, errorCallback: () => void)
+  {
+    let url: string = environment.apiUrl + "/auth";
+    const headers = new HttpHeaders().set("Content-Type", "application/json").set("Authorization", this.cognitoService.apiAuthModel?.access.idToken!);
+    var reqBody = {RequestType: "PutLayout", PutLayout: {LayoutId:layoutId,LayoutConfig:JSON.parse(layoutConfigString)}};
     this.http.post<BlankResponseDto>(url, reqBody, {headers}).subscribe(resp => {
       if (resp.Success)
       {

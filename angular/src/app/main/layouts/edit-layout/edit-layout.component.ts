@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 
 import { ApiService } from '../../../api/api.service';
 
@@ -14,28 +15,45 @@ import { RenderLayoutService } from '../../../layout/services/render-layout.serv
 })
 export class EditLayoutComponent {
 
+  layoutId: string| null = null;
+
   layoutRender: RenderLayoutService | null = null;
+  
+  savedLayoutJson: string | null = null;
   
   previewLayoutJson: string | null = null;
   
   editedLayoutJson: string | null = null;
   
-  isFetching: boolean = false;
+  isBusy: boolean = true;
 
-  constructor(private apiService: ApiService)
+  constructor(private router: Router, private route: ActivatedRoute, private apiService: ApiService)
   {
     //
   }
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      this.layoutId = params['layoutId'];
+      this.apiService.getLayout(this.layoutId!, (loadedConfig) =>
+      {
+        this.savedLayoutJson = JSON.stringify(loadedConfig);
+        this.editedLayoutJson = this.savedLayoutJson;
+        this.isBusy = false;
+      }, () =>
+      {
+        this.layoutRender!.loadingMessage = "Load Error.";
+        this.isBusy = false;
+      });
+    });
+
     this.layoutRender = new RenderLayoutService(document.getElementById('overlayCanvas')!);
   }
 
   onPreviewLayout()
   {
     // Disable UI
-    this.isFetching = true;
-    this.previewLayoutJson = this.editedLayoutJson;
+    this.isBusy = true;
 
     // Do fetch
     this.layoutRender!.loadingMessage = "Fetching...";
@@ -52,16 +70,33 @@ export class EditLayoutComponent {
         this.layoutRender!.loadingMessage = "Success";
         this.layoutRender!.setLayout(loadedLayout);
         this.layoutRender!.render(true);
-        this.isFetching = false;
+        this.previewLayoutJson = this.editedLayoutJson;
+        this.isBusy = false;
       }, () =>
       {
         this.layoutRender!.loadingMessage = "Load Error.";
-        this.isFetching = false;
+        this.isBusy = false;
       });
     }, () =>
     {
       this.layoutRender!.loadingMessage = "Fetch Errored.";
-      this.isFetching = false;
+      this.isBusy = false;
+    });
+  }
+
+  onSaveLayout()
+  {
+    // Disable UI
+    this.isBusy = true;
+
+    // Do fetch
+    this.apiService.putLayout(this.layoutId!, this.previewLayoutJson!, () =>
+    {
+      this.router.navigate(['/main/layouts']);
+      this.isBusy = false;
+    }, () =>
+    {
+      this.isBusy = false;
     });
   }
 }
