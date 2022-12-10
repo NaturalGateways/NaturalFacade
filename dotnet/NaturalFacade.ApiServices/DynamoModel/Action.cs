@@ -36,6 +36,8 @@ namespace NaturalFacade.ActionModel
                     return this.UpdateUser;
                 case ActionType.CreateLayout:
                     return this.CreateLayout;
+                case ActionType.PutLayout:
+                    return this.PutLayout;
                 default:
                     throw new Exception("Cannot create minimal object of action.");
             }

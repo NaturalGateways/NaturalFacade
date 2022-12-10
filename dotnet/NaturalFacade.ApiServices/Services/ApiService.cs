@@ -75,30 +75,23 @@ namespace NaturalFacade.Services
         /// <summary>Handle the request.</summary>
         public static async Task<object> HandleAuthRequestAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
         {
-            try
+            // Parse enum
+            switch (Enum.Parse<ApiDto.AuthRequestType>(requestDto.payload.RequestType))
             {
-                // Parse enum
-                switch (Enum.Parse<ApiDto.AuthRequestType>(requestDto.payload.RequestType))
-                {
-                    case ApiDto.AuthRequestType.GetCurrentUser:
-                        return await HandleAuthGetCurrentUserAsync(dynamoService, requestDto);
-                    case ApiDto.AuthRequestType.UpdateCurrentUser:
-                        return await HandleAuthUpdateCurrentUserAsync(dynamoService, requestDto);
-                    case ApiDto.AuthRequestType.GetLayoutSummaryPage:
-                        return await HandleAuthGetLayoutSummaryPageAsync(dynamoService, requestDto);
-                    case ApiDto.AuthRequestType.CreateLayout:
-                        return await HandleAuthCreateLayoutAsync(dynamoService, requestDto);
-                    case ApiDto.AuthRequestType.GetLayout:
-                        return await HandleAuthGetLayoutAsync(dynamoService, requestDto);
-                    case ApiDto.AuthRequestType.PutLayout:
-                        return await HandleAuthPutLayoutAsync(dynamoService, requestDto);
-                    default:
-                        return ApiDto.ApiResponseDto.CreateError($"Unrecognised request type: {requestDto.payload.RequestType}");
-                }
-            }
-            catch (Exception ex)
-            {
-                return ApiDto.ApiResponseDto.CreateError(ex);
+                case ApiDto.AuthRequestType.GetCurrentUser:
+                    return await HandleAuthGetCurrentUserAsync(dynamoService, requestDto);
+                case ApiDto.AuthRequestType.UpdateCurrentUser:
+                    return await HandleAuthUpdateCurrentUserAsync(dynamoService, requestDto);
+                case ApiDto.AuthRequestType.GetLayoutSummaryPage:
+                    return await HandleAuthGetLayoutSummaryPageAsync(dynamoService, requestDto);
+                case ApiDto.AuthRequestType.CreateLayout:
+                    return await HandleAuthCreateLayoutAsync(dynamoService, requestDto);
+                case ApiDto.AuthRequestType.GetLayout:
+                    return await HandleAuthGetLayoutAsync(dynamoService, requestDto);
+                case ApiDto.AuthRequestType.PutLayout:
+                    return await HandleAuthPutLayoutAsync(dynamoService, requestDto);
+                default:
+                    throw new FacadeApiException($"Unrecognised request type: {requestDto.payload.RequestType}");
             }
         }
 
