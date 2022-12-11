@@ -39,4 +39,10 @@ export class LayoutsComponent {
       //
     });
   }
+
+  onViewOverlay(layoutId: string)
+  {
+    var newUrl : string = window.location.protocol + "//" + window.location.host + "/overlay?layoutId=" + layoutId;
+    window.open(newUrl, "_blank");
+  }
 }

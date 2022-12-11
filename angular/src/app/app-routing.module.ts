@@ -14,6 +14,8 @@ import { CreateLayoutComponent } from './main/layouts/create-layout/create-layou
 import { EditLayoutComponent } from './main/layouts/edit-layout/edit-layout.component';
 import { TestCanvasComponent } from './test-canvas/test-canvas.component';
 
+import { ViewOverlayComponent } from './layout/view-overlay/view-overlay.component';
+
 const routes: Routes = [
   { path: 'testcanvas', component: TestCanvasComponent },
   { path: 'admin', component: AdminComponent, children:[
@@ -26,6 +28,7 @@ const routes: Routes = [
   ]},
   { path: 'main/layouts/create', component: CreateLayoutComponent },
   { path: 'main/layouts/edit', component: EditLayoutComponent },
+  { path: 'overlay', component: ViewOverlayComponent },
   { path: '**', component: MainComponent }
 ];
 

@@ -29,12 +29,11 @@ export class RenderLayoutService {
   rootElementWithBounds: LayoutElementWithBounds | undefined;
 
   loadingMessage: string | null = null;
+  loadingBackColour: string | null = null;
 
   constructor(element: HTMLElement) {
     this.canvas = element as HTMLCanvasElement;
     this.context = this.canvas.getContext("2d")!;
-
-    this.render(false);
   }
 
   setLayout(layoutData: LayoutData)
@@ -599,7 +598,11 @@ export class RenderLayoutService {
 
   renderLoading(width: number, height: number)
   {
-    this.context.clearRect(0, 0, width, height);
+    if (this.loadingBackColour !== null)
+    {
+      this.context.fillStyle = this.loadingBackColour;
+      this.context.fillRect(0, 0, width, height);
+    }
     if (this.loadingMessage !== null)
     {
       this.context.fillStyle = '#FFFFFF';

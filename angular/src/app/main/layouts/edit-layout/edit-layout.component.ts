@@ -33,6 +33,8 @@ export class EditLayoutComponent {
   }
 
   ngOnInit(): void {
+    this.layoutRender = new RenderLayoutService(document.getElementById('overlayCanvas')!);
+
     this.route.queryParams.subscribe(params => {
       this.layoutId = params['layoutId'];
       this.apiService.getLayout(this.layoutId!, (loadedConfig) =>
@@ -43,11 +45,10 @@ export class EditLayoutComponent {
       }, () =>
       {
         this.layoutRender!.loadingMessage = "Load Error.";
+        this.layoutRender!.render(false);
         this.isBusy = false;
       });
     });
-
-    this.layoutRender = new RenderLayoutService(document.getElementById('overlayCanvas')!);
   }
 
   onPreviewLayout()
@@ -62,6 +63,7 @@ export class EditLayoutComponent {
     {
       // Do fetch
       this.layoutRender!.loadingMessage = "Loading Resources...";
+      this.layoutRender!.render(false);
 
       // Load data
       var loadLayoutService : LoadLayoutService = new LoadLayoutService();
@@ -75,11 +77,13 @@ export class EditLayoutComponent {
       }, () =>
       {
         this.layoutRender!.loadingMessage = "Load Error.";
+        this.layoutRender!.render(false);
         this.isBusy = false;
       });
     }, () =>
     {
       this.layoutRender!.loadingMessage = "Fetch Errored.";
+      this.layoutRender!.render(false);
       this.isBusy = false;
     });
   }
