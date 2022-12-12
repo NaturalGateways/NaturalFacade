@@ -8,13 +8,22 @@ namespace NaturalFacade.SandboxConsole.Helpers
 {
     public static class MockRawLayoutFactory
     {
-        private class PostBody { public PostBodyLayout PutLayout { get; set; } }
-        private class PostBodyLayout { public PostBodyLayoutRaw Config { get; set; } }
-        private class PostBodyLayoutRaw { public LayoutConfig.Raw.RawLayoutConfig Raw { get; set; } }
+        private class AllPostBody { public AllPostBodyLayout PutLayout { get; set; } }
+        private class AllPostBodyLayout { public LayoutConfig.LayoutConfig Config { get; set; } }
 
-        public static LayoutConfig.Raw.RawLayoutConfig CreateLayoutFromPostBody(string json)
+        public static LayoutConfig.LayoutConfig CreateAllLayoutFromPostBody(string json)
         {
-            PostBody data = Newtonsoft.Json.JsonConvert.DeserializeObject<PostBody>(json);
+            AllPostBody data = Newtonsoft.Json.JsonConvert.DeserializeObject<AllPostBody>(json);
+            return data.PutLayout.Config;
+        }
+
+        private class RawPostBody { public RawPostBodyLayout PutLayout { get; set; } }
+        private class RawPostBodyLayout { public RawPostBodyLayoutRaw Config { get; set; } }
+        private class RawPostBodyLayoutRaw { public LayoutConfig.Raw.RawLayoutConfig Raw { get; set; } }
+
+        public static LayoutConfig.Raw.RawLayoutConfig CreateRawLayoutFromPostBody(string json)
+        {
+            RawPostBody data = Newtonsoft.Json.JsonConvert.DeserializeObject<RawPostBody>(json);
             return data.PutLayout.Config.Raw;
         }
     }

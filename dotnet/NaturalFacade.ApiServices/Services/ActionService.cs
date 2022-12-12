@@ -81,11 +81,14 @@ namespace NaturalFacade.Services
 
         private static async Task ProcessPutLayoutActionAsync(DynamoService dynamoService, ActionModel.ActionPutLayout action)
         {
+            // Get existing properties
+            ApiDto.PropertyDto[] properties = await dynamoService.GetOverlayPropertiesAsync(action.LayoutId);
+
             // Convert layout
-            object overlay = LayoutConfig.Config2Layout.Convert(action.LayoutConfig);
+            LayoutConfig.Config2LayoutResult convertResult = LayoutConfig.Config2Layout.Convert(action.LayoutConfig, properties);
 
             // Save
-            await dynamoService.PutNewLayoutConfigAsync(action.LayoutId, action.LayoutConfig, overlay);
+            await dynamoService.PutNewLayoutConfigAsync(action.LayoutId, action.LayoutConfig, convertResult);
         }
     }
 }

@@ -24,6 +24,8 @@ namespace NaturalFacade.Services
                     return HandleAnonGetInfo();
                 case ApiDto.AnonRequestType.GetLayoutOverlay:
                     return await HandleAnonGetLayoutOverlayAsync(dynamoService, requestDto);
+                case ApiDto.AnonRequestType.GetLayoutOverlayPropValues:
+                    return await HandleAnonGetLayoutOverlayPropValuesAsync(dynamoService, requestDto);
                 case ApiDto.AnonRequestType.ConvertLayoutToOverlay:
                     return await HandleAnonConvertLayoutToOverlayAsync(requestDto);
                 default:
@@ -70,9 +72,27 @@ namespace NaturalFacade.Services
         }
 
         /// <summary>Handle the request.</summary>
+        private static async Task<object> HandleAnonGetLayoutOverlayPropValuesAsync(DynamoService dynamoService, ApiDto.AnonRequestPayloadDto requestDto)
+        {
+            // Check params
+            if (string.IsNullOrEmpty(requestDto.LayoutId))
+                throw new Exception("Layout ID is needed for fetching a layout overlay.");
+            // Fetch
+            object layoutOverlay = await dynamoService.GetOverlayPropValuesAsync(requestDto.LayoutId);
+            if (layoutOverlay == null)
+                throw new Exception($"Layout ID '{requestDto.LayoutId}' doesn't match a saved overlay.");
+            return layoutOverlay;
+        }
+
+        /// <summary>Handle the request.</summary>
         private static async Task<object> HandleAnonConvertLayoutToOverlayAsync(ApiDto.AnonRequestPayloadDto requestDto)
         {
-            return LayoutConfig.Config2Layout.Convert(requestDto.LayoutConfig);
+            LayoutConfig.Config2LayoutResult result = LayoutConfig.Config2Layout.Convert(requestDto.LayoutConfig, null);
+            return new Dictionary<string, object>
+            {
+                { "overlay", result.Overlay },
+                { "propValues", result.PropertyValues }
+            };
         }
 
         #endregion

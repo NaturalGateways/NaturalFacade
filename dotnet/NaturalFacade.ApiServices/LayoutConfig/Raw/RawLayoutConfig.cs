@@ -10,6 +10,8 @@ namespace NaturalFacade.LayoutConfig.Raw
     {
         public const string TYPENAME = "Raw";
 
+        public RawLayoutConfigProperty[] Properties { get; set; }
+
         public RawLayoutConfigResource[] Resources { get; set; }
 
         public RawLayoutConfigFont[] Fonts { get; set; }
@@ -17,9 +19,13 @@ namespace NaturalFacade.LayoutConfig.Raw
         public RawLayoutConfigElement RootElement { get; set; }
     }
 
-    public enum RawLayoutConfigResourceType
+    public class RawLayoutConfigProperty
     {
-        Image
+        public string Name { get; set; }
+
+        public string Type { get; set; }
+
+        public object DefaultValue { get; set; }
     }
 
     public class RawLayoutConfigResource
@@ -159,5 +165,7 @@ namespace NaturalFacade.LayoutConfig.Raw
         public string Font { get; set; }
 
         public string Text { get; set; }
+
+        public RawLayoutConfigOperation TextOp { get; set; }
     }
 }

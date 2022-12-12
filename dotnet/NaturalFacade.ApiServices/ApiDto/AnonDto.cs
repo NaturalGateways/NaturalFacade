@@ -15,6 +15,7 @@ namespace NaturalFacade.ApiDto
     {
         GetInfo,
         GetLayoutOverlay,
+        GetLayoutOverlayPropValues,
         ConvertLayoutToOverlay
     }
 

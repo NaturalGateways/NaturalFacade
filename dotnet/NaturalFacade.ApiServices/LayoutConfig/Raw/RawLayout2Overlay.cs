@@ -9,28 +9,54 @@ namespace NaturalFacade.LayoutConfig.Raw
     public class RawLayout2Overlay
     {
         /// <summary>Converts the data.</summary>
-        public static void Convert(ApiDto.OverlayDto overlay, RawLayoutConfig layoutConfig)
+        public static void Convert(Config2LayoutResult result, RawLayoutConfig layoutConfig)
         {
             // Create an instance
             RawLayout2Overlay instance = new RawLayout2Overlay(layoutConfig);
 
             // Get root element
-            overlay.rootElement = instance.ConvertElement(layoutConfig.RootElement);
+            result.Overlay.rootElement = instance.ConvertElement(layoutConfig.RootElement);
 
             // Set resources
+            if (instance.m_propertyUsedList.Any())
+                result.Overlay.properties = instance.m_propertyUsedList.Select(x => x.PropConfig.Name).ToArray();
             if (instance.m_imageResourcesUsedList.Any())
-                overlay.imageResources = instance.m_imageResourcesUsedList.Select(x => x.ResConfig.Url).ToArray();
+                result.Overlay.imageResources = instance.m_imageResourcesUsedList.Select(x => x.ResConfig.Url).ToArray();
             if (instance.m_fontResourcesUsedList.Any())
-                overlay.fontResources = instance.m_fontResourcesUsedList.Select(x => x.ResConfig.Url).ToArray();
+                result.Overlay.fontResources = instance.m_fontResourcesUsedList.Select(x => x.ResConfig.Url).ToArray();
             if (instance.m_fontObjUsedList.Any())
-                overlay.fonts = instance.m_fontObjUsedList.Select(x => new ApiDto.OverlayDtoFont
+                result.Overlay.fonts = instance.m_fontObjUsedList.Select(x => new ApiDto.OverlayDtoFont
                 {
                     res = x.ResIndex.Value,
                     size = x.Font.Size,
                     colour = x.Font.Colour,
                     align = x.Font.Align
                 }).ToArray();
+
+            // Create new properties
+            Dictionary<string, ApiDto.PropertyDto> oldPropertiesByName = result.Properties?.ToDictionary(x => x.Name);
+            List<ApiDto.PropertyDto> newPropertyList = new List<ApiDto.PropertyDto>();
+            foreach (PropertyRef usedProperty in instance.m_propertyUsedList)
+            {
+                ApiDto.PropertyDto newProperty = new ApiDto.PropertyDto
+                {
+                    Name = usedProperty.PropConfig.Name,
+                    DefaultValue = usedProperty.PropConfig.DefaultValue
+                };
+                if (oldPropertiesByName?.ContainsKey(usedProperty.PropConfig.Name) ?? false)
+                {
+                    ApiDto.PropertyDto oldProperty = oldPropertiesByName[usedProperty.PropConfig.Name];
+                    newProperty.UpdatedValue = oldProperty.UpdatedValue;
+                }
+                newPropertyList.Add(newProperty);
+            }
+            result.Properties = newPropertyList.ToArray();
         }
+
+        /// <summary>The properties and their indexes.</summary>
+        private Dictionary<string, PropertyRef> m_propertyByName = new Dictionary<string, PropertyRef>();
+        /// <summary>The properties and their indexes.</summary>
+        private List<PropertyRef> m_propertyUsedList = new List<PropertyRef>();
 
         /// <summary>The resources indexed.</summary>
         private Dictionary<string, ResourceRef> m_imageResourcesByName = null;
@@ -50,37 +76,61 @@ namespace NaturalFacade.LayoutConfig.Raw
         /// <summary>Constructor.</summary>
         private RawLayout2Overlay(RawLayoutConfig layoutConfig)
         {
-            if (layoutConfig.Resources == null)
+            if (layoutConfig.Properties?.Any() ?? false)
             {
-                m_imageResourcesByName = new Dictionary<string, ResourceRef>();
-                m_fontResourcesByName = new Dictionary<string, ResourceRef>();
+                m_propertyByName = layoutConfig.Properties.Select(x => new PropertyRef(x)).ToDictionary(x => x.PropConfig.Name);
             }
             else
+            {
+                m_propertyByName = new Dictionary<string, PropertyRef>();
+            }
+            if (layoutConfig.Resources?.Any() ?? false)
             {
                 m_imageResourcesByName = layoutConfig.Resources.Where(x => x.Type == "Image").Select(x => new ResourceRef(x)).ToDictionary(x => x.ResConfig.Name);
                 m_fontResourcesByName = layoutConfig.Resources.Where(x => x.Type == "Font").Select(x => new ResourceRef(x)).ToDictionary(x => x.ResConfig.Name);
             }
-            if (layoutConfig.Fonts == null)
-            {
-                m_fontObjsByName = new Dictionary<string, FontObjResource>();
-            }
             else
+            {
+                m_imageResourcesByName = new Dictionary<string, ResourceRef>();
+                m_fontResourcesByName = new Dictionary<string, ResourceRef>();
+            }
+            if (layoutConfig.Fonts?.Any() ?? false)
             {
                 m_fontObjsByName = layoutConfig.Fonts.Select(x => new FontObjResource(x)).ToDictionary(x => x.Font.Name);
             }
+            else
+            {
+                m_fontObjsByName = new Dictionary<string, FontObjResource>();
+            }
         }
 
-        /// <summary>A resource with a boolean flag for whether it is used or not.</summary>
-        private class Resource
+        /// <summary>A property with a boolean flag for whether it is used or not.</summary>
+        private class PropertyRef
         {
-            public RawLayoutConfigResource ResConfig { get; private set; }
+            public RawLayoutConfigProperty PropConfig { get; private set; }
 
-            public bool IsUsed { get; set; } = false;
+            public int? PropIndex { get; set; }
 
-            public Resource(RawLayoutConfigResource resConfig)
+            public PropertyRef(RawLayoutConfigProperty propConfig)
             {
-                this.ResConfig = resConfig;
+                this.PropConfig = propConfig;
             }
+        }
+
+        /// <summary>Getter for the property with the given name, marking it as used.</summary>
+        private PropertyRef GetPropertyFromName(string name)
+        {
+            if (m_propertyByName.ContainsKey(name) == false)
+            {
+                throw new Exception($"Undefined property '{name}'.");
+            }
+            PropertyRef property = m_propertyByName[name];
+            if (property.PropIndex.HasValue == false)
+            {
+                property.PropIndex = m_propertyUsedList.Count;
+                m_propertyUsedList.Add(property);
+            }
+            return property;
         }
 
         /// <summary>A resource with a boolean flag for whether it is used or not.</summary>
@@ -368,13 +418,54 @@ namespace NaturalFacade.LayoutConfig.Raw
             }
             fontObj.ResIndex = fontFile.ResIndex;
 
-            // Return object
-            return new Dictionary<string, object>
+            // Create object
+            Dictionary<string, object> data = new Dictionary<string, object>
             {
                 { "elTyp", "Text" },
-                { "font", fontObj.FontIndex.Value },
-                { "text", layoutText.Text }
+                { "font", fontObj.FontIndex.Value }
             };
+
+            // Add text or text parameter
+            if (layoutText.TextOp != null)
+            {
+                data.Add("text", ConvertOperation(layoutText.TextOp));
+            }
+            else
+            {
+                data.Add("text", new Dictionary<string, object>
+                {
+                    { "op", "Text" },
+                    { "value", layoutText.Text }
+                });
+            }
+
+            // Return object
+            return data;
+        }
+
+        /// <summary>Creates an overlay element from a layout element.</summary>
+        private Dictionary<string, object> ConvertOperation(RawLayoutConfigOperation operation)
+        {
+            switch (operation.Op)
+            {
+                case "Text":
+                    return new Dictionary<string, object>
+                    {
+                        { "op", "Text" },
+                        { "index", operation.Text }
+                    };
+                case "Prop":
+                    {
+                        PropertyRef property = GetPropertyFromName(operation.Name);
+                        return new Dictionary<string, object>
+                        {
+                            { "op", "Prop" },
+                            { "index", property.PropIndex.Value }
+                        };
+                    }
+                default:
+                    throw new Exception($"Unknown operation type '{operation.Op}'.");
+            }
         }
     }
 }

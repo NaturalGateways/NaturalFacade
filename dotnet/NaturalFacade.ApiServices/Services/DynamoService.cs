@@ -153,10 +153,24 @@ namespace NaturalFacade.Services
         }
 
         /// <summary>Puts a layout config and overlay.</summary>
-        public async Task PutNewLayoutConfigAsync(string layoutId, LayoutConfig.LayoutConfig layoutConfig, object overlay)
+        public async Task<ApiDto.PropertyDto[]> GetOverlayPropertiesAsync(string layoutId)
+        {
+            return await GetItemDataAsync<ApiDto.PropertyDto[]>(layoutId, "OverlayProperties");
+        }
+
+        /// <summary>Puts a layout config and overlay.</summary>
+        public async Task<object[]> GetOverlayPropValuesAsync(string layoutId)
+        {
+            return await GetItemDataAsync<object[]>(layoutId, "PropertyValues");
+        }
+
+        /// <summary>Puts a layout config and overlay.</summary>
+        public async Task PutNewLayoutConfigAsync(string layoutId, LayoutConfig.LayoutConfig layoutConfig, LayoutConfig.Config2LayoutResult convertResult)
         {
             await PutItemAsync(layoutId, "LayoutConfig", layoutConfig);
-            await PutItemAsync(layoutId, "Overlay", overlay);
+            await PutItemAsync(layoutId, "Overlay", convertResult.Overlay);
+            await PutItemAsync(layoutId, "OverlayProperties", convertResult.Properties);
+            await PutItemAsync(layoutId, "OverlayPropValues", convertResult.PropertyValues);
         }
 
         #endregion
