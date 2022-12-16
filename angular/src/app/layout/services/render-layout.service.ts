@@ -28,6 +28,8 @@ export class RenderLayoutService {
   layoutData: LayoutData | undefined;
   rootElementWithBounds: LayoutElementWithBounds | undefined;
 
+  propValues: any;
+
   loadingMessage: string | null = null;
   loadingBackColour: string | null = null;
 
@@ -40,6 +42,11 @@ export class RenderLayoutService {
   {
     this.layoutData = layoutData;
     this.rootElementWithBounds = this.createElementWithBounds(layoutData, layoutData.rootElement);
+  }
+
+  setPropValues(propValues: any)
+  {
+    this.propValues = propValues;
   }
 
   createElementWithBounds(layoutData: LayoutData, element: any): LayoutElementWithBounds
@@ -78,11 +85,13 @@ export class RenderLayoutService {
     {
       return object;
     }
-    if (object.op === "para")
+    if (object.op === "Text")
     {
-      if (layoutData.parameters.has(object.name))
-        return layoutData.parameters.get(object.name)!.value;
-      return "<" + object.name + ">";
+      return object.value;
+    }
+    if (object.op === "Prop")
+    {
+      return this.propValues[object.index];
     }
     if (object.op === "cat")
     {

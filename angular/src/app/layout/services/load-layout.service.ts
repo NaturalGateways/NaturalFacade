@@ -1,13 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 
-import { LayoutApiDto, LayoutApiDtoContainer } from '../model/layout-api-dto';
+import { ConvertedOverlayApiDto, OverlayApiDto, LayoutApiDtoContainer } from '../model/layout-api-dto';
 import { LayoutData, LayoutParameter, LayoutImageResource, LayoutFontResource, LayoutFontConfig } from '../layout-data';
 
 export class LoadLayoutService {
 
   constructor() { }
 
-  loadAllFromJson(apiDto: LayoutApiDto, successCallback: (layoutData: LayoutData) => void, errorCallback: () => void)
+  loadAllFromJson(apiDto: OverlayApiDto, successCallback: (layoutData: LayoutData) => void, errorCallback: () => void)
   {
     // Load data
     var layoutData: LayoutData = this.fromJson(apiDto);
@@ -62,7 +62,7 @@ export class LoadLayoutService {
     return this.fromJson(apiDto.Payload);
   }
 
-  fromJson(apiDto: LayoutApiDto) : LayoutData
+  fromJson(apiDto: OverlayApiDto) : LayoutData
   {
     var layoutData : LayoutData = new LayoutData();
     layoutData.canvasSize = apiDto.canvasSize;

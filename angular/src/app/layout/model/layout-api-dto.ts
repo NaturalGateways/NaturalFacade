@@ -1,8 +1,14 @@
 export class LayoutApiDtoContainer {
-  Payload: LayoutApiDto = new LayoutApiDto();
+  Payload: OverlayApiDto = new OverlayApiDto();
 }
 
-export class LayoutApiDto {
+export class ConvertedOverlayApiDto {
+  overlay: OverlayApiDto | undefined;
+
+  propValues: any;
+}
+
+export class OverlayApiDto {
   canvasSize: any = [];
 
   parameters: { [key: string]: any } = {};

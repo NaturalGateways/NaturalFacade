@@ -67,9 +67,10 @@ export class EditLayoutComponent {
 
       // Load data
       var loadLayoutService : LoadLayoutService = new LoadLayoutService();
-      loadLayoutService.loadAllFromJson(overlayObj, (loadedLayout) =>
+      loadLayoutService.loadAllFromJson(overlayObj.overlay!, (loadedLayout) =>
       {
         this.layoutRender!.loadingMessage = "Success";
+        this.layoutRender!.setPropValues(overlayObj.propValues);
         this.layoutRender!.setLayout(loadedLayout);
         this.layoutRender!.render(true);
         this.previewLayoutJson = this.editedLayoutJson;

@@ -6,7 +6,7 @@ import { environment } from '../../environments/environment';
 import { CognitoService } from '../auth/cognito.service';
 import { CognitoAccessModel } from '../auth/cognito-model';
 
-import { LayoutApiDto } from '../layout/model/layout-api-dto';
+import { ConvertedOverlayApiDto, OverlayApiDto } from '../layout/model/layout-api-dto';
 
 import { BaseResponseDto, BlankResponseDto } from './base-dto';
 import { CurrentUserApiDto } from './api-auth-dto/current-user-api-dto';
@@ -82,12 +82,12 @@ export class ApiService {
     });
   }
 
-  convertLayout(layoutObj: any, successCallback: (overlayObj: LayoutApiDto) => void, errorCallback: () => void)
+  convertLayout(layoutObj: any, successCallback: (overlayObj: ConvertedOverlayApiDto) => void, errorCallback: () => void)
   {
     let url: string = environment.apiUrl + "/anon";
     const headers = new HttpHeaders().set("Content-Type", "application/json");
     var reqBody = {RequestType: "ConvertLayoutToOverlay", LayoutConfig: layoutObj};
-    this.http.post<BaseResponseDto<LayoutApiDto>>(url, reqBody, {headers}).subscribe(resp => {
+    this.http.post<BaseResponseDto<ConvertedOverlayApiDto>>(url, reqBody, {headers}).subscribe(resp => {
       if (resp.Success && resp.Payload !== undefined)
       {
         successCallback(resp.Payload);
@@ -124,11 +124,11 @@ export class ApiService {
     });
   }
 
-  getLayoutOverlay(layoutId: string, successCallback: (layoutObj: LayoutApiDto) => void, errorCallback: () => void)
+  getLayoutOverlay(layoutId: string, successCallback: (layoutObj: OverlayApiDto) => void, errorCallback: () => void)
   {
     let url: string = environment.apiUrl + "/anon?RequestType=GetLayoutOverlay&LayoutId=" + layoutId;
     const headers = new HttpHeaders().set("Content-Type", "application/json");
-    this.http.get<BaseResponseDto<LayoutApiDto>>(url, {headers}).subscribe(resp => {
+    this.http.get<BaseResponseDto<OverlayApiDto>>(url, {headers}).subscribe(resp => {
       if (resp.Success && resp.Payload !== undefined)
       {
         successCallback(resp.Payload);

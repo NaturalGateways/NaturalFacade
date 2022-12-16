@@ -128,7 +128,7 @@
                                     "Margin": 10,
                                     "Element": {
                                       "Rows": {
-                                        "Spacing": 19,
+                                        "Spacing": 15,
                                         "Children": [
                                           {
                                             "Text": {
@@ -285,9 +285,7 @@
                                 "Fit": "None",
                                 "Res": "FakeCam"
                               }
-                            },
-                            "Spacing": 10,
-                            "Margin": 10
+                            }
                           }
                         }
                       }
