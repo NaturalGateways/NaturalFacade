@@ -161,7 +161,7 @@ namespace NaturalFacade.Services
         /// <summary>Puts a layout config and overlay.</summary>
         public async Task<object[]> GetOverlayPropValuesAsync(string layoutId)
         {
-            return await GetItemDataAsync<object[]>(layoutId, "PropertyValues");
+            return await GetItemDataAsync<object[]>(layoutId, "OverlayPropValues");
         }
 
         /// <summary>Puts a layout config and overlay.</summary>
