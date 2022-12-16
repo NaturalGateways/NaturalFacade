@@ -17,6 +17,9 @@ export class ViewOverlayComponent {
 
   layoutRender: RenderLayoutService | undefined;
 
+  updateIndex: number = 0;
+  updatePerFetch: number = 8;
+
   constructor(private route: ActivatedRoute, private apiService: ApiService)
   {
     //
@@ -36,21 +39,42 @@ export class ViewOverlayComponent {
       // Fetch from API
       this.layoutRender!.loadingMessage = "Fetching...";
       this.layoutRender!.render(false);
-      this.apiService.getLayoutOverlay(this.layoutId!, (layoutOverlay) =>
+      this.apiService.getLayoutPropValues(this.layoutId!, (propValues) =>
       {
-        // Set canvas size
-        this.layoutRender!.canvas.width = layoutOverlay.canvasSize[0];
-        this.layoutRender!.canvas.height = layoutOverlay.canvasSize[1];
-
-        // Load layout
-        this.layoutRender!.loadingMessage = "Loading Resources...";
-        this.layoutRender!.render(false);
-        var loadLayoutService : LoadLayoutService = new LoadLayoutService();
-        loadLayoutService.loadAllFromJson(layoutOverlay, (loadedLayout) =>
+        this.apiService.getLayoutOverlay(this.layoutId!, (layoutOverlay) =>
         {
-          this.layoutRender!.loadingMessage = "Success";
-          this.layoutRender!.setLayout(loadedLayout);
-          this.layoutRender!.render(true);
+          // Set canvas size
+          this.layoutRender!.canvas.width = layoutOverlay.canvasSize[0];
+          this.layoutRender!.canvas.height = layoutOverlay.canvasSize[1];
+  
+          // Load layout
+          this.layoutRender!.loadingMessage = "Loading Resources...";
+          this.layoutRender!.render(false);
+          var loadLayoutService : LoadLayoutService = new LoadLayoutService();
+          loadLayoutService.loadAllFromJson(layoutOverlay, (loadedLayout) =>
+          {
+            this.layoutRender!.loadingMessage = "Success";
+            this.layoutRender!.setPropValues(propValues);
+            this.layoutRender!.setLayout(loadedLayout);
+            this.layoutRender!.render(true);
+
+            setInterval(() => {
+              this.updateIndex += 1;
+              if (this.updateIndex == this.updatePerFetch)
+              {
+                this.onFetch();
+                this.updateIndex = 0;
+              }
+              else
+              {
+                this.layoutRender!.render(true);
+              }
+            }, 250);
+          }, () =>
+          {
+            this.layoutRender!.loadingMessage = "Load Error.";
+            this.layoutRender!.render(false);
+          });
         }, () =>
         {
           this.layoutRender!.loadingMessage = "Load Error.";
@@ -62,5 +86,14 @@ export class ViewOverlayComponent {
         this.layoutRender!.render(false);
       });
     });
+  }
+
+  onFetch()
+  {
+    this.apiService.getLayoutPropValues(this.layoutId!, (propValues) =>
+    {
+      this.layoutRender!.setPropValues(propValues);
+      this.layoutRender!.render(true);
+    }, () => { });
   }
 }

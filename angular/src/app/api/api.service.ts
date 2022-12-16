@@ -144,6 +144,26 @@ export class ApiService {
     });
   }
 
+  getLayoutPropValues(layoutId: string, successCallback: (propValues: any) => void, errorCallback: () => void)
+  {
+    let url: string = environment.apiUrl + "/anon?RequestType=GetLayoutOverlayPropValues&LayoutId=" + layoutId;
+    const headers = new HttpHeaders().set("Content-Type", "application/json");
+    this.http.get<BaseResponseDto<any>>(url, {headers}).subscribe(resp => {
+      if (resp.Success && resp.Payload !== undefined)
+      {
+        successCallback(resp.Payload);
+      }
+      else
+      {
+        console.log("Error: " + JSON.stringify(resp));
+        errorCallback();
+      }
+    }, error => {
+      console.log("Error: " + JSON.stringify(error));
+      errorCallback();
+    });
+  }
+
   createLayout(layoutName: string, successCallback: () => void, errorCallback: () => void)
   {
     let url: string = environment.apiUrl + "/auth";
