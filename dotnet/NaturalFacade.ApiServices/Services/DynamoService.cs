@@ -187,6 +187,13 @@ namespace NaturalFacade.Services
             }
         }
 
+        /// <summary>Puts a layout config and overlay.</summary>
+        public async Task PutLayoutPropertyValuesAsync(string layoutId, ApiDto.PropertyDto[] properties, object[] propValues)
+        {
+            await PutItemAsync(layoutId, "OverlayProperties", properties);
+            await PutItemAsync(layoutId, "OverlayPropValues", propValues);
+        }
+
         #endregion
     }
 }

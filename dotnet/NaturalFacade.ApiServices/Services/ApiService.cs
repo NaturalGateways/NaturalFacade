@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,6 +28,8 @@ namespace NaturalFacade.Services
                     return await HandleAnonGetLayoutOverlayPropValuesAsync(dynamoService, requestDto);
                 case ApiDto.AnonRequestType.ConvertLayoutToOverlay:
                     return await HandleAnonConvertLayoutToOverlayAsync(requestDto);
+                case ApiDto.AnonRequestType.ConvertPropertiesToValues:
+                    return HandleAnonConvertPropertiesToValues(requestDto);
                 default:
                     throw new FacadeApiException($"Unrecognised request type: {requestDto.RequestType}");
             }
@@ -100,6 +102,12 @@ namespace NaturalFacade.Services
             return resultData;
         }
 
+        /// <summary>Handle the request.</summary>
+        private static object HandleAnonConvertPropertiesToValues(ApiDto.AnonRequestPayloadDto requestDto)
+        {
+            return LayoutConfig.Properties2Values.GetValuesFromProperties(requestDto.Properties);
+        }
+
         #endregion
 
         #region Auth endpoint
@@ -124,6 +132,8 @@ namespace NaturalFacade.Services
                     return await HandleAuthGetLayoutControlsAsync(dynamoService, requestDto);
                 case ApiDto.AuthRequestType.PutLayout:
                     return await HandleAuthPutLayoutAsync(dynamoService, requestDto);
+                case ApiDto.AuthRequestType.PutLayoutProperties:
+                    return await HandleAuthPutLayoutPropertiesAsync(dynamoService, requestDto);
                 default:
                     throw new FacadeApiException($"Unrecognised request type: {requestDto.payload.RequestType}");
             }
@@ -301,6 +311,35 @@ namespace NaturalFacade.Services
                 {
                     LayoutId = layoutId,
                     LayoutConfig = requestDto.payload.PutLayout.LayoutConfig
+                }
+            };
+            await dynamoService.PutActionAsync(userId, layoutId, action);
+            return await ActionService.ProcessActionAsync(dynamoService, action, true);
+        }
+
+        /// <summary>Handle the request.</summary>
+        private static async Task<object> HandleAuthPutLayoutPropertiesAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
+        {
+            // Get IDs
+            string userId = requestDto.context.userId;
+            string layoutId = requestDto.payload.PutLayoutProperties.LayoutId;
+
+            // Fetch summary
+            ItemModel.ItemLayoutSummary summary = await dynamoService.GetLayoutSummaryAsync(layoutId);
+            // Check creator
+            if (summary.CreatorUserId != userId)
+            {
+                throw new Exception("User is not authorised to view layout.");
+            }
+
+            // Run action
+            ActionModel.Action action = new ActionModel.Action
+            {
+                AuthType = ActionModel.ActionType.PutLayoutProperties,
+                PutLayoutProperties = new ActionModel.ActionPutLayoutProperties
+                {
+                    LayoutId = layoutId,
+                    Properties = requestDto.payload.PutLayoutProperties.Props
                 }
             };
             await dynamoService.PutActionAsync(userId, layoutId, action);

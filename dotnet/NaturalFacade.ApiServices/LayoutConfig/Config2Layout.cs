@@ -34,14 +34,7 @@ namespace NaturalFacade.LayoutConfig
             }
 
             // Compile property values
-            if (result.Properties?.Any() ?? false)
-            {
-                result.PropertyValues = result.Properties.Select(x => x.UpdatedValue ?? x.DefaultValue).ToArray();
-            }
-            else
-            {
-                result.PropertyValues = null;
-            }
+            result.PropertyValues = Properties2Values.GetValuesFromProperties(result.Properties);
 
             // Return
             return result;

@@ -1,3 +1,4 @@
+using NaturalFacade.LayoutConfig;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,9 @@ namespace NaturalFacade.Services
                     return await ProcessCreateLayoutActionAsync(dynamoService, action.CreateLayout, createResponse);
                 case ActionModel.ActionType.PutLayout:
                     await ProcessPutLayoutActionAsync(dynamoService, action.PutLayout);
+                    return null;
+                case ActionModel.ActionType.PutLayoutProperties:
+                    await ProcessPutLayoutPropertiesActionAsync(dynamoService, action.PutLayoutProperties);
                     return null;
                 default:
                     throw new Exception($"Cannot handle action type '{action.AuthType.ToString()}'.");
@@ -91,6 +95,25 @@ namespace NaturalFacade.Services
 
             // Save
             await dynamoService.PutNewLayoutConfigAsync(action.LayoutId, summary, action.LayoutConfig, convertResult);
+        }
+
+        private static async Task ProcessPutLayoutPropertiesActionAsync(DynamoService dynamoService, ActionModel.ActionPutLayoutProperties action)
+        {
+            // Get existing properties
+            ApiDto.PropertyDto[] properties = await dynamoService.GetOverlayPropertiesAsync(action.LayoutId);
+
+            // Apply changes
+            foreach (ApiDto.AuthPutLayoutPropertiesRequestDtoProp newProperty in action.Properties)
+            {
+                ApiDto.PropertyDto existingProperty = properties[newProperty.PropertyIndex];
+                existingProperty.UpdatedValue = newProperty.StringValue;
+            }
+
+            // Create new values
+            object[] propValues = Properties2Values.GetValuesFromProperties(properties);
+
+            // Save
+            await dynamoService.PutLayoutPropertyValuesAsync(action.LayoutId, properties, propValues);
         }
     }
 }

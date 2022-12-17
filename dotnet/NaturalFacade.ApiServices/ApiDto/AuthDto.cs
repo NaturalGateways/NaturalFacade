@@ -21,7 +21,8 @@ namespace NaturalFacade.ApiDto
         CreateLayout,
         GetLayout,
         GetLayoutControls,
-        PutLayout
+        PutLayout,
+        PutLayoutProperties
     }
 
     public class AuthRequestPayloadDto
@@ -37,6 +38,8 @@ namespace NaturalFacade.ApiDto
         public AuthGetLayoutControlsRequestDto GetLayoutControls { get; set; }
 
         public AuthPutLayoutRequestDto PutLayout { get; set; }
+
+        public AuthPutLayoutPropertiesRequestDto PutLayoutProperties { get; set; }
     }
 
     #endregion
@@ -86,6 +89,24 @@ namespace NaturalFacade.ApiDto
         public string LayoutId { get; set; }
 
         public LayoutConfig.LayoutConfig LayoutConfig { get; set; }
+    }
+
+    #endregion
+
+    #region PutLayoutProperties
+
+    public class AuthPutLayoutPropertiesRequestDto
+    {
+        public string LayoutId { get; set; }
+
+        public AuthPutLayoutPropertiesRequestDtoProp[] Props { get; set; }
+    }
+
+    public class AuthPutLayoutPropertiesRequestDtoProp
+    {
+        public int PropertyIndex { get; set; }
+
+        public string StringValue { get; set; }
     }
 
     #endregion
