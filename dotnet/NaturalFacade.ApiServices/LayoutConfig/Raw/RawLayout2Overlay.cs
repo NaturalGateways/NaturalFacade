@@ -51,6 +51,9 @@ namespace NaturalFacade.LayoutConfig.Raw
                 newPropertyList.Add(newProperty);
             }
             result.Properties = newPropertyList.ToArray();
+
+            // Convert controls
+            result.ControlsArray = layoutConfig.Controls?.Select(x => instance.ConvertControls(x))?.ToArray();
         }
 
         /// <summary>The properties and their indexes.</summary>
@@ -466,6 +469,44 @@ namespace NaturalFacade.LayoutConfig.Raw
                 default:
                     throw new Exception($"Unknown operation type '{operation.Op}'.");
             }
+        }
+
+        /// <summary>Converts a controls object.</summary>
+        private ItemModel.ItemLayoutControlsData ConvertControls(RawLayoutConfigControls srcControls)
+        {
+            return new ItemModel.ItemLayoutControlsData
+            {
+                Name = srcControls.Name,
+                Fields = srcControls.Fields.Select(x => ConvertControlsField(x)).Where(x => x != null).ToArray()
+            };
+        }
+
+        /// <summary>Converts a controls object.</summary>
+        private ItemModel.ItemLayoutControlsField ConvertControlsField(RawLayoutConfigControlsField srcField)
+        {
+            // Get property
+            if (string.IsNullOrEmpty(srcField.PropName))
+            {
+                throw new Exception("Prop name for a controls field must be provided.");
+            }
+            if (m_propertyByName.ContainsKey(srcField.PropName) == false)
+            {
+                throw new Exception($"Prop name '{srcField.PropName}' not found.");
+            }
+            PropertyRef propertyRef = m_propertyByName[srcField.PropName];
+            if (propertyRef.PropIndex.HasValue == false)
+            {
+                return null;
+            }
+
+            // Create field
+            ItemModel.ItemLayoutControlsField destField = new ItemModel.ItemLayoutControlsField
+            {
+                PropIndex = propertyRef.PropIndex.Value,
+                AllowTextEdit = srcField.AllowTextEdit,
+                Options = srcField.Options
+            };
+            return destField;
         }
     }
 }

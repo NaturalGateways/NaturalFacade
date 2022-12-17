@@ -19,6 +19,8 @@ namespace NaturalFacade.ItemModel
         public bool HasDraft { get; set; } = false;
 
         public bool HasRelease { get; set; } = false;
+
+        public string[] ControlsNameArray { get; set; }
     }
 
     public class ItemLayoutSecurity

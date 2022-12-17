@@ -1,300 +1,340 @@
 {
-  "RequestType": "PutLayout",
-  "PutLayout": {
-    "LayoutId": "Layout-55e23f3a-2db9-44c3-ab38-9e457ffbfeae",
-    "Config": {
-      "LayoutType": "Raw",
-      "Name": "Twitch",
-      "Raw": {
-        "Properties": [
-          {
-            "Name": "Hero",
-            "Type": "String",
-            "DefaultValue": "DefHero"
-          },
-          {
-            "Name": "Biome",
-            "Type": "String",
-            "DefaultValue": "DefBiome"
-          },
-          {
-            "Name": "Phase",
-            "Type": "String",
-            "DefaultValue": "DefPhase"
-          }
-        ],
-        "Resources": [
-          {
-            "Name": "StaticBacking",
-            "Type": "Image",
-            "Url": "https://httpsorigin.s3.amazonaws.com/https/Overlay/StaticBacking.webp"
-          },
-          {
-            "Name": "BgLight",
-            "Type": "Image",
-            "Url": "https://httpsorigin.s3.amazonaws.com/https/Overlay/UIWoodLight.jpg"
-          },
-          {
-            "Name": "BgDark",
-            "Type": "Image",
-            "Url": "https://httpsorigin.s3.amazonaws.com/https/Overlay/UIWoodDark.jpg"
-          },
-          {
-            "Name": "GameCover",
-            "Type": "Image",
-            "Url": "https://httpsorigin.s3.amazonaws.com/https/Overlay/GameCover.jpg"
-          },
-          {
-            "Name": "FakeCam",
-            "Type": "Image",
-            "Url": "https://httpsorigin.s3.amazonaws.com/https/Overlay/FakeCam.png"
-          },
-          {
-            "Name": "NorseFont",
-            "Type": "Font",
-            "Url": "https://httpsorigin.s3.amazonaws.com/https/Overlay/Norse.otf"
-          }
-        ],
-        "Fonts": [
-          {
-            "Name": "AttTitle",
-            "FontRes": "NorseFont",
-            "Size": "38px",
-            "Colour": "#e9d26c",
-            "Align": "Centre"
-          },
-          {
-            "Name": "AttLabel",
-            "FontRes": "NorseFont",
-            "Size": "28px",
-            "Colour": "#e9d26c",
-            "Align": "Left"
-          },
-          {
-            "Name": "AttValue",
-            "FontRes": "NorseFont",
-            "Size": "28px",
-            "Colour": "#e9d26c",
-            "Align": "Right"
-          }
-        ],
-        "RootElement": {
-          "Stack": {
-            "Children": [
-              {
-                "Element": {
-                  "Image": {
-                    "Fit": "None",
-                    "Res": "StaticBacking"
-                  }
+  "LayoutId": "Layout-55e23f3a-2db9-44c3-ab38-9e457ffbfeae",
+  "Config": {
+    "LayoutType": "Raw",
+    "Name": "Twitch",
+    "Raw": {
+      "Properties": [
+        {
+          "Name": "Hero",
+          "Type": "String",
+          "DefaultValue": "DefHero"
+        },
+        {
+          "Name": "Biome",
+          "Type": "String",
+          "DefaultValue": "DefBiome"
+        },
+        {
+          "Name": "Phase",
+          "Type": "String",
+          "DefaultValue": "DefPhase"
+        }
+      ],
+      "Controls": [
+        {
+          "Name": "Admin",
+          "Fields": [
+            {
+              "PropName": "Hero",
+              "AllowTextEdit": true
+            }
+          ]
+        },
+        {
+          "Name": "Live",
+          "Fields": [
+            {
+              "PropName": "Biome",
+              "Options": [
+                "Meadows",
+                "Forest",
+                "Swamp",
+                "Mountains",
+                "Plains",
+                "Mistlands"
+              ]
+            },
+            {
+              "PropName": "Phase",
+              "Options": [
+                "starting Out",
+                "Building Base",
+                "Arming and Dressing",
+                "Hunting Eikthyr",
+                "Mining Bronze",
+                "Exploring",
+                "Hunting Elder",
+                "Finding Trader",
+                "Mining Iron",
+                "Hunting Bonemass"
+              ],
+              "AllowTextEdit": true
+            }
+          ]
+        }
+      ],
+      "Resources": [
+        {
+          "Name": "StaticBacking",
+          "Type": "Image",
+          "Url": "https://httpsorigin.s3.amazonaws.com/https/Overlay/StaticBacking.webp"
+        },
+        {
+          "Name": "BgLight",
+          "Type": "Image",
+          "Url": "https://httpsorigin.s3.amazonaws.com/https/Overlay/UIWoodLight.jpg"
+        },
+        {
+          "Name": "BgDark",
+          "Type": "Image",
+          "Url": "https://httpsorigin.s3.amazonaws.com/https/Overlay/UIWoodDark.jpg"
+        },
+        {
+          "Name": "GameCover",
+          "Type": "Image",
+          "Url": "https://httpsorigin.s3.amazonaws.com/https/Overlay/GameCover.jpg"
+        },
+        {
+          "Name": "FakeCam",
+          "Type": "Image",
+          "Url": "https://httpsorigin.s3.amazonaws.com/https/Overlay/FakeCam.png"
+        },
+        {
+          "Name": "NorseFont",
+          "Type": "Font",
+          "Url": "https://httpsorigin.s3.amazonaws.com/https/Overlay/Norse.otf"
+        }
+      ],
+      "Fonts": [
+        {
+          "Name": "AttTitle",
+          "FontRes": "NorseFont",
+          "Size": "38px",
+          "Colour": "#e9d26c",
+          "Align": "Centre"
+        },
+        {
+          "Name": "AttLabel",
+          "FontRes": "NorseFont",
+          "Size": "28px",
+          "Colour": "#e9d26c",
+          "Align": "Left"
+        },
+        {
+          "Name": "AttValue",
+          "FontRes": "NorseFont",
+          "Size": "28px",
+          "Colour": "#e9d26c",
+          "Align": "Right"
+        }
+      ],
+      "RootElement": {
+        "Stack": {
+          "Children": [
+            {
+              "Element": {
+                "Image": {
+                  "Fit": "None",
+                  "Res": "StaticBacking"
                 }
-              },
-              {
-                "HAlign": "Right",
-                "Element": {
-                  "Stack": {
-                    "Children": [
-                      {
-                        "Element": {
-                          "Image": {
-                            "Fit": "Tiled",
-                            "Res": "BgLight"
-                          }
+              }
+            },
+            {
+              "HAlign": "Right",
+              "Element": {
+                "Stack": {
+                  "Children": [
+                    {
+                      "Element": {
+                        "Image": {
+                          "Fit": "Tiled",
+                          "Res": "BgLight"
                         }
-                      },
-                      {
-                        "Element": {
-                          "VFloat": {
-                            "Spacing": 10,
-                            "Margin": 10,
-                            "Top": {
-                              "Image": {
-                                "Fit": "None",
-                                "Res": "GameCover"
-                              }
-                            },
-                            "Middle": {
-                              "Stack": {
-                                "Children": [
-                                  {
-                                    "Element": {
-                                      "Image": {
-                                        "Fit": "Tiled",
-                                        "Res": "BgDark"
-                                      }
+                      }
+                    },
+                    {
+                      "Element": {
+                        "VFloat": {
+                          "Spacing": 10,
+                          "Margin": 10,
+                          "Top": {
+                            "Image": {
+                              "Fit": "None",
+                              "Res": "GameCover"
+                            }
+                          },
+                          "Middle": {
+                            "Stack": {
+                              "Children": [
+                                {
+                                  "Element": {
+                                    "Image": {
+                                      "Fit": "Tiled",
+                                      "Res": "BgDark"
                                     }
-                                  },
-                                  {
-                                    "Margin": 10,
-                                    "Element": {
-                                      "Rows": {
-                                        "Spacing": 15,
-                                        "Children": [
-                                          {
-                                            "Text": {
-                                              "Font": "AttTitle",
-                                              "Text": "Valheim"
-                                            }
-                                          },
-                                          {
-                                            "HFloat": {
-                                              "Left": {
-                                                "Text": {
-                                                  "Font": "AttLabel",
-                                                  "Text": "Permadeath Run"
-                                                }
-                                              },
-                                              "Right": {
-                                                "Text": {
-                                                  "Font": "AttValue",
-                                                  "Text": "Placeholder"
-                                                }
+                                  }
+                                },
+                                {
+                                  "Margin": 10,
+                                  "Element": {
+                                    "Rows": {
+                                      "Spacing": 15,
+                                      "Children": [
+                                        {
+                                          "Text": {
+                                            "Font": "AttTitle",
+                                            "Text": "Valheim"
+                                          }
+                                        },
+                                        {
+                                          "HFloat": {
+                                            "Left": {
+                                              "Text": {
+                                                "Font": "AttLabel",
+                                                "Text": "Permadeath Run"
+                                              }
+                                            },
+                                            "Right": {
+                                              "Text": {
+                                                "Font": "AttValue",
+                                                "Text": "Placeholder"
                                               }
                                             }
-                                          },
-                                          {
-                                            "HFloat": {
-                                              "Left": {
-                                                "Text": {
-                                                  "Font": "AttLabel",
-                                                  "Text": "Hero"
-                                                }
-                                              },
-                                              "Right": {
-                                                "Text": {
-                                                  "Font": "AttValue",
-                                                  "TextOp": {
-                                                    "Op": "Prop",
-                                                    "Name": "Hero"
-                                                  }
-                                                }
+                                          }
+                                        },
+                                        {
+                                          "HFloat": {
+                                            "Left": {
+                                              "Text": {
+                                                "Font": "AttLabel",
+                                                "Text": "Hero"
                                               }
-                                            }
-                                          },
-                                          {
-                                            "HFloat": {
-                                              "Left": {
-                                                "Text": {
-                                                  "Font": "AttLabel",
-                                                  "Text": "Total Time"
-                                                }
-                                              },
-                                              "Right": {
-                                                "Text": {
-                                                  "Font": "AttValue",
-                                                  "Text": "Placeholder"
-                                                }
-                                              }
-                                            }
-                                          },
-                                          {
-                                            "HFloat": {
-                                              "Left": {
-                                                "Text": {
-                                                  "Font": "AttLabel",
-                                                  "Text": "Session Time"
-                                                }
-                                              },
-                                              "Right": {
-                                                "Text": {
-                                                  "Font": "AttValue",
-                                                  "Text": "Placeholder"
-                                                }
-                                              }
-                                            }
-                                          },
-                                          {
-                                            "HFloat": {
-                                              "Left": {
-                                                "Text": {
-                                                  "Font": "AttLabel",
-                                                  "Text": "Longest Run"
-                                                }
-                                              },
-                                              "Right": {
-                                                "Text": {
-                                                  "Font": "AttValue",
-                                                  "Text": "Placeholder"
-                                                }
-                                              }
-                                            }
-                                          },
-                                          {
-                                            "HFloat": {
-                                              "Left": {
-                                                "Text": {
-                                                  "Font": "AttLabel",
-                                                  "Text": "Biome"
-                                                }
-                                              },
-                                              "Right": {
-                                                "Text": {
-                                                  "Font": "AttValue",
-                                                  "TextOp": {
-                                                    "Op": "Prop",
-                                                    "Name": "Biome"
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          },
-                                          {
-                                            "HFloat": {
-                                              "Left": {
-                                                "Text": {
-                                                  "Font": "AttLabel",
-                                                  "Text": "Phase"
-                                                }
-                                              },
-                                              "Right": {
-                                                "Text": {
-                                                  "Font": "AttValue",
-                                                  "TextOp": {
-                                                    "Op": "Prop",
-                                                    "Name": "Phase"
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          },
-                                          {
-                                            "HFloat": {
-                                              "Left": {
-                                                "Text": {
-                                                  "Font": "AttLabel",
-                                                  "Text": "Close calls"
-                                                }
-                                              },
-                                              "Right": {
-                                                "Text": {
-                                                  "Font": "AttValue",
-                                                  "Text": "Placeholder"
+                                            },
+                                            "Right": {
+                                              "Text": {
+                                                "Font": "AttValue",
+                                                "TextOp": {
+                                                  "Op": "Prop",
+                                                  "Name": "Hero"
                                                 }
                                               }
                                             }
                                           }
-                                        ]
-                                      }
+                                        },
+                                        {
+                                          "HFloat": {
+                                            "Left": {
+                                              "Text": {
+                                                "Font": "AttLabel",
+                                                "Text": "Total Time"
+                                              }
+                                            },
+                                            "Right": {
+                                              "Text": {
+                                                "Font": "AttValue",
+                                                "Text": "Placeholder"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "HFloat": {
+                                            "Left": {
+                                              "Text": {
+                                                "Font": "AttLabel",
+                                                "Text": "Session Time"
+                                              }
+                                            },
+                                            "Right": {
+                                              "Text": {
+                                                "Font": "AttValue",
+                                                "Text": "Placeholder"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "HFloat": {
+                                            "Left": {
+                                              "Text": {
+                                                "Font": "AttLabel",
+                                                "Text": "Longest Run"
+                                              }
+                                            },
+                                            "Right": {
+                                              "Text": {
+                                                "Font": "AttValue",
+                                                "Text": "Placeholder"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "HFloat": {
+                                            "Left": {
+                                              "Text": {
+                                                "Font": "AttLabel",
+                                                "Text": "Biome"
+                                              }
+                                            },
+                                            "Right": {
+                                              "Text": {
+                                                "Font": "AttValue",
+                                                "TextOp": {
+                                                  "Op": "Prop",
+                                                  "Name": "Biome"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "HFloat": {
+                                            "Left": {
+                                              "Text": {
+                                                "Font": "AttLabel",
+                                                "Text": "Phase"
+                                              }
+                                            },
+                                            "Right": {
+                                              "Text": {
+                                                "Font": "AttValue",
+                                                "TextOp": {
+                                                  "Op": "Prop",
+                                                  "Name": "Phase"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "HFloat": {
+                                            "Left": {
+                                              "Text": {
+                                                "Font": "AttLabel",
+                                                "Text": "Close calls"
+                                              }
+                                            },
+                                            "Right": {
+                                              "Text": {
+                                                "Font": "AttValue",
+                                                "Text": "Placeholder"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      ]
                                     }
                                   }
-                                ]
-                              }
-                            },
-                            "Bottom": {
-                              "Image": {
-                                "Fit": "None",
-                                "Res": "FakeCam"
-                              }
+                                }
+                              ]
+                            }
+                          },
+                          "Bottom": {
+                            "Image": {
+                              "Fit": "None",
+                              "Res": "FakeCam"
                             }
                           }
                         }
                       }
-                    ]
-                  }
+                    }
+                  ]
                 }
               }
-            ]
-          }
+            }
+          ]
         }
       }
     }

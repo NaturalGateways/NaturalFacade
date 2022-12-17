@@ -83,12 +83,14 @@ namespace NaturalFacade.Services
         {
             // Get existing properties
             ApiDto.PropertyDto[] properties = await dynamoService.GetOverlayPropertiesAsync(action.LayoutId);
+            ItemModel.ItemLayoutSummary summary = await dynamoService.GetLayoutSummaryAsync(action.LayoutId);
 
             // Convert layout
             LayoutConfig.Config2LayoutResult convertResult = LayoutConfig.Config2Layout.Convert(action.LayoutConfig, properties);
+            summary.ControlsNameArray = convertResult.ControlsArray?.Select(x => x.Name)?.ToArray();
 
             // Save
-            await dynamoService.PutNewLayoutConfigAsync(action.LayoutId, action.LayoutConfig, convertResult);
+            await dynamoService.PutNewLayoutConfigAsync(action.LayoutId, summary, action.LayoutConfig, convertResult);
         }
     }
 }

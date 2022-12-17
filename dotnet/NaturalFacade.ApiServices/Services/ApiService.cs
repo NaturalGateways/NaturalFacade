@@ -88,11 +88,16 @@ namespace NaturalFacade.Services
         private static async Task<object> HandleAnonConvertLayoutToOverlayAsync(ApiDto.AnonRequestPayloadDto requestDto)
         {
             LayoutConfig.Config2LayoutResult result = LayoutConfig.Config2Layout.Convert(requestDto.LayoutConfig, null);
-            return new Dictionary<string, object>
+            Dictionary<string, object> resultData = new Dictionary<string, object>
             {
                 { "overlay", result.Overlay },
                 { "propValues", result.PropertyValues }
             };
+            if (result.ControlsArray?.Any() ?? false)
+            {
+                resultData.Add("controls", result.ControlsArray);
+            }
+            return resultData;
         }
 
         #endregion
@@ -115,6 +120,8 @@ namespace NaturalFacade.Services
                     return await HandleAuthCreateLayoutAsync(dynamoService, requestDto);
                 case ApiDto.AuthRequestType.GetLayout:
                     return await HandleAuthGetLayoutAsync(dynamoService, requestDto);
+                case ApiDto.AuthRequestType.GetLayoutControls:
+                    return await HandleAuthGetLayoutControlsAsync(dynamoService, requestDto);
                 case ApiDto.AuthRequestType.PutLayout:
                     return await HandleAuthPutLayoutAsync(dynamoService, requestDto);
                 default:
@@ -231,6 +238,44 @@ namespace NaturalFacade.Services
 
             // Get layout config
             return await dynamoService.GetLayoutConfigAsync(layoutId);
+        }
+
+        /// <summary>Handle the request.</summary>
+        private static async Task<object> HandleAuthGetLayoutControlsAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
+        {
+            // Get IDs
+            string userId = requestDto.context.userId;
+            string layoutId = requestDto.payload.GetLayoutControls.LayoutId;
+            int controlsIndex = requestDto.payload.GetLayoutControls.ControlsIndex;
+
+            // Fetch summary
+            ItemModel.ItemLayoutSummary summary = await dynamoService.GetLayoutSummaryAsync(layoutId);
+            // Check creator
+            if (summary.CreatorUserId != userId)
+            {
+                throw new Exception("User is not authorised to view layout.");
+            }
+
+            // Fetch controls
+            ItemModel.ItemLayoutControlsData controls = await dynamoService.GetOverlayControlsAsync(layoutId, controlsIndex);
+            if (controls == null)
+            {
+                throw new Exception($"Controls at index {controlsIndex} don't exist.");
+            }
+
+            // Fetch properties
+            ApiDto.PropertyDto[] properties = await dynamoService.GetOverlayPropertiesAsync(layoutId);
+            if (properties == null)
+            {
+                throw new Exception($"Controls at index {controlsIndex} don't exist.");
+            }
+
+            // Get layout config
+            return new Dictionary<string, object>
+            {
+                { "controls", controls },
+                { "properties", properties }
+            };
         }
 
         /// <summary>Handle the request.</summary>

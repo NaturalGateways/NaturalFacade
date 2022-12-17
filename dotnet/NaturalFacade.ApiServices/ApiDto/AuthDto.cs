@@ -20,6 +20,7 @@ namespace NaturalFacade.ApiDto
         GetLayoutSummaryPage,
         CreateLayout,
         GetLayout,
+        GetLayoutControls,
         PutLayout
     }
 
@@ -32,6 +33,8 @@ namespace NaturalFacade.ApiDto
         public AuthCreateLayoutRequestDto CreateLayout { get; set; }
 
         public AuthGetLayoutRequestDto GetLayout { get; set; }
+
+        public AuthGetLayoutControlsRequestDto GetLayoutControls { get; set; }
 
         public AuthPutLayoutRequestDto PutLayout { get; set; }
     }
@@ -61,6 +64,17 @@ namespace NaturalFacade.ApiDto
     public class AuthGetLayoutRequestDto
     {
         public string LayoutId { get; set; }
+    }
+
+    #endregion
+
+    #region GetLayoutControls
+
+    public class AuthGetLayoutControlsRequestDto
+    {
+        public string LayoutId { get; set; }
+
+        public int ControlsIndex { get; set; }
     }
 
     #endregion

@@ -12,6 +12,8 @@ namespace NaturalFacade.LayoutConfig.Raw
 
         public RawLayoutConfigProperty[] Properties { get; set; }
 
+        public RawLayoutConfigControls[] Controls { get; set; }
+
         public RawLayoutConfigResource[] Resources { get; set; }
 
         public RawLayoutConfigFont[] Fonts { get; set; }
@@ -26,6 +28,24 @@ namespace NaturalFacade.LayoutConfig.Raw
         public string Type { get; set; }
 
         public object DefaultValue { get; set; }
+    }
+
+    public class RawLayoutConfigControls
+    {
+        public string Name { get; set; }
+
+        public RawLayoutConfigControlsField[] Fields { get; set; }
+    }
+
+    public class RawLayoutConfigControlsField
+    {
+        public string Label { get; set; }
+
+        public string PropName { get; set; }
+
+        public bool AllowTextEdit { get; set; } = false;
+
+        public string[] Options { get; set; }
     }
 
     public class RawLayoutConfigResource

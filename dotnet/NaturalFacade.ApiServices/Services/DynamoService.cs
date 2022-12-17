@@ -165,12 +165,26 @@ namespace NaturalFacade.Services
         }
 
         /// <summary>Puts a layout config and overlay.</summary>
-        public async Task PutNewLayoutConfigAsync(string layoutId, LayoutConfig.LayoutConfig layoutConfig, LayoutConfig.Config2LayoutResult convertResult)
+        public async Task<ItemModel.ItemLayoutControlsData> GetOverlayControlsAsync(string layoutId, int controlsIndex)
         {
+            return await GetItemDataAsync<ItemModel.ItemLayoutControlsData>(layoutId, $"OverlayControls{controlsIndex:D2}");
+        }
+
+        /// <summary>Puts a layout config and overlay.</summary>
+        public async Task PutNewLayoutConfigAsync(string layoutId, ItemModel.ItemLayoutSummary summary, LayoutConfig.LayoutConfig layoutConfig, LayoutConfig.Config2LayoutResult convertResult)
+        {
+            await PutItemAsync(layoutId, "Summary", summary);
             await PutItemAsync(layoutId, "LayoutConfig", layoutConfig);
             await PutItemAsync(layoutId, "Overlay", convertResult.Overlay);
             await PutItemAsync(layoutId, "OverlayProperties", convertResult.Properties);
             await PutItemAsync(layoutId, "OverlayPropValues", convertResult.PropertyValues);
+            if (convertResult.ControlsArray?.Any() ?? false)
+            {
+                for (int controlsIndex = 0; controlsIndex != convertResult.ControlsArray.Length; ++controlsIndex)
+                {
+                    await PutItemAsync(layoutId, $"OverlayControls{controlsIndex:D2}", convertResult.ControlsArray[controlsIndex]);
+                }
+            }
         }
 
         #endregion
