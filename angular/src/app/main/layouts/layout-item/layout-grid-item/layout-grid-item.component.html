@@ -1,0 +1,13 @@
+<div class="layout-grid-item card">
+    <div class="layout-grid-item-content">
+        <div class="layout-name">{{item!.Name}}</div>
+        <div class="layout-datetime">{{item!.CreatedDate}}</div>
+        <div class="layout-datetime">{{item!.CreatedTime}}</div>
+        <div class="layout-grid-actions">
+            <button pButton pRipple type="button" icon="pi pi-pencil" class="p-button-rounded action-button" routerLink="/main/layouts/edit" [queryParams]="{layoutId: item!.LayoutId}"></button>
+            <button pButton pRipple type="button" icon="pi pi-search" class="p-button-rounded p-button-secondary action-button" (click)="onViewOverlay()"></button>
+            <button pButton pRipple type="button" icon="pi pi-sliders-v" class="p-button-rounded p-button-secondary action-button" *ngIf="0 < (item?.ControlsMenuItems?.length ?? 0)" (click)="onViewControlsForLayout($event, controlsCM)"></button>
+            <p-contextMenu #controlsCM [model]="item!.ControlsMenuItems"></p-contextMenu>
+        </div>
+    </div>
+</div>

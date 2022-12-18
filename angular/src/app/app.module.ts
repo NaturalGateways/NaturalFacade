@@ -29,6 +29,8 @@ import { AdminComponent } from './admin/admin.component';
 import { ViewCurrentUserComponent } from './admin/view-current-user/view-current-user.component';
 import { CreateLayoutComponent } from './main/layouts/create-layout/create-layout.component';
 import { EditLayoutComponent } from './main/layouts/edit-layout/edit-layout.component';
+import { LayoutGridItemComponent } from './main/layouts/layout-item/layout-grid-item/layout-grid-item.component';
+import { LayoutListItemComponent } from './main/layouts/layout-item/layout-list-item/layout-list-item.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +43,9 @@ import { EditLayoutComponent } from './main/layouts/edit-layout/edit-layout.comp
     AdminComponent,
     ViewCurrentUserComponent,
     CreateLayoutComponent,
-    EditLayoutComponent
+    EditLayoutComponent,
+    LayoutGridItemComponent,
+    LayoutListItemComponent
   ],
   imports: [
     BrowserModule,

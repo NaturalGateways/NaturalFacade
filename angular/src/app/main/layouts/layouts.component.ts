@@ -1,15 +1,11 @@
 import { Component } from '@angular/core';
 
+import { MenuItem } from 'primeng/api';
+import { ContextMenu } from 'primeng/contextmenu';
+
 import { ApiService } from '../../api/api.service';
 
-import { LayoutSummaryApiDto } from '../../api/api-auth-dto/layout-summary-api-dto';
-
-export class LayoutItem {
-  LayoutId: string = "";
-  Name: string = "";
-  CreatedDate: string = "";
-  CreatedTime: string = "";
-}
+import { LayoutItem, LayoutItemControls } from './layout-item/layout-item-data';
 
 @Component({
   selector: 'app-layouts',
@@ -31,6 +27,19 @@ export class LayoutsComponent {
         var dateTime = new Date(element.CreatedDateTime);
         layoutItem.CreatedDate = dateTime.toLocaleDateString();
         layoutItem.CreatedTime = dateTime.toLocaleTimeString();
+        if (element.ControlsNameArray !== null && element.ControlsNameArray !== undefined)
+        {
+          element.ControlsNameArray.forEach((controlsName) =>
+          {
+            var controlsMenuItems : MenuItem =
+            {
+              label: controlsName,
+              icon:'pi pi-fw pi-sliders-v',
+              command: e => this.onViewControlsAtIndex(layoutItem.LayoutId, layoutItem.ControlsMenuItems.length)
+            };
+            layoutItem.ControlsMenuItems.push(controlsMenuItems);
+          });
+        }
         layoutItems.push(layoutItem);
       });
       this.layouts = layoutItems;
@@ -40,9 +49,8 @@ export class LayoutsComponent {
     });
   }
 
-  onViewOverlay(layoutId: string)
+  onViewControlsAtIndex(layoutId: string, controlsIndex: number)
   {
-    var newUrl : string = window.location.protocol + "//" + window.location.host + "/overlay?layoutId=" + layoutId;
-    window.open(newUrl, "_blank");
+    console.log("Layout: " + layoutId + ", " + controlsIndex);
   }
 }

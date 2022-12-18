@@ -1,0 +1,43 @@
+.layout-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.layout-datetime {
+    font-size: 1.0rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.layout-list-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    width: 100%;
+}
+
+.layout-list-title {
+    flex: 0 1 0;
+}
+
+.layout-list-datetime {
+    flex: 0 1 0;
+}
+
+.layout-list-actions {
+    display: flex;
+    flex: 0 1 0;
+}
+
+.layout-list-actions .action-button {
+    flex: auto 1 0;
+}
+
+.action-button {
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+}
+
+.layout-list-spacer {
+    flex: 1 1 0;
+}

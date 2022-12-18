@@ -9,4 +9,6 @@ export class LayoutSummaryApiDto
   HasDraft: boolean = false;
   
   HasRelease: boolean = false;
+
+  ControlsNameArray: string[] = [];
 }
