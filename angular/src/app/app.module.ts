@@ -31,6 +31,8 @@ import { CreateLayoutComponent } from './main/layouts/create-layout/create-layou
 import { EditLayoutComponent } from './main/layouts/edit-layout/edit-layout.component';
 import { LayoutGridItemComponent } from './main/layouts/layout-item/layout-grid-item/layout-grid-item.component';
 import { LayoutListItemComponent } from './main/layouts/layout-item/layout-list-item/layout-list-item.component';
+import { EditControlsComponent } from './main/layouts/edit-controls/edit-controls.component';
+import { EditControlsFieldComponent } from './main/layouts/edit-controls/edit-controls-field/edit-controls-field.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +47,9 @@ import { LayoutListItemComponent } from './main/layouts/layout-item/layout-list-
     CreateLayoutComponent,
     EditLayoutComponent,
     LayoutGridItemComponent,
-    LayoutListItemComponent
+    LayoutListItemComponent,
+    EditControlsComponent,
+    EditControlsFieldComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,20 @@
+.fieldLabel {
+    font-size: x-large;
+    font-weight: bold;
+}
+
+.fieldValue {
+    font-size: large;
+    vertical-align: middle;
+}
+
+.inputRow {
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;
+    width: 100%;
+}
+
+.rightSaveButton {
+    flex: 0 0 auto;
+    margin-left: 1em;
+}

@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { MenuItem } from 'primeng/api';
-import { ContextMenu } from 'primeng/contextmenu';
 
 import { ApiService } from '../../api/api.service';
 
-import { LayoutItem, LayoutItemControls } from './layout-item/layout-item-data';
+import { LayoutItem } from './layout-item/layout-item-data';
 
 @Component({
   selector: 'app-layouts',
@@ -16,7 +16,7 @@ export class LayoutsComponent {
 
   layouts: LayoutItem[] = [];
 
-  constructor(private apiService: ApiService) {
+  constructor(private router: Router, private apiService: ApiService) {
     this.apiService.getLayoutPage((layouts) =>
     {
       var layoutItems: LayoutItem[] = [];
@@ -31,11 +31,12 @@ export class LayoutsComponent {
         {
           element.ControlsNameArray.forEach((controlsName) =>
           {
+            var controlsIndex : number = layoutItem.ControlsMenuItems.length;
             var controlsMenuItems : MenuItem =
             {
               label: controlsName,
               icon:'pi pi-fw pi-sliders-v',
-              command: e => this.onViewControlsAtIndex(layoutItem.LayoutId, layoutItem.ControlsMenuItems.length)
+              command: e => this.onViewControlsAtIndex(layoutItem.LayoutId, controlsIndex)
             };
             layoutItem.ControlsMenuItems.push(controlsMenuItems);
           });
@@ -51,6 +52,6 @@ export class LayoutsComponent {
 
   onViewControlsAtIndex(layoutId: string, controlsIndex: number)
   {
-    console.log("Layout: " + layoutId + ", " + controlsIndex);
+      this.router.navigateByUrl('/main/layouts/controls/edit?layoutId=' + layoutId + '&controlsIndex=' + controlsIndex);
   }
 }
