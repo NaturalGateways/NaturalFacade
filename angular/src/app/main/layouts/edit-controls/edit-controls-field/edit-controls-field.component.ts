@@ -3,6 +3,8 @@ import { Component, Input } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { ContextMenu } from 'primeng/contextmenu';
 
+import { ApiService } from '../../../../api/api.service';
+
 import { EditControlsField } from '../edit-controls-model';
 
 @Component({
@@ -11,7 +13,10 @@ import { EditControlsField } from '../edit-controls-model';
   styleUrls: ['./edit-controls-field.component.css']
 })
 export class EditControlsFieldComponent {
+  @Input() layoutId : string | undefined;
   @Input() field : EditControlsField | undefined;
+
+  isSaving: boolean = false;
 
   fieldLabel : string | undefined;
   fieldValue : string | undefined;
@@ -22,9 +27,18 @@ export class EditControlsFieldComponent {
   freeTextVisible : boolean = false;
   freeTextText : string | undefined;
 
+  constructor(private apiService: ApiService)
+  {
+    //
+  }
+
   ngOnInit(): void {
     this.fieldLabel = this.field!.property.Name;
-    this.fieldValue = this.field!.property.DefaultValue;
+    this.fieldValue = this.field!.property.UpdatedValue;
+    if (this.fieldValue === undefined || this.fieldValue === null)
+    {
+      this.fieldValue = this.field!.property.DefaultValue;
+    }
 
     if (this.field!.control.Options !== undefined && this.field!.control.Options !== null)
     {
@@ -34,7 +48,8 @@ export class EditControlsFieldComponent {
         var controlsMenuItems : MenuItem =
         {
           label: optionValue,
-          icon:'pi pi-fw pi-stop'
+          icon:'pi pi-fw pi-stop',
+          command: e => this.saveString(optionValue)
         };
         this.optionsModel.push(controlsMenuItems);
       });
@@ -53,6 +68,21 @@ export class EditControlsFieldComponent {
 
   saveFreeText()
   {
-    //
+    this.saveString(this.freeTextText!);
+  }
+
+  saveString(stringValue: string)
+  {
+    this.isSaving = true;
+    var propIndex: number = this.field!.control.PropIndex;
+    this.apiService.putLayoutPropertyValue(this.layoutId!, propIndex, stringValue, () =>
+    {
+      this.fieldValue = stringValue;
+      this.freeTextText = stringValue;
+      this.isSaving = false;
+    }, () =>
+    {
+      this.isSaving = false;
+    });
   }
 }

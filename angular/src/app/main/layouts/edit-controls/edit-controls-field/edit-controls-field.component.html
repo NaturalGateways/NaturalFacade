@@ -5,7 +5,7 @@
         <div class="flex flex-row">
             <div class="flex-1"><label class="fieldValue">{{fieldValue}}</label></div>
             <div class="rightSaveButton">
-                <button pButton pRipple type="button" icon="pi pi-th-large" class="p-button" (click)="onShowContextMenu($event, optionsCM)"></button>
+                <button pButton pRipple type="button" icon="pi pi-th-large" class="p-button" [disabled]="isSaving" (click)="onShowContextMenu($event, optionsCM)"></button>
                 <p-contextMenu #optionsCM [model]="optionsModel!"></p-contextMenu>
             </div>
         </div>
@@ -14,7 +14,7 @@
     <div class="inputRow" *ngIf="freeTextVisible">
         <div class="flex flex-row">
             <input class="flex-1" type="text" pInputText [(ngModel)]="freeTextText">
-            <div class="rightSaveButton"><button pButton pRipple type="button" icon="pi pi-save" class="p-button" [disabled]="freeTextText === fieldValue" (click)="saveFreeText()"></button></div>
+            <div class="rightSaveButton"><button pButton pRipple type="button" icon="pi pi-save" class="p-button" [disabled]="freeTextText === fieldValue || isSaving" (click)="saveFreeText()"></button></div>
         </div>
     </div>
 </div>

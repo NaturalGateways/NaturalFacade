@@ -2,7 +2,7 @@
     <div class="flex-1"></div>
     <p-card class="flex-auto card" *ngIf="isLoaded">
         <form>
-            <app-edit-controls-field *ngFor="let field of fields" [field]="field"></app-edit-controls-field>
+            <app-edit-controls-field *ngFor="let field of fields" [layoutId]="layoutId!" [field]="field"></app-edit-controls-field>
     
             <p-divider></p-divider>
     

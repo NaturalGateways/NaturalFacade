@@ -176,4 +176,10 @@ export class ApiService {
     var reqBody = {RequestType: "PutLayout", PutLayout: {LayoutId:layoutId,LayoutConfig:JSON.parse(layoutConfigString)}};
     this.executeAuthPostNoResponse(reqBody, successCallback, errorCallback);
   }
+
+  putLayoutPropertyValue(layoutId: string, propertyIndex: number, stringValue: string, successCallback: () => void, errorCallback: () => void)
+  {
+    var reqBody = {RequestType: "PutLayoutPropertyValue", PutLayoutPropertyValue: {LayoutId:layoutId,PropertyIndex:propertyIndex,StringValue:stringValue}};
+    this.executeAuthPostNoResponse(reqBody, successCallback, errorCallback);
+  }
 }
