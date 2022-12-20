@@ -11,8 +11,7 @@ namespace NaturalFacade.ActionModel
         CreateUser,
         UpdateUser,
         CreateLayout,
-        PutLayout,
-        PutLayoutProperties
+        PutLayout
     }
 
     public class Action
@@ -27,8 +26,6 @@ namespace NaturalFacade.ActionModel
 
         public ActionPutLayout PutLayout { get; set; }
 
-        public ActionPutLayoutProperties PutLayoutProperties { get; set; }
-
         public object AsMinimalObject()
         {
             switch (this.AuthType)
@@ -41,8 +38,6 @@ namespace NaturalFacade.ActionModel
                     return this.CreateLayout;
                 case ActionType.PutLayout:
                     return this.PutLayout;
-                case ActionType.PutLayoutProperties:
-                    return this.PutLayoutProperties;
                 default:
                     throw new Exception("Cannot create minimal object of action.");
             }
@@ -77,12 +72,5 @@ namespace NaturalFacade.ActionModel
         public string LayoutId { get; set; }
 
         public LayoutConfig.LayoutConfig LayoutConfig { get; set; }
-    }
-
-    public class ActionPutLayoutProperties
-    {
-        public string LayoutId { get; set; }
-
-        public ApiDto.AuthPutLayoutPropertiesRequestDtoProp[] Properties { get; set; }
     }
 }

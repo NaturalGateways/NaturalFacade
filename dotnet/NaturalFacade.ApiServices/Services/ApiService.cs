@@ -132,8 +132,8 @@ namespace NaturalFacade.Services
                     return await HandleAuthGetLayoutControlsAsync(dynamoService, requestDto);
                 case ApiDto.AuthRequestType.PutLayout:
                     return await HandleAuthPutLayoutAsync(dynamoService, requestDto);
-                case ApiDto.AuthRequestType.PutLayoutProperties:
-                    return await HandleAuthPutLayoutPropertiesAsync(dynamoService, requestDto);
+                case ApiDto.AuthRequestType.PutLayoutPropertyValue:
+                    return await HandleAuthPutLayoutPropertyValueAsync(dynamoService, requestDto);
                 default:
                     throw new FacadeApiException($"Unrecognised request type: {requestDto.payload.RequestType}");
             }
@@ -318,11 +318,12 @@ namespace NaturalFacade.Services
         }
 
         /// <summary>Handle the request.</summary>
-        private static async Task<object> HandleAuthPutLayoutPropertiesAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
+        private static async Task<object> HandleAuthPutLayoutPropertyValueAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
         {
             // Get IDs
             string userId = requestDto.context.userId;
-            string layoutId = requestDto.payload.PutLayoutProperties.LayoutId;
+            string layoutId = requestDto.payload.PutLayoutPropertyValue.LayoutId;
+            int propertyIndex = requestDto.payload.PutLayoutPropertyValue.PropertyIndex;
 
             // Fetch summary
             ItemModel.ItemLayoutSummary summary = await dynamoService.GetLayoutSummaryAsync(layoutId);
@@ -332,18 +333,27 @@ namespace NaturalFacade.Services
                 throw new Exception("User is not authorised to view layout.");
             }
 
-            // Run action
-            ActionModel.Action action = new ActionModel.Action
+            // Get existing properties
+            ApiDto.PropertyDto[] properties = await dynamoService.GetOverlayPropertiesAsync(layoutId);
+            if (properties == null)
             {
-                AuthType = ActionModel.ActionType.PutLayoutProperties,
-                PutLayoutProperties = new ActionModel.ActionPutLayoutProperties
-                {
-                    LayoutId = layoutId,
-                    Properties = requestDto.payload.PutLayoutProperties.Props
-                }
-            };
-            await dynamoService.PutActionAsync(userId, layoutId, action);
-            return await ActionService.ProcessActionAsync(dynamoService, action, true);
+                throw new Exception("Cannot find properties.");
+            }
+            if ((properties?.Length ?? 0) <= propertyIndex)
+            {
+                throw new Exception("Cannot find property.");
+            }
+
+            // Apply changes
+            ApiDto.PropertyDto existingProperty = properties[propertyIndex];
+            existingProperty.UpdatedValue = requestDto.payload.PutLayoutPropertyValue.StringValue;
+
+            // Create new values
+            object[] propValues = LayoutConfig.Properties2Values.GetValuesFromProperties(properties);
+
+            // Save
+            await dynamoService.PutLayoutPropertyValuesAsync(layoutId, properties, propValues);
+            return null;
         }
 
         #endregion
