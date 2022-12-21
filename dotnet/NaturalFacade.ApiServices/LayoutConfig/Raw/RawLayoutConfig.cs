@@ -46,6 +46,15 @@ namespace NaturalFacade.LayoutConfig.Raw
         public bool AllowTextEdit { get; set; } = false;
 
         public string[] Options { get; set; }
+
+        public RawLayoutConfigControlsFieldSwitch Switch { get; set; }
+    }
+
+    public class RawLayoutConfigControlsFieldSwitch
+    {
+        public string FalseLabel { get; set; }
+
+        public string TrueLabel { get; set; }
     }
 
     public class RawLayoutConfigResource

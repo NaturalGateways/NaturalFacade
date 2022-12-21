@@ -520,7 +520,19 @@ namespace NaturalFacade.LayoutConfig.Raw
                 AllowTextEdit = srcField.AllowTextEdit,
                 Options = srcField.Options
             };
+            if (srcField.Switch != null)
+                destField.Switch = ConvertControlsFieldSwitch(srcField.Switch);
             return destField;
+        }
+
+        /// <summary>Converts a controls object.</summary>
+        private ItemModel.ItemLayoutControlsFieldSwitch ConvertControlsFieldSwitch(RawLayoutConfigControlsFieldSwitch srcSwitch)
+        {
+            return new ItemModel.ItemLayoutControlsFieldSwitch
+            {
+                FalseLabel = srcSwitch.FalseLabel,
+                TrueLabel = srcSwitch.TrueLabel
+            };
         }
     }
 }

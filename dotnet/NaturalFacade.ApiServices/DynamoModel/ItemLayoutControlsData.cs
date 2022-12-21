@@ -20,5 +20,14 @@ namespace NaturalFacade.ItemModel
         public bool AllowTextEdit { get; set; } = false;
 
         public string[] Options { get; set; }
+
+        public ItemLayoutControlsFieldSwitch Switch { get; set; }
+    }
+
+    public class ItemLayoutControlsFieldSwitch
+    {
+        public string FalseLabel { get; set; }
+
+        public string TrueLabel { get; set; }
     }
 }

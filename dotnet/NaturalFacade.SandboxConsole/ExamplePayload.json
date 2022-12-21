@@ -39,7 +39,11 @@
         "Fields": [
           {
             "PropName": "ShowBacking",
-            "Label": "Show Backing"
+            "Label": "Show Backing",
+            "Switch": {
+              "FalseLabel": "Hidden",
+              "TrueLabel": "Showing"
+            }
           },
           {
             "PropName": "Biome",
