@@ -167,6 +167,20 @@ namespace NaturalFacade.LayoutConfig.Raw
         /// <summary>Creates an overlay element from a layout element.</summary>
         private Dictionary<string, object> ConvertElement(RawLayoutConfigElement layoutElement)
         {
+            // Convert for specific type
+            Dictionary<string, object> overlayObject = ConvertElementType(layoutElement);
+
+            // Check rules
+            if (layoutElement.IsVisibleOp != null)
+                overlayObject.Add("isVisible", ConvertOperation(layoutElement.IsVisibleOp));
+
+            // Return
+            return overlayObject;
+        }
+        
+        /// <summary>Creates an overlay element from a layout element of a specfic type.</summary>
+        private Dictionary<string, object> ConvertElementType(RawLayoutConfigElement layoutElement)
+        {
             if (layoutElement.HFloat != null)
                 return ConvertHFloatElement(layoutElement.HFloat);
             if (layoutElement.Rows != null)

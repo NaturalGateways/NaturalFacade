@@ -72,6 +72,9 @@ namespace NaturalFacade.LayoutConfig.Raw
 
     public class RawLayoutConfigElement
     {
+        // Common props
+        public RawLayoutConfigOperation IsVisibleOp { get; set; }
+
         // Layouts
         public RawLayoutConfigElementHFloat HFloat { get; set; }
         public RawLayoutConfigElementRows Rows { get; set; }
