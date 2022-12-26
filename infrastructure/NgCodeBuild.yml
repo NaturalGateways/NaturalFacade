@@ -11,6 +11,11 @@ phases:
       - echo Installing source NPM dependencies...
       - cd angular && npm install --force
       - npm install -g @angular/cli
+  pre_build:
+    commands:
+      - "json=$(jq -n --arg cci \"$COGNITO_CLIENT_ID\" --arg cu \"$COGNITO_URL\" '{production: true, cognitoClientId: $cci, cognitoUrl: $cu }')"
+      - "script=\"export const environment = $json ;\""
+      - echo $script > src/environments/environment.prod.ts
   build:
     commands:
       - echo Build started on `date`

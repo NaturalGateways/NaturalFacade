@@ -20,7 +20,7 @@ import { LayoutControlsApiDto } from './api-dto/layout-controls-api-dto';
 })
 export class ApiService {
 
-  constructor(public settingsService: SettingsService, public cognitoService: CognitoService, private http: HttpClient) { }
+  constructor(private settingsService: SettingsService, public cognitoService: CognitoService, private http: HttpClient) { }
 
   executeAnonGetWithResponse<ResponseDto>(queryParams: string, successCallback: (response: ResponseDto) => void, errorCallback: () => void)
   {

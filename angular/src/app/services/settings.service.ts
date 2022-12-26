@@ -29,4 +29,21 @@ export class SettingsService {
       callback(data.apiUrl);
     });
   }
+
+  getCognitoCallbackUrl(callback: (apiUrl: string) => void)
+  {
+    // Check config is loaded
+    var config = this.config;
+    if (config !== null)
+    {
+      callback(config.cognitoCallbackUrl);
+      return;
+    }
+
+    // Get config
+    this.http.get<any>("./assets/config.json").subscribe(data => {
+      this.config = data;
+      callback(data.cognitoCallbackUrl);
+    });
+  }
 }

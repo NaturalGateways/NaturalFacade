@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 
-import {ContextMenu} from 'primeng/contextmenu';
-import {MenuItem} from 'primeng/api';
+import { SettingsService } from '../services/settings.service';
+
+import { ContextMenu } from 'primeng/contextmenu';
+import { MenuItem } from 'primeng/api';
 
 import { CognitoService, CognitoServiceAuthStatus } from './../auth/cognito.service';
 
@@ -17,7 +19,7 @@ export class RootComponent {
 
   contextMenuItems: MenuItem[] = [];
 
-  constructor(public cognitoService: CognitoService)
+  constructor(private settingsService: SettingsService, public cognitoService: CognitoService)
   {
     this.contextMenuItems = [
       {
@@ -55,12 +57,18 @@ export class RootComponent {
 
   onRegisterClicked()
   {
-    location.href = this.cognitoService.registerUrl;
+    this.settingsService.getCognitoCallbackUrl((callbackUrl) =>
+    {
+      location.href = this.cognitoService.getRegisterUrl(callbackUrl);
+    });
   }
 
   onLoginClicked()
   {
-    location.href = this.cognitoService.signInUrl;
+    this.settingsService.getCognitoCallbackUrl((callbackUrl) =>
+    {
+      location.href = this.cognitoService.getLoginUrl(callbackUrl);
+    });
   }
 
   onUserClicked(event: MouseEvent, contextMenu: ContextMenu): void {
