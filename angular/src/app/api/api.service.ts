@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { environment } from '../../environments/environment';
+import { SettingsService } from '../services/settings.service';
 
 import { CognitoService } from '../auth/cognito.service';
 import { CognitoAccessModel } from '../auth/cognito-model';
@@ -20,106 +20,121 @@ import { LayoutControlsApiDto } from './api-dto/layout-controls-api-dto';
 })
 export class ApiService {
 
-  constructor(public cognitoService: CognitoService, private http: HttpClient) { }
+  constructor(public settingsService: SettingsService, public cognitoService: CognitoService, private http: HttpClient) { }
 
   executeAnonGetWithResponse<ResponseDto>(queryParams: string, successCallback: (response: ResponseDto) => void, errorCallback: () => void)
   {
-    let url: string = environment.apiUrl + "/anon?" + queryParams;
-    const headers = new HttpHeaders().set("Content-Type", "application/json");
-    this.http.get<BaseResponseDto<ResponseDto>>(url, {headers}).subscribe(resp => {
-      if (resp.Success && resp.Payload !== undefined)
-      {
-        successCallback(resp.Payload);
-      }
-      else
-      {
-        console.log("Error: " + JSON.stringify(resp));
+    this.settingsService.getApiUrl((apiUrl) =>
+    {
+      let url: string = apiUrl + "/anon?" + queryParams;
+      const headers = new HttpHeaders().set("Content-Type", "application/json");
+      this.http.get<BaseResponseDto<ResponseDto>>(url, {headers}).subscribe(resp => {
+        if (resp.Success && resp.Payload !== undefined)
+        {
+          successCallback(resp.Payload);
+        }
+        else
+        {
+          console.log("Error: " + JSON.stringify(resp));
+          errorCallback();
+        }
+      }, error => {
+        console.log("Error: " + JSON.stringify(error));
         errorCallback();
-      }
-    }, error => {
-      console.log("Error: " + JSON.stringify(error));
-      errorCallback();
+      });
     });
   }
 
   executeAnonPostWithResponse<ResponseDto>(reqBody: any, successCallback: (response: ResponseDto) => void, errorCallback: () => void)
   {
-    let url: string = environment.apiUrl + "/anon";
-    const headers = new HttpHeaders().set("Content-Type", "application/json");
-    this.http.post<BaseResponseDto<ResponseDto>>(url, reqBody, {headers}).subscribe(resp => {
-      if (resp.Success && resp.Payload !== undefined)
-      {
-        successCallback(resp.Payload);
-      }
-      else
-      {
-        console.log("Error: " + JSON.stringify(resp));
+    this.settingsService.getApiUrl((apiUrl) =>
+    {
+      let url: string = apiUrl + "/anon";
+      const headers = new HttpHeaders().set("Content-Type", "application/json");
+      this.http.post<BaseResponseDto<ResponseDto>>(url, reqBody, {headers}).subscribe(resp => {
+        if (resp.Success && resp.Payload !== undefined)
+        {
+          successCallback(resp.Payload);
+        }
+        else
+        {
+          console.log("Error: " + JSON.stringify(resp));
+          errorCallback();
+        }
+      }, error => {
+        console.log("Error: " + JSON.stringify(error));
         errorCallback();
-      }
-    }, error => {
-      console.log("Error: " + JSON.stringify(error));
-      errorCallback();
+      });
     });
   }
 
   executeAuthPostNoResponse(reqBody: any, successCallback: () => void, errorCallback: () => void)
   {
-    let url: string = environment.apiUrl + "/auth";
-    const headers = new HttpHeaders().set("Content-Type", "application/json").set("Authorization", this.cognitoService.apiAuthModel?.access.idToken!);
-    this.http.post<BlankResponseDto>(url, reqBody, {headers}).subscribe(resp => {
-      if (resp.Success)
-      {
-        successCallback();
-      }
-      else
-      {
-        console.log("Error: " + JSON.stringify(resp));
+    this.settingsService.getApiUrl((apiUrl) =>
+    {
+      let url: string = apiUrl + "/auth";
+      const headers = new HttpHeaders().set("Content-Type", "application/json").set("Authorization", this.cognitoService.apiAuthModel?.access.idToken!);
+      this.http.post<BlankResponseDto>(url, reqBody, {headers}).subscribe(resp => {
+        if (resp.Success)
+        {
+          successCallback();
+        }
+        else
+        {
+          console.log("Error: " + JSON.stringify(resp));
+          errorCallback();
+        }
+      }, error => {
+        console.log("Error: " + JSON.stringify(error));
         errorCallback();
-      }
-    }, error => {
-      console.log("Error: " + JSON.stringify(error));
-      errorCallback();
+      });
     });
   }
 
   executeAuthPostWithResponse<ResponseDto>(reqBody: any, successCallback: (response: ResponseDto) => void, errorCallback: () => void)
   {
-    let url: string = environment.apiUrl + "/auth";
-    const headers = new HttpHeaders().set("Content-Type", "application/json").set("Authorization", this.cognitoService.apiAuthModel?.access.idToken!);
-    this.http.post<BaseResponseDto<ResponseDto>>(url, reqBody, {headers}).subscribe(resp => {
-      if (resp.Success && resp.Payload !== undefined)
-      {
-        successCallback(resp.Payload);
-      }
-      else
-      {
-        console.log("Error: " + JSON.stringify(resp));
+    this.settingsService.getApiUrl((apiUrl) =>
+    {
+      let url: string = apiUrl + "/auth";
+      const headers = new HttpHeaders().set("Content-Type", "application/json").set("Authorization", this.cognitoService.apiAuthModel?.access.idToken!);
+      this.http.post<BaseResponseDto<ResponseDto>>(url, reqBody, {headers}).subscribe(resp => {
+        if (resp.Success && resp.Payload !== undefined)
+        {
+          successCallback(resp.Payload);
+        }
+        else
+        {
+          console.log("Error: " + JSON.stringify(resp));
+          errorCallback();
+        }
+      }, error => {
+        console.log("Error: " + JSON.stringify(error));
         errorCallback();
-      }
-    }, error => {
-      console.log("Error: " + JSON.stringify(error));
-      errorCallback();
+      });
     });
   }
 
   getCurrentUser(cognitoAccessModel: CognitoAccessModel, successCallback: (response: CurrentUserApiDto) => void, errorCallback: () => void)
   {
-    let url: string = environment.apiUrl + "/auth";
-    const headers = new HttpHeaders().set("Content-Type", "application/json").set("Authorization", cognitoAccessModel.idToken);
-    var reqBody = {RequestType: "GetCurrentUser"};
-    this.http.post<BaseResponseDto<CurrentUserApiDto>>(url, reqBody, {headers}).subscribe(resp => {
-      if (resp.Success && resp.Payload !== undefined)
-      {
-        successCallback(resp.Payload);
-      }
-      else
-      {
-        console.log("Error: " + JSON.stringify(resp));
+    this.settingsService.getApiUrl((apiUrl) =>
+    {
+      let url: string = apiUrl + "/auth";
+      const headers = new HttpHeaders().set("Content-Type", "application/json").set("Authorization", cognitoAccessModel.idToken);
+      var reqBody = {RequestType: "GetCurrentUser"};
+      this.http.post<BaseResponseDto<CurrentUserApiDto>>(url, reqBody, {headers}).subscribe(resp => {
+        if (resp.Success && resp.Payload !== undefined)
+        {
+          successCallback(resp.Payload);
+        }
+        else
+        {
+          console.log("Error: " + JSON.stringify(resp));
+          errorCallback();
+        }
+      }, error => {
+        console.log("Error: " + JSON.stringify(error));
         errorCallback();
-      }
-    }, error => {
-      console.log("Error: " + JSON.stringify(error));
-      errorCallback();
+      });
     });
   }
 

@@ -1,0 +1,26 @@
+version: 0.2
+
+env:
+  variables:
+    VERSION: 0.0.0
+  git-credential-helper: yes
+
+phases:
+  install:
+    commands:
+      - echo Installing source NPM dependencies...
+      - cd angular && npm install
+      - npm install -g @angular/cli
+  build:
+    commands:
+      - echo Build started on `date`
+      - ng build -c production
+  post_build:
+    commands:
+      - git tag "ngbuilds/$VERSION"
+      - git push origin --tags
+artifacts:
+  files:
+    - '**/*'
+  name: $VERSION.zip
+  base-directory: angular/dist/natural-facade

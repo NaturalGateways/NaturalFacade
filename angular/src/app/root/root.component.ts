@@ -3,7 +3,6 @@ import { Component } from '@angular/core';
 import {ContextMenu} from 'primeng/contextmenu';
 import {MenuItem} from 'primeng/api';
 
-import { ApiService } from './../api/api.service';
 import { CognitoService, CognitoServiceAuthStatus } from './../auth/cognito.service';
 
 @Component({
@@ -18,7 +17,7 @@ export class RootComponent {
 
   contextMenuItems: MenuItem[] = [];
 
-  constructor(public cognitoService: CognitoService, public apiService: ApiService)
+  constructor(public cognitoService: CognitoService)
   {
     this.contextMenuItems = [
       {

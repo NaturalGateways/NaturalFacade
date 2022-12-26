@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import {MenuItem} from 'primeng/api';
+import { MenuItem } from 'primeng/api';
 
 import { CognitoService, CognitoServiceAuthStatus } from '../auth/cognito.service';
 
