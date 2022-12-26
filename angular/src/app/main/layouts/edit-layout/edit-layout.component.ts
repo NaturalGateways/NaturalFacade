@@ -97,7 +97,7 @@ export class EditLayoutComponent {
     // Do fetch
     this.apiService.putLayout(this.layoutId!, this.previewLayoutJson!, () =>
     {
-      this.router.navigate(['/main/layouts']);
+      this.router.navigate(['/layouts']);
       this.isBusy = false;
     }, () =>
     {

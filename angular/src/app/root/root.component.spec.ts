@@ -1,20 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TestCanvasComponent } from './test-canvas.component';
+import { RootComponent } from './root.component';
 
-describe('TestCanvasComponent', () => {
-  let component: TestCanvasComponent;
-  let fixture: ComponentFixture<TestCanvasComponent>;
+describe('RootComponent', () => {
+  let component: RootComponent;
+  let fixture: ComponentFixture<RootComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TestCanvasComponent ]
+      declarations: [ RootComponent ]
     })
     .compileComponents();
-  });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(TestCanvasComponent);
+    fixture = TestBed.createComponent(RootComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

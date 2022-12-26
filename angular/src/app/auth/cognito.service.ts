@@ -50,7 +50,7 @@ export class CognitoService {
       this.authentication = CognitoServiceAuthStatus.Authenticated;
       if (environment.production)
       {
-        this.router.navigate(['/main/dashboard']);
+        this.router.navigate(['/dashboard']);
       }
     }
   }

@@ -20,7 +20,6 @@ import {ToggleButtonModule} from 'primeng/togglebutton';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MainComponent } from './main/main.component';
-import { TestCanvasComponent } from './test-canvas/test-canvas.component';
 
 import { LayoutModule } from './layout/layout.module';
 import { LoginComponent } from './auth/login/login.component';
@@ -34,12 +33,12 @@ import { LayoutGridItemComponent } from './main/layouts/layout-item/layout-grid-
 import { LayoutListItemComponent } from './main/layouts/layout-item/layout-list-item/layout-list-item.component';
 import { EditControlsComponent } from './main/layouts/edit-controls/edit-controls.component';
 import { EditControlsFieldComponent } from './main/layouts/edit-controls/edit-controls-field/edit-controls-field.component';
+import { RootComponent } from './root/root.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MainComponent,
-    TestCanvasComponent,
     LoginComponent,
     LayoutsComponent,
     DashboardComponent,
@@ -50,7 +49,8 @@ import { EditControlsFieldComponent } from './main/layouts/edit-controls/edit-co
     LayoutGridItemComponent,
     LayoutListItemComponent,
     EditControlsComponent,
-    EditControlsFieldComponent
+    EditControlsFieldComponent,
+    RootComponent
   ],
   imports: [
     BrowserModule,

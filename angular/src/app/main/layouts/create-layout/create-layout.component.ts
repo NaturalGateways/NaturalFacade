@@ -40,7 +40,7 @@ export class CreateLayoutComponent {
     // Send layout
     this.apiService.createLayout(this.layoutName, () =>
     {
-      this.router.navigate(['/main/layouts']);
+      this.router.navigate(['/layouts']);
       this.isSubmitting = false;
     }, () =>
     {

@@ -7,9 +7,4 @@ import { Component } from '@angular/core';
 })
 export class DashboardComponent {
 
-
-  onTestCanvas()
-  {
-    location.href = '/testcanvas';
-  }
 }

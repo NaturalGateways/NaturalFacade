@@ -52,7 +52,7 @@ export class LayoutsComponent {
 
   onViewControlsAtIndex(layoutId: string, controlsIndex: number)
   {
-    var newUrl : string = window.location.protocol + "//" + window.location.host + "/main/layouts/controls/edit?layoutId=" + layoutId + "&controlsIndex=" + controlsIndex;
+    var newUrl : string = window.location.protocol + "//" + window.location.host + "/layouts/controls/edit?layoutId=" + layoutId + "&controlsIndex=" + controlsIndex;
     window.open(newUrl, "_blank");
   }
 }

@@ -19,8 +19,8 @@ export class MainComponent implements OnInit {
   constructor(public cognitoService: CognitoService) {
     // Create nav items
     this.navItems = [
-      { label: 'Home', icon: 'pi pi-fw pi-home', routerLink: "/main/dashboard" },
-      { label: 'Layouts', icon: 'pi pi-fw pi-file', routerLink: "/main/layouts" }
+      { label: 'Home', icon: 'pi pi-fw pi-home', routerLink: "/dashboard" },
+      { label: 'Layouts', icon: 'pi pi-fw pi-file', routerLink: "/layouts" }
     ];
     this.navActiveItem = this.navItems[0];
   }

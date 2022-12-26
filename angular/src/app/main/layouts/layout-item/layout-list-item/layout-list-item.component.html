@@ -9,7 +9,7 @@
     </div>
     <div class="layout-list-spacer"></div>
     <div class="layout-list-actions">
-        <button pButton pRipple type="button" icon="pi pi-pencil" class="p-button-rounded action-button" routerLink="/main/layouts/edit" [queryParams]="{layoutId: item!.LayoutId}"></button>
+        <button pButton pRipple type="button" icon="pi pi-pencil" class="p-button-rounded action-button" routerLink="/layouts/edit" [queryParams]="{layoutId: item!.LayoutId}"></button>
         <button pButton pRipple type="button" icon="pi pi-search" class="p-button-rounded p-button-secondary action-button" (click)="onViewOverlay()"></button>
         <button pButton pRipple type="button" icon="pi pi-sliders-v" class="p-button-rounded p-button-secondary action-button" *ngIf="0 < (item?.ControlsMenuItems?.length ?? 0)" (click)="onViewControlsForLayout($event, controlsCM)"></button>
         <p-contextMenu #controlsCM [model]="item!.ControlsMenuItems"></p-contextMenu>
