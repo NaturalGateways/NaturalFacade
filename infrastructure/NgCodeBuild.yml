@@ -9,7 +9,7 @@ phases:
   install:
     commands:
       - echo Installing source NPM dependencies...
-      - cd angular && npm install
+      - cd angular && npm install --force
       - npm install -g @angular/cli
   build:
     commands:
