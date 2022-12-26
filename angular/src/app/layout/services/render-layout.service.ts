@@ -104,6 +104,18 @@ export class RenderLayoutService {
     return object;
   }
 
+  checkCondition(condition: any, defaultValue: boolean) {
+    if (condition === undefined || condition == null)
+    {
+      return defaultValue;
+    }
+    if (condition.op === "Prop")
+    {
+      return this.propValues[condition.index];
+    }
+    return defaultValue;
+  }
+
   setTransform(actWidth: number, actHeight: number)
   {
     var canWidth: number = this.layoutData!.canvasSize[0];
@@ -622,6 +634,13 @@ export class RenderLayoutService {
 
   renderElement(elementWithBounds: LayoutElementWithBounds)
   {
+    // Check we need to render
+    if (this.checkCondition(elementWithBounds.element.isVisible, true) == false)
+    {
+      return;
+    }
+
+    // Render depending on type
     switch (elementWithBounds.element.elTyp)
     {
       // Layouts

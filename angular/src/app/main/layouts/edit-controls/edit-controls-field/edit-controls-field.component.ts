@@ -19,7 +19,14 @@ export class EditControlsFieldComponent {
   isSaving: boolean = false;
 
   fieldLabel : string | undefined;
-  fieldValue : string | undefined;
+  fieldStringValue : string | null = null;
+  fieldBoolValue : boolean | null = null;
+
+  switchVisible : boolean = false;
+  switchFalseLabel : string = "False";
+  switchTrueLabel : string = "True";
+  switchSavedValue : boolean = false;
+  switchEditedValue : boolean = false;
 
   optionsVisible : boolean = false;
   optionsModel : MenuItem[] = [];
@@ -33,13 +40,39 @@ export class EditControlsFieldComponent {
   }
 
   ngOnInit(): void {
-    this.fieldLabel = this.field!.property.Name;
-    this.fieldValue = this.field!.property.UpdatedValue;
-    if (this.fieldValue === undefined || this.fieldValue === null)
+    this.fieldLabel = this.field!.control.Label;
+    var fieldValue : any = this.field!.property.UpdatedValue ?? this.field!.property.DefaultValue;
+
+    // Check type
+    console.log("Field: " + JSON.stringify(this.field!));
+    switch (this.field!.property.ValueType)
     {
-      this.fieldValue = this.field!.property.DefaultValue;
+      // String
+      case 0:
+        this.fieldStringValue = fieldValue;
+        this.freeTextText = fieldValue;
+        break;
+      // Boolean
+      case 1:
+        this.fieldBoolValue = Boolean(fieldValue);
+        this.freeTextText = this.fieldBoolValue ? this.switchTrueLabel : this.switchFalseLabel;
+        break;
     }
 
+    // Setup switch
+    if (this.field!.control.Switch !== undefined && this.field!.control.Switch !== null)
+    {
+      this.switchVisible = true;
+      var switchObj = this.field!.control.Switch;
+      if (switchObj.FalseLabel !== undefined && switchObj.FalseLabel !== null)
+        this.switchFalseLabel = switchObj.FalseLabel;
+      if (switchObj.TrueLabel !== undefined && switchObj.TrueLabel !== null)
+        this.switchTrueLabel = switchObj.TrueLabel;
+      this.switchSavedValue = this.fieldBoolValue ?? false;
+      this.switchEditedValue = this.switchSavedValue;
+    }
+
+    // Setup choices
     if (this.field!.control.Options !== undefined && this.field!.control.Options !== null)
     {
       this.optionsVisible = true;
@@ -55,8 +88,13 @@ export class EditControlsFieldComponent {
       });
     }
 
+    // Setup free text
     this.freeTextVisible = this.field!.control.AllowTextEdit;
-    this.freeTextText = this.fieldValue;
+  }
+
+  onSwitchToggled(event: any)
+  {
+    this.saveBoolean(event.checked);
   }
 
   onShowContextMenu(event: MouseEvent, contextMenu : ContextMenu)
@@ -75,10 +113,29 @@ export class EditControlsFieldComponent {
   {
     this.isSaving = true;
     var propIndex: number = this.field!.control.PropIndex;
-    this.apiService.putLayoutPropertyValue(this.layoutId!, propIndex, stringValue, () =>
+    this.apiService.putLayoutStringPropertyValue(this.layoutId!, propIndex, stringValue, () =>
     {
-      this.fieldValue = stringValue;
+      this.fieldStringValue = stringValue;
+      this.fieldBoolValue = null;
       this.freeTextText = stringValue;
+      this.isSaving = false;
+    }, () =>
+    {
+      this.isSaving = false;
+    });
+  }
+
+  saveBoolean(boolValue: boolean)
+  {
+    this.isSaving = true;
+    var propIndex: number = this.field!.control.PropIndex;
+    this.apiService.putLayoutBooleanPropertyValue(this.layoutId!, propIndex, boolValue, () =>
+    {
+      var stringValue : string = boolValue ? this.switchTrueLabel : this.switchFalseLabel;
+      this.fieldStringValue = null;
+      this.fieldBoolValue = boolValue;
+      this.freeTextText = stringValue;
+      this.switchSavedValue = boolValue;
       this.isSaving = false;
     }, () =>
     {

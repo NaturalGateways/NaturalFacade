@@ -1,9 +1,13 @@
 <div style="margin-top: 1em; margin-bottom: 1em;">
     <div><label class="fieldLabel">{{fieldLabel}}</label></div>
     
+    <div class="inputRow" *ngIf="switchVisible">
+        <p-toggleButton offIcon="pi pi-circle-off" [offLabel]="switchFalseLabel" onIcon="pi pi-check-circle" [onLabel]="switchTrueLabel" [(ngModel)]="switchEditedValue" [disabled]="switchSavedValue !== switchEditedValue" (onChange)="onSwitchToggled($event)"></p-toggleButton>
+    </div>
+    
     <div class="inputRow" *ngIf="optionsVisible">
         <div class="flex flex-row">
-            <div class="flex-1"><label class="fieldValue">{{fieldValue}}</label></div>
+            <div class="flex-1"><label class="fieldValue">{{fieldStringValue}}</label></div>
             <div class="rightSaveButton">
                 <button pButton pRipple type="button" icon="pi pi-th-large" class="p-button" [disabled]="isSaving" (click)="onShowContextMenu($event, optionsCM)"></button>
                 <p-contextMenu #optionsCM [model]="optionsModel!"></p-contextMenu>
@@ -14,7 +18,7 @@
     <div class="inputRow" *ngIf="freeTextVisible">
         <div class="flex flex-row">
             <input class="flex-1" type="text" pInputText [(ngModel)]="freeTextText">
-            <div class="rightSaveButton"><button pButton pRipple type="button" icon="pi pi-save" class="p-button" [disabled]="freeTextText === fieldValue || isSaving" (click)="saveFreeText()"></button></div>
+            <div class="rightSaveButton"><button pButton pRipple type="button" icon="pi pi-save" class="p-button" [disabled]="freeTextText === fieldStringValue || isSaving" (click)="saveFreeText()"></button></div>
         </div>
     </div>
 </div>

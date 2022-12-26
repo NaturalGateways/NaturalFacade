@@ -15,6 +15,7 @@ import {PanelModule} from 'primeng/panel';
 import {ProgressSpinnerModule} from 'primeng/progressspinner';
 import {TabMenuModule} from 'primeng/tabmenu';
 import {TabViewModule} from 'primeng/tabview';
+import {ToggleButtonModule} from 'primeng/togglebutton';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -68,7 +69,8 @@ import { EditControlsFieldComponent } from './main/layouts/edit-controls/edit-co
     PanelModule,
     ProgressSpinnerModule,
     TabMenuModule,
-    TabViewModule
+    TabViewModule,
+    ToggleButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent]
