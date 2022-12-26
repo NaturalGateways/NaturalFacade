@@ -34,6 +34,8 @@ namespace NaturalFacade.LayoutConfig.Raw
     {
         public string Name { get; set; }
 
+        public bool SaveAll { get; set; } = false;
+
         public RawLayoutConfigControlsField[] Fields { get; set; }
     }
 

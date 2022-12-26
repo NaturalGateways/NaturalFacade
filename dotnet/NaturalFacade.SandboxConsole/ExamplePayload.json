@@ -27,6 +27,7 @@
     "Controls": [
       {
         "Name": "Admin",
+        "SaveAll": true,
         "Fields": [
           {
             "PropName": "Hero",
@@ -36,6 +37,7 @@
       },
       {
         "Name": "Live",
+        "SaveAll": false,
         "Fields": [
           {
             "PropName": "ShowBacking",

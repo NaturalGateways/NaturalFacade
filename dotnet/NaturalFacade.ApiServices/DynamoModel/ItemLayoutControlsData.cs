@@ -10,11 +10,15 @@ namespace NaturalFacade.ItemModel
     {
         public string Name { get; set; }
 
+        public bool SaveAll { get; set; } = false;
+
         public ItemLayoutControlsField[] Fields { get; set; }
     }
 
     public class ItemLayoutControlsField
     {
+        public string Label { get; set; }
+
         public int PropIndex { get; set; }
 
         public bool AllowTextEdit { get; set; } = false;

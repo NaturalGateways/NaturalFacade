@@ -132,8 +132,8 @@ namespace NaturalFacade.Services
                     return await HandleAuthGetLayoutControlsAsync(dynamoService, requestDto);
                 case ApiDto.AuthRequestType.PutLayout:
                     return await HandleAuthPutLayoutAsync(dynamoService, requestDto);
-                case ApiDto.AuthRequestType.PutLayoutPropertyValue:
-                    return await HandleAuthPutLayoutPropertyValueAsync(dynamoService, requestDto);
+                case ApiDto.AuthRequestType.PutLayoutPropertyValues:
+                    return await HandleAuthPutLayoutPropertyValuesAsync(dynamoService, requestDto);
                 default:
                     throw new FacadeApiException($"Unrecognised request type: {requestDto.payload.RequestType}");
             }
@@ -318,12 +318,11 @@ namespace NaturalFacade.Services
         }
 
         /// <summary>Handle the request.</summary>
-        private static async Task<object> HandleAuthPutLayoutPropertyValueAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
+        private static async Task<object> HandleAuthPutLayoutPropertyValuesAsync(DynamoService dynamoService, ApiDto.AuthRequestDto requestDto)
         {
             // Get IDs
             string userId = requestDto.context.userId;
-            string layoutId = requestDto.payload.PutLayoutPropertyValue.LayoutId;
-            int propertyIndex = requestDto.payload.PutLayoutPropertyValue.PropertyIndex;
+            string layoutId = requestDto.payload.PutLayoutPropertyValues.LayoutId;
 
             // Fetch summary
             ItemModel.ItemLayoutSummary summary = await dynamoService.GetLayoutSummaryAsync(layoutId);
@@ -339,14 +338,28 @@ namespace NaturalFacade.Services
             {
                 throw new Exception("Cannot find properties.");
             }
-            if ((properties?.Length ?? 0) <= propertyIndex)
+            foreach (ApiDto.AuthPutLayoutPropertyValueDataRequestDto propertyValue in requestDto.payload.PutLayoutPropertyValues.Values)
             {
-                throw new Exception("Cannot find property.");
+                if ((properties?.Length ?? 0) <= propertyValue.PropertyIndex)
+                {
+                    throw new Exception("Cannot find property.");
+                }
             }
 
             // Apply changes
-            ApiDto.PropertyDto existingProperty = properties[propertyIndex];
-            existingProperty.UpdatedValue = requestDto.payload.PutLayoutPropertyValue.StringValue;
+            foreach (ApiDto.AuthPutLayoutPropertyValueDataRequestDto propertyValue in requestDto.payload.PutLayoutPropertyValues.Values)
+            {
+                ApiDto.PropertyDto existingProperty = properties[propertyValue.PropertyIndex];
+                switch (existingProperty.ValueType)
+                {
+                    case ApiDto.PropertyTypeDto.String:
+                        existingProperty.UpdatedValue = propertyValue.StringValue;
+                        break;
+                    case ApiDto.PropertyTypeDto.Boolean:
+                        existingProperty.UpdatedValue = propertyValue.BoolValue;
+                        break;
+                }
+            }
 
             // Create new values
             object[] propValues = LayoutConfig.Properties2Values.GetValuesFromProperties(properties);

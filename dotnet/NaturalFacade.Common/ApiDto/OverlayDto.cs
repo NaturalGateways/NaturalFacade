@@ -8,8 +8,6 @@ namespace NaturalFacade.ApiDto
     {
         public int[] canvasSize { get; set; }
 
-        public string[] properties { get; set; }
-
         public string[] imageResources { get; set; }
 
         public string[] fontResources { get; set; }

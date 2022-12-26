@@ -171,7 +171,7 @@ namespace NaturalFacade.Services
         }
 
         /// <summary>Puts a layout config and overlay.</summary>
-        public async Task PutNewLayoutConfigAsync(string layoutId, ItemModel.ItemLayoutSummary summary, LayoutConfig.LayoutConfig layoutConfig, LayoutConfig.Config2LayoutResult convertResult)
+        public async Task PutLayoutConfigAsync(string layoutId, ItemModel.ItemLayoutSummary summary, LayoutConfig.LayoutConfig layoutConfig, LayoutConfig.Config2LayoutResult convertResult)
         {
             await PutItemAsync(layoutId, "Summary", summary);
             await PutItemAsync(layoutId, "LayoutConfig", layoutConfig);

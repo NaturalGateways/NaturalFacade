@@ -1,4 +1,3 @@
-using NaturalFacade.LayoutConfig;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,7 +90,7 @@ namespace NaturalFacade.Services
             summary.ControlsNameArray = convertResult.ControlsArray?.Select(x => x.Name)?.ToArray();
 
             // Save
-            await dynamoService.PutNewLayoutConfigAsync(action.LayoutId, summary, action.LayoutConfig, convertResult);
+            await dynamoService.PutLayoutConfigAsync(action.LayoutId, summary, action.LayoutConfig, convertResult);
         }
     }
 }

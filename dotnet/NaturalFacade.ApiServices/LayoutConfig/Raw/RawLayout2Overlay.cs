@@ -18,8 +18,6 @@ namespace NaturalFacade.LayoutConfig.Raw
             result.Overlay.rootElement = instance.ConvertElement(layoutConfig.RootElement);
 
             // Set resources
-            if (instance.m_propertyUsedList.Any())
-                result.Overlay.properties = instance.m_propertyUsedList.Select(x => x.PropConfig.Name).ToArray();
             if (instance.m_imageResourcesUsedList.Any())
                 result.Overlay.imageResources = instance.m_imageResourcesUsedList.Select(x => x.ResConfig.Url).ToArray();
             if (instance.m_fontResourcesUsedList.Any())
@@ -40,6 +38,7 @@ namespace NaturalFacade.LayoutConfig.Raw
             {
                 ApiDto.PropertyDto newProperty = new ApiDto.PropertyDto
                 {
+                    ValueType = GetTypeOfProperty(usedProperty),
                     Name = usedProperty.PropConfig.Name,
                     DefaultValue = usedProperty.PropConfig.DefaultValue
                 };
@@ -54,6 +53,16 @@ namespace NaturalFacade.LayoutConfig.Raw
 
             // Convert controls
             result.ControlsArray = layoutConfig.Controls?.Select(x => instance.ConvertControls(x))?.ToArray();
+        }
+
+        /// <summary>Getter for the property type of a property.</summary>
+        private static ApiDto.PropertyTypeDto GetTypeOfProperty(PropertyRef propertyRef)
+        {
+            if (propertyRef.PropConfig.Type == "Boolean")
+            {
+                return ApiDto.PropertyTypeDto.Boolean;
+            }
+            return ApiDto.PropertyTypeDto.String;
         }
 
         /// <summary>The properties and their indexes.</summary>
@@ -491,6 +500,7 @@ namespace NaturalFacade.LayoutConfig.Raw
             return new ItemModel.ItemLayoutControlsData
             {
                 Name = srcControls.Name,
+                SaveAll = srcControls.SaveAll,
                 Fields = srcControls.Fields.Select(x => ConvertControlsField(x)).Where(x => x != null).ToArray()
             };
         }
@@ -516,6 +526,7 @@ namespace NaturalFacade.LayoutConfig.Raw
             // Create field
             ItemModel.ItemLayoutControlsField destField = new ItemModel.ItemLayoutControlsField
             {
+                Label = srcField.Label ?? propertyRef.PropConfig.Name,
                 PropIndex = propertyRef.PropIndex.Value,
                 AllowTextEdit = srcField.AllowTextEdit,
                 Options = srcField.Options
