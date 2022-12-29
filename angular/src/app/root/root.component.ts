@@ -57,17 +57,17 @@ export class RootComponent {
 
   onRegisterClicked()
   {
-    this.settingsService.getCognitoCallbackUrl((callbackUrl) =>
+    this.settingsService.getCognitoClientIdAndCallbackUrl((cognitoClientId, callbackUrl) =>
     {
-      location.href = this.cognitoService.getRegisterUrl(callbackUrl);
+      location.href = this.cognitoService.getRegisterUrl(cognitoClientId, callbackUrl);
     });
   }
 
   onLoginClicked()
   {
-    this.settingsService.getCognitoCallbackUrl((callbackUrl) =>
+    this.settingsService.getCognitoClientIdAndCallbackUrl((cognitoClientId, callbackUrl) =>
     {
-      location.href = this.cognitoService.getLoginUrl(callbackUrl);
+      location.href = this.cognitoService.getLoginUrl(cognitoClientId, callbackUrl);
     });
   }
 

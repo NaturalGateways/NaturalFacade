@@ -50,14 +50,14 @@ export class CognitoService {
     }
   }
 
-  getRegisterUrl(callbackUrl: string) : string
+  getRegisterUrl(cognitoClientId: string, callbackUrl: string) : string
   {
-    return environment.cognitoUrl + "/signup?client_id=" + environment.cognitoClientId + "&response_type=code&scope=openid&redirect_uri=" + callbackUrl;
+    return environment.cognitoUrl + "/signup?client_id=" + cognitoClientId + "&response_type=code&scope=openid&redirect_uri=" + callbackUrl;
   }
 
-  getLoginUrl(callbackUrl: string) : string
+  getLoginUrl(cognitoClientId: string, callbackUrl: string) : string
   {
-    return environment.cognitoUrl + "/login?response_type=code&scope=openid&client_id=" + environment.cognitoClientId + "&redirect_uri=" + callbackUrl;
+    return environment.cognitoUrl + "/login?response_type=code&scope=openid&client_id=" + cognitoClientId + "&redirect_uri=" + callbackUrl;
   }
 
   authenticate(apiService: ApiService, code: string, callback: () => void)
@@ -67,9 +67,9 @@ export class CognitoService {
     this.authEmitter.emit();
 
     // Use Cognito to convert code to tokens
-    this.settingsService.getCognitoCallbackUrl((callbackUrl) =>
+    this.settingsService.getCognitoClientIdAndCallbackUrl((cognitoClientId, callbackUrl) =>
     {
-      let url: string = environment.cognitoUrl + "/oauth2/token?grant_type=authorization_code&client_id=" + environment.cognitoClientId + "&code=" + code + "&redirect_uri=" + callbackUrl;
+      let url: string = environment.cognitoUrl + "/oauth2/token?grant_type=authorization_code&client_id=" + cognitoClientId + "&code=" + code + "&redirect_uri=" + callbackUrl;
       const headers = new HttpHeaders().set("Content-Type", "application/x-www-form-urlencoded");
       this.http.post<CognitoServiceTokenResponseDto>(url, "", {headers}).subscribe(resp => {
         let cognitoAccess = new CognitoAccessModel(resp.id_token!, resp.refresh_token!, resp.access_token!, resp.expires_in!);

@@ -5,7 +5,6 @@
 export const environment = {
   production: false,
 
-  cognitoClientId:"TODO",
   cognitoUrl:"TODO"
 };
 

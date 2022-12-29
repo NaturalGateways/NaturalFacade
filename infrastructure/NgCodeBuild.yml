@@ -13,7 +13,7 @@ phases:
       - npm install -g @angular/cli
   pre_build:
     commands:
-      - "json=$(jq -n --arg cci \"$COGNITO_CLIENT_ID\" --arg cu \"$COGNITO_URL\" '{production: true, cognitoClientId: $cci, cognitoUrl: $cu }')"
+      - "json=$(jq -n --arg cu \"$COGNITO_URL\" '{production: true, cognitoUrl: $cu }')"
       - "script=\"export const environment = $json ;\""
       - echo $script > src/environments/environment.prod.ts
   build:
