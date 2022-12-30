@@ -1,5 +1,7 @@
 import { Component, Input } from '@angular/core';
 
+import { environment } from '../../../../../environments/environment';
+
 import { ContextMenu } from 'primeng/contextmenu';
 
 import { LayoutItem } from '../../layout-item/layout-item-data';
@@ -16,7 +18,14 @@ export class LayoutListItemComponent {
   onViewOverlay()
   {
     var newUrl : string = window.location.protocol + "//" + window.location.host + "/overlay?layoutId=" + this.item?.LayoutId;
-    window.open(newUrl, "_blank");
+    if (environment.openLinkNewTab)
+    {
+      window.open(newUrl, "_blank");
+    }
+    else
+    {
+      location.href = newUrl;
+    }
   }
 
   onViewControlsForLayout(event: MouseEvent, contextMenu : ContextMenu)

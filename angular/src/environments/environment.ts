@@ -5,7 +5,9 @@
 export const environment = {
   production: false,
 
-  cognitoUrl:"TODO"
+  cognitoUrl:"TODO",
+
+  openLinkNewTab: true
 };
 
 /*

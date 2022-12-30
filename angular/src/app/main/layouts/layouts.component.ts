@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { environment } from '../../../environments/environment';
+
 import { MenuItem } from 'primeng/api';
 
 import { ApiService } from '../../api/api.service';
@@ -53,6 +55,13 @@ export class LayoutsComponent {
   onViewControlsAtIndex(layoutId: string, controlsIndex: number)
   {
     var newUrl : string = window.location.protocol + "//" + window.location.host + "/layouts/controls/edit?layoutId=" + layoutId + "&controlsIndex=" + controlsIndex;
-    window.open(newUrl, "_blank");
+    if (environment.openLinkNewTab)
+    {
+      window.open(newUrl, "_blank");
+    }
+    else
+    {
+      location.href = newUrl;
+    }
   }
 }
