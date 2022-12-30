@@ -50,6 +50,25 @@ export class CognitoService {
     }
   }
 
+  getIdToken(successCallback: (idToken: string) => void, errorCallback: () => void)
+  {
+    // Check if refresh is needed
+    var apiAuthModel = this.apiAuthModel!;
+    var curDate : Date = new Date();
+    if (curDate.toISOString() < apiAuthModel.access.expiryDateTime)
+    {
+      if (environment.production === false)
+      {
+        console.log("Token exists.");
+      }
+      successCallback(apiAuthModel.access.idToken);
+      return;
+    }
+
+    // Do refresh
+    this.refreshToken(successCallback, errorCallback);
+  }
+
   getRegisterUrl(cognitoClientId: string, callbackUrl: string) : string
   {
     return environment.cognitoUrl + "/signup?client_id=" + cognitoClientId + "&response_type=code&scope=openid&redirect_uri=" + callbackUrl;
@@ -101,5 +120,34 @@ export class CognitoService {
     this.apiAuthModel = null;
     this.authentication = CognitoServiceAuthStatus.None;
     this.authEmitter.emit();
+  }
+
+  refreshToken(successCallback: (idToken: string) => void, errorCallback: () => void)
+  {
+    // Use Cognito to convert code to tokens
+    this.settingsService.getCognitoClientId((cognitoClientId) =>
+    {
+      var apiAuthModel = this.apiAuthModel!;
+      var refreshToken = apiAuthModel.access.refreshToken;
+      let url: string = environment.cognitoUrl + "/oauth2/token?grant_type=refresh_token&client_id=" + cognitoClientId + "&refresh_token=" + this.apiAuthModel?.access.refreshToken;
+      const headers = new HttpHeaders().set("Content-Type", "application/x-www-form-urlencoded");
+      this.http.post<CognitoServiceTokenResponseDto>(url, "", {headers}).subscribe(resp => {
+        let cognitoAccess = new CognitoAccessModel(resp.id_token!, refreshToken, resp.access_token!, resp.expires_in!);
+        this.apiAuthModel = new ApiAuthModel(apiAuthModel.user, cognitoAccess);
+        localStorage.setItem('auth', JSON.stringify(this.apiAuthModel));
+        this.authentication = CognitoServiceAuthStatus.Authenticated;
+        this.authEmitter.emit();
+        successCallback(resp.id_token!);
+        if (environment.production === false)
+        {
+          console.log("Refreshed token.");
+        }
+      }, error => {
+        console.log("Error: " + JSON.stringify(error));
+        this.authentication = CognitoServiceAuthStatus.None;
+        this.authEmitter.emit();
+        errorCallback();
+      });
+    });
   }
 }

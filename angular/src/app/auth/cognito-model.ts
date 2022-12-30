@@ -3,15 +3,15 @@ export class CognitoAccessModel
   idToken: string;
   refreshToken: string;
   accessToken: string;
-  expiryDateTime: Date;
+  expiryDateTime: string;
 
   constructor(idToken: string, refreshToken: string, accessToken: string, expiresIn: number)
   {
     this.idToken = idToken;
     this.refreshToken = refreshToken;
     this.accessToken = accessToken;
-    this.expiryDateTime = new Date();
-    this.expiryDateTime.setSeconds(this.expiryDateTime.getSeconds() + expiresIn);
-    this.expiryDateTime.setMinutes(this.expiryDateTime.getMinutes() - 5);
+    var expiryDateTime : Date = new Date();
+    expiryDateTime.setSeconds(expiryDateTime.getSeconds() + expiresIn - 5 * 60);
+    this.expiryDateTime = expiryDateTime.toISOString();
   }
 }

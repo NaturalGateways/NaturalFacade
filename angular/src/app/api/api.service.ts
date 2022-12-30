@@ -72,22 +72,25 @@ export class ApiService {
   {
     this.settingsService.getApiUrl((apiUrl) =>
     {
-      let url: string = apiUrl + "/auth";
-      const headers = new HttpHeaders().set("Content-Type", "application/json").set("Authorization", this.cognitoService.apiAuthModel?.access.idToken!);
-      this.http.post<BlankResponseDto>(url, reqBody, {headers}).subscribe(resp => {
-        if (resp.Success)
-        {
-          successCallback();
-        }
-        else
-        {
-          console.log("Error: " + JSON.stringify(resp));
+      this.cognitoService.getIdToken((idToken) =>
+      {
+        let url: string = apiUrl + "/auth";
+        const headers = new HttpHeaders().set("Content-Type", "application/json").set("Authorization", idToken);
+        this.http.post<BlankResponseDto>(url, reqBody, {headers}).subscribe(resp => {
+          if (resp.Success)
+          {
+            successCallback();
+          }
+          else
+          {
+            console.log("Error: " + JSON.stringify(resp));
+            errorCallback();
+          }
+        }, error => {
+          console.log("Error: " + JSON.stringify(error));
           errorCallback();
-        }
-      }, error => {
-        console.log("Error: " + JSON.stringify(error));
-        errorCallback();
-      });
+        });
+      }, errorCallback);
     });
   }
 
@@ -95,22 +98,25 @@ export class ApiService {
   {
     this.settingsService.getApiUrl((apiUrl) =>
     {
-      let url: string = apiUrl + "/auth";
-      const headers = new HttpHeaders().set("Content-Type", "application/json").set("Authorization", this.cognitoService.apiAuthModel?.access.idToken!);
-      this.http.post<BaseResponseDto<ResponseDto>>(url, reqBody, {headers}).subscribe(resp => {
-        if (resp.Success && resp.Payload !== undefined)
-        {
-          successCallback(resp.Payload);
-        }
-        else
-        {
-          console.log("Error: " + JSON.stringify(resp));
+      this.cognitoService.getIdToken((idToken) =>
+      {
+        let url: string = apiUrl + "/auth";
+        const headers = new HttpHeaders().set("Content-Type", "application/json").set("Authorization", idToken);
+        this.http.post<BaseResponseDto<ResponseDto>>(url, reqBody, {headers}).subscribe(resp => {
+          if (resp.Success && resp.Payload !== undefined)
+          {
+            successCallback(resp.Payload);
+          }
+          else
+          {
+            console.log("Error: " + JSON.stringify(resp));
+            errorCallback();
+          }
+        }, error => {
+          console.log("Error: " + JSON.stringify(error));
           errorCallback();
-        }
-      }, error => {
-        console.log("Error: " + JSON.stringify(error));
-        errorCallback();
-      });
+        });
+      }, errorCallback);
     });
   }
 

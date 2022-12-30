@@ -30,6 +30,23 @@ export class SettingsService {
     });
   }
 
+  getCognitoClientId(callback: (cognitoClientId: string) => void)
+  {
+    // Check config is loaded
+    var config = this.config;
+    if (config !== null)
+    {
+      callback(config.cognitoClientId);
+      return;
+    }
+
+    // Get config
+    this.http.get<any>("./assets/config.json").subscribe(data => {
+      this.config = data;
+      callback(data.cognitoClientId);
+    });
+  }
+
   getCognitoClientIdAndCallbackUrl(callback: (cognitoClientId: string, cognitoCallbackUrl: string) => void)
   {
     // Check config is loaded
