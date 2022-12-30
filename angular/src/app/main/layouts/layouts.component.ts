@@ -54,14 +54,15 @@ export class LayoutsComponent {
 
   onViewControlsAtIndex(layoutId: string, controlsIndex: number)
   {
-    var newUrl : string = window.location.protocol + "//" + window.location.host + "/layouts/controls/edit?layoutId=" + layoutId + "&controlsIndex=" + controlsIndex;
     if (environment.openLinkNewTab)
     {
+      var newUrl : string = window.location.protocol + "//" + window.location.host + "/layouts/controls/edit?layoutId=" + layoutId + "&controlsIndex=" + controlsIndex;
       window.open(newUrl, "_blank");
     }
     else
     {
-      location.href = newUrl;
+      var newRoute : string = "/layouts/controls/edit";
+      this.router.navigate([newRoute], { queryParams: { layoutId: layoutId, controlsIndex: controlsIndex } });
     }
   }
 }

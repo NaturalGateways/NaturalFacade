@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { environment } from '../../../../../environments/environment';
 
@@ -15,16 +16,18 @@ export class LayoutGridItemComponent {
 
   @Input() item: LayoutItem | undefined;
 
+  constructor(private router: Router) { }
+
   onViewOverlay()
   {
-    var newUrl : string = window.location.protocol + "//" + window.location.host + "/overlay?layoutId=" + this.item?.LayoutId;
     if (environment.openLinkNewTab)
     {
+      var newUrl : string = window.location.protocol + "//" + window.location.host + "/overlay?layoutId=" + this.item?.LayoutId;
       window.open(newUrl, "_blank");
     }
     else
     {
-      location.href = newUrl;
+      this.router.navigate(['/overlay'], { queryParams: { layoutId: this.item!.LayoutId } });
     }
   }
 
