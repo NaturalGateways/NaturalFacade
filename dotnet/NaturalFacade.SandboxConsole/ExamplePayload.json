@@ -22,6 +22,11 @@
         "Name": "Phase",
         "Type": "String",
         "DefaultValue": "DefPhase"
+      },
+      {
+        "Name": "CloseCalls",
+        "Type": "String",
+        "DefaultValue": "0"
       }
     ],
     "Controls": [
@@ -73,6 +78,13 @@
               "Hunting Bonemass"
             ],
             "AllowTextEdit": true
+          },
+          {
+            "PropName": "CloseCalls",
+            "Integer":
+            {
+              "MinValue": 0
+            }
           }
         ]
       }
@@ -326,7 +338,10 @@
                                           "Right": {
                                             "Text": {
                                               "Font": "AttValue",
-                                              "Text": "Placeholder"
+                                              "TextOp": {
+                                                "Op": "Prop",
+                                                "Name": "CloseCalls"
+                                              }
                                             }
                                           }
                                         }

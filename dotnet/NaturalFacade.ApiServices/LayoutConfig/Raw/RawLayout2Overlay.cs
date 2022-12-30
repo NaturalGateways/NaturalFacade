@@ -531,9 +531,22 @@ namespace NaturalFacade.LayoutConfig.Raw
                 AllowTextEdit = srcField.AllowTextEdit,
                 Options = srcField.Options
             };
+            if (srcField.Integer != null)
+                destField.Integer = ConvertControlsFieldInteger(srcField.Integer);
             if (srcField.Switch != null)
                 destField.Switch = ConvertControlsFieldSwitch(srcField.Switch);
             return destField;
+        }
+
+        /// <summary>Converts a controls object.</summary>
+        private ItemModel.ItemLayoutControlsFieldInteger ConvertControlsFieldInteger(RawLayoutConfigControlsFieldInteger srcInteger)
+        {
+            return new ItemModel.ItemLayoutControlsFieldInteger
+            {
+                MinValue = srcInteger.MinValue,
+                MaxValue = srcInteger.MaxValue,
+                Step = srcInteger.Step
+            };
         }
 
         /// <summary>Converts a controls object.</summary>

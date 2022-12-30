@@ -49,7 +49,18 @@ namespace NaturalFacade.LayoutConfig.Raw
 
         public string[] Options { get; set; }
 
+        public RawLayoutConfigControlsFieldInteger Integer { get; set; }
+
         public RawLayoutConfigControlsFieldSwitch Switch { get; set; }
+    }
+
+    public class RawLayoutConfigControlsFieldInteger
+    {
+        public int? MinValue { get; set; }
+
+        public int? MaxValue { get; set; }
+
+        public int Step { get; set; } = 1;
     }
 
     public class RawLayoutConfigControlsFieldSwitch
