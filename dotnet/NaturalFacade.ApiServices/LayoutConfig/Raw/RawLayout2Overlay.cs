@@ -461,7 +461,7 @@ namespace NaturalFacade.LayoutConfig.Raw
                 data.Add("text", new Dictionary<string, object>
                 {
                     { "op", "Text" },
-                    { "value", layoutText.Text }
+                    { "text", layoutText.Text }
                 });
             }
 
