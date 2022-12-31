@@ -4,6 +4,14 @@
     <div class="inputRow" *ngIf="switchVisible">
         <p-toggleButton offIcon="pi pi-circle-off" [offLabel]="switchFalseLabel" onIcon="pi pi-check-circle" [onLabel]="switchTrueLabel" [(ngModel)]="switchEditedValue" [disabled]="switchSavedValue !== switchEditedValue" (onChange)="onSwitchToggled($event)"></p-toggleButton>
     </div>
+
+    <div class="inputRow" *ngIf="numericVisible">
+        <div class="flex flex-row">
+            <p-inputNumber class="flex-auto" [(ngModel)]="numericValue" [showButtons]="true" buttonLayout="horizontal" inputId="horizontal" spinnerMode="horizontal" [step]="1" decrementButtonIcon="pi pi-minus" incrementButtonIcon="pi pi-plus" [min]="minValue" [max]="maxValue" [disabled]="isSaving" (onInput)="onNumericChanged()"></p-inputNumber>
+            <div class="flex-1"></div>
+            <button class="flex-auto" pButton pRipple type="button" icon="pi pi-replay" class="p-button" [disabled]="isSaving" (click)="onNumericClear()"></button>
+        </div>
+    </div>
     
     <div class="inputRow" *ngIf="optionsVisible">
         <div class="flex flex-row">

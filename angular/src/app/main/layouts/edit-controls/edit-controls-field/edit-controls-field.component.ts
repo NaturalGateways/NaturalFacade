@@ -28,6 +28,11 @@ export class EditControlsFieldComponent {
   switchSavedValue : boolean = false;
   switchEditedValue : boolean = false;
 
+  numericVisible : boolean = false;
+  numericValue : number = 0;
+  minValue : number = 0;
+  maxValue : number = 0;
+
   optionsVisible : boolean = false;
   optionsModel : MenuItem[] = [];
 
@@ -44,7 +49,6 @@ export class EditControlsFieldComponent {
     var fieldValue : any = this.field!.property.UpdatedValue ?? this.field!.property.DefaultValue;
 
     // Check type
-    console.log("Field: " + JSON.stringify(this.field!));
     switch (this.field!.property.ValueType)
     {
       // String
@@ -72,6 +76,21 @@ export class EditControlsFieldComponent {
       this.switchEditedValue = this.switchSavedValue;
     }
 
+    // Setup numeric
+    if (this.field!.control.Integer !== undefined && this.field!.control.Integer !== null)
+    {
+      this.numericVisible = true;
+      this.numericValue = Number(fieldValue);
+      if (this.field!.control.Integer.MinValue !== undefined && this.field!.control.Integer.MinValue !== null)
+        this.minValue = this.field!.control.Integer.MinValue;
+      else
+        this.minValue = Number.MIN_VALUE;
+      if (this.field!.control.Integer.MaxValue !== undefined && this.field!.control.Integer.MaXValue !== null)
+        this.maxValue = this.field!.control.Integer.MaxValue;
+      else
+        this.maxValue = Number.MAX_VALUE;
+    }
+
     // Setup choices
     if (this.field!.control.Options !== undefined && this.field!.control.Options !== null)
     {
@@ -97,6 +116,14 @@ export class EditControlsFieldComponent {
     this.saveBoolean(event.checked);
   }
 
+  onNumericChanged() {
+    this.saveString(String(this.numericValue));
+  }
+
+  onNumericClear() {
+    this.saveString(this.field!.property.DefaultValue);
+  }
+
   onShowContextMenu(event: MouseEvent, contextMenu : ContextMenu)
   {
     // Show menu
@@ -117,6 +144,7 @@ export class EditControlsFieldComponent {
     {
       this.fieldStringValue = stringValue;
       this.fieldBoolValue = null;
+      this.numericValue = Number(stringValue);
       this.freeTextText = stringValue;
       this.isSaving = false;
     }, () =>
@@ -134,6 +162,7 @@ export class EditControlsFieldComponent {
       var stringValue : string = boolValue ? this.switchTrueLabel : this.switchFalseLabel;
       this.fieldStringValue = null;
       this.fieldBoolValue = boolValue;
+      this.numericValue = Number(stringValue);
       this.freeTextText = stringValue;
       this.switchSavedValue = boolValue;
       this.isSaving = false;

@@ -3,19 +3,20 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
-import {ButtonModule} from 'primeng/button';
-import {CardModule} from 'primeng/card';
-import {ContextMenuModule} from 'primeng/contextmenu';
-import {DataViewModule} from 'primeng/dataview';
-import {DividerModule} from 'primeng/divider';
-import {InputTextareaModule} from 'primeng/inputtextarea';
-import {InputTextModule} from 'primeng/inputtext';
-import {MenubarModule} from 'primeng/menubar';
-import {PanelModule} from 'primeng/panel';
-import {ProgressSpinnerModule} from 'primeng/progressspinner';
-import {TabMenuModule} from 'primeng/tabmenu';
-import {TabViewModule} from 'primeng/tabview';
-import {ToggleButtonModule} from 'primeng/togglebutton';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { ContextMenuModule } from 'primeng/contextmenu';
+import { DataViewModule } from 'primeng/dataview';
+import { DividerModule } from 'primeng/divider';
+import { InputTextareaModule } from 'primeng/inputtextarea';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
+import { MenubarModule } from 'primeng/menubar';
+import { PanelModule } from 'primeng/panel';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { TabMenuModule } from 'primeng/tabmenu';
+import { TabViewModule } from 'primeng/tabview';
+import { ToggleButtonModule } from 'primeng/togglebutton';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -64,6 +65,7 @@ import { RootComponent } from './root/root.component';
     DataViewModule,
     DividerModule,
     InputTextareaModule,
+    InputNumberModule,
     InputTextModule,
     MenubarModule,
     PanelModule,
