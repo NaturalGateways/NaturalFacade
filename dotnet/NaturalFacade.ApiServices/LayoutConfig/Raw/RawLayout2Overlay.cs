@@ -478,7 +478,7 @@ namespace NaturalFacade.LayoutConfig.Raw
                     return new Dictionary<string, object>
                     {
                         { "op", "Text" },
-                        { "index", operation.Text }
+                        { "text", operation.Text }
                     };
                 case "Prop":
                     {
@@ -489,6 +489,12 @@ namespace NaturalFacade.LayoutConfig.Raw
                             { "index", property.PropIndex.Value }
                         };
                     }
+                case "Cat":
+                    return new Dictionary<string, object>
+                    {
+                        { "op", "Cat" },
+                        { "items", operation.Children.Select(x => ConvertOperation(x)).ToArray() }
+                    };
                 default:
                     throw new Exception($"Unknown operation type '{operation.Op}'.");
             }

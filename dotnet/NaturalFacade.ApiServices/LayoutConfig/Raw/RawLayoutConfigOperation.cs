@@ -16,5 +16,8 @@ namespace NaturalFacade.LayoutConfig.Raw
 
         /// <summary>The hardcoded text.</summary>
         public string Text { get; set; }
+
+        /// <summary>The children of a concatenation operation.</summary>
+        public RawLayoutConfigOperation[] Children { get; set; }
     }
 }

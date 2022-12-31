@@ -9,6 +9,16 @@
         "DefaultValue": false
       },
       {
+        "Name": "MajorVer",
+        "Type": "String",
+        "DefaultValue": "0"
+      },
+      {
+        "Name": "MinorVer",
+        "Type": "String",
+        "DefaultValue": "0"
+      },
+      {
         "Name": "Hero",
         "Type": "String",
         "DefaultValue": "DefHero"
@@ -34,6 +44,14 @@
         "Name": "Admin",
         "SaveAll": true,
         "Fields": [
+          {
+            "PropName": "MajorVer",
+            "Integer": { "MinValue": 0 }
+          },
+          {
+            "PropName": "MinorVer",
+            "Integer": { "MinValue": 0 }
+          },
           {
             "PropName": "Hero",
             "AllowTextEdit": true
@@ -81,10 +99,7 @@
           },
           {
             "PropName": "CloseCalls",
-            "Integer":
-            {
-              "MinValue": 0
-            }
+            "Integer": { "MinValue": 0 }
           }
         ]
       }
@@ -217,7 +232,15 @@
                                           "Right": {
                                             "Text": {
                                               "Font": "AttValue",
-                                              "Text": "Placeholder"
+                                              "TextOp": {
+                                                "Op": "Cat",
+                                                "Children": [
+                                                  { "Op": "Text", "Text": "v" },
+                                                  { "Op": "Prop", "Name": "MajorVer" },
+                                                  { "Op": "Text", "Text": "." },
+                                                  { "Op": "Prop", "Name": "MinorVer" }
+                                                ]
+                                              }
                                             }
                                           }
                                         }
