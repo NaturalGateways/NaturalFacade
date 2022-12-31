@@ -87,17 +87,17 @@ export class RenderLayoutService {
     }
     if (object.op === "Text")
     {
-      return object.value;
+      return object.text;
     }
     if (object.op === "Prop")
     {
       return this.propValues[object.index];
     }
-    if (object.op === "cat")
+    if (object.op === "Cat")
     {
       var result = "";
-      for (var valueIndex in object.values) {
-        result += this.getString(layoutData, object.values[valueIndex]);
+      for (var itemIndex in object.items) {
+        result += this.getString(layoutData, object.items[itemIndex]);
       }
       return result;
     }
