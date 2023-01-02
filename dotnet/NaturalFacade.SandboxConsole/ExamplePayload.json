@@ -108,7 +108,7 @@
       {
         "Name": "StaticBacking",
         "Type": "Image",
-        "Url": "https://httpsorigin.s3.amazonaws.com/https/Overlay/StaticBacking.webp"
+        "Url": "https://httpsorigin.s3.amazonaws.com/https/Overlay/Valheim/StaticBacking.webp"
       },
       {
         "Name": "BgLight",
@@ -123,12 +123,12 @@
       {
         "Name": "GameCover",
         "Type": "Image",
-        "Url": "https://httpsorigin.s3.amazonaws.com/https/Overlay/GameCover.jpg"
+        "Url": "https://httpsorigin.s3.amazonaws.com/https/Overlay/Valheim/GameCover.jpg"
       },
       {
         "Name": "FakeCam",
         "Type": "Image",
-        "Url": "https://httpsorigin.s3.amazonaws.com/https/Overlay/FakeCam.png"
+        "Url": "https://httpsorigin.s3.amazonaws.com/https/Overlay/Valheim/FakeCam.png"
       },
       {
         "Name": "NorseFont",

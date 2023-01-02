@@ -409,7 +409,8 @@ namespace NaturalFacade.LayoutConfig.Raw
             return new Dictionary<string, object>
             {
                 { "elTyp", "Image" },
-                { "fit", ConvertStringToImageFit(layoutImage.Fit).ToString() },
+                { "hfit", ConvertStringToImageFit(layoutImage.HFit ?? layoutImage.Fit).ToString() },
+                { "vfit", ConvertStringToImageFit(layoutImage.VFit ?? layoutImage.Fit).ToString() },
                 { "res", imageFile.ResIndex.Value }
             };
         }

@@ -201,6 +201,8 @@ namespace NaturalFacade.LayoutConfig.Raw
     public class RawLayoutConfigElementImage
     {
         public string Fit { get; set; }
+        public string HFit { get; set; }
+        public string VFit { get; set; }
 
         public string Res { get; set; }
     }
