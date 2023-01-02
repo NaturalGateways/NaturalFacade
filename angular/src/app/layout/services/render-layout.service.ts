@@ -220,11 +220,17 @@ export class RenderLayoutService {
   {
     var minWidth = 0;
     var minHeight = 0;
-    if (elementWithBounds.element.fit === "None")
+    if (elementWithBounds.element.hfit === "None" || elementWithBounds.element.vfit === "None")
     {
       var image: HTMLImageElement = this.layoutData!.imageResources[elementWithBounds.element.res]!.imageElement!;
-      minWidth = image.width;
-      minHeight = image.height;
+      if (elementWithBounds.element.hfit === "None")
+      {
+        minWidth = image.width;
+      }
+      if (elementWithBounds.element.vfit === "None")
+      {
+        minHeight = image.height;
+      }
     }
     elementWithBounds.minWidth = minWidth;
     elementWithBounds.minHeight = minHeight;
@@ -683,13 +689,97 @@ export class RenderLayoutService {
 
   renderElementImage(elementWithBounds: LayoutElementWithBounds)
   {
+    console.log("Image: " + JSON.stringify(elementWithBounds));
+
     var image: HTMLImageElement = this.layoutData!.imageResources[elementWithBounds.element.res]!.imageElement!;
-    if (elementWithBounds.element.fit === "Tiled") {
-      this.renderElementImageTiled(image, elementWithBounds);
+    switch (elementWithBounds.element.hfit)
+    {
+      case "None":
+        this.renderElementImageSimpleHFit(image, elementWithBounds);
+        break;
+      case "Tiled":
+        this.renderElementImageTiledHFit(image, elementWithBounds);
+        break;
+      case "Scaled":
+        this.renderElementImageScaledHFit(image, elementWithBounds);
+        break;
     }
-    else {
-      this.renderElementImageSimple(image, elementWithBounds);
+  }
+
+  renderElementImageSimpleHFit(image: HTMLImageElement, elementWithBounds: LayoutElementWithBounds)
+  {
+    var width : number = elementWithBounds.right - elementWithBounds.left;
+    this.renderElementImageVStrip(image, elementWithBounds, elementWithBounds.left, width, width);
+  }
+
+  renderElementImageTiledHFit(image: HTMLImageElement, elementWithBounds: LayoutElementWithBounds)
+  {
+    let imageWidth = image.width;
+    if (imageWidth <= 0)
+    {
+      return;
     }
+    let curLeft = 0;
+    var left : number = elementWithBounds.left;
+    var width : number = elementWithBounds.right - elementWithBounds.left;
+    while (curLeft < width)
+    {
+      let drawWidth = (width < curLeft + imageWidth) ? (width - curLeft) : imageWidth;
+      this.renderElementImageVStrip(image, elementWithBounds, left + curLeft, drawWidth, drawWidth);
+      curLeft += imageWidth;
+    }
+  }
+
+  renderElementImageScaledHFit(image: HTMLImageElement, elementWithBounds: LayoutElementWithBounds)
+  {
+    var renderWidth : number = elementWithBounds.right - elementWithBounds.left;
+    this.renderElementImageVStrip(image, elementWithBounds, elementWithBounds.left, renderWidth, image.width);
+  }
+
+  renderElementImageVStrip(image: HTMLImageElement, elementWithBounds: LayoutElementWithBounds, left: number, renderWidth: number, imageWidth: number)
+  {
+    switch (elementWithBounds.element.vfit)
+    {
+      case "None":
+        this.renderElementImageSimpleVFit(image, elementWithBounds, left, renderWidth, imageWidth);
+        break;
+      case "Tiled":
+        this.renderElementImageTiledVFit(image, elementWithBounds, left, renderWidth, imageWidth);
+        break;
+      case "Scaled":
+        this.renderElementImageScaledVFit(image, elementWithBounds, left, renderWidth, imageWidth);
+        break;
+    }
+  }
+
+  renderElementImageSimpleVFit(image: HTMLImageElement, elementWithBounds: LayoutElementWithBounds, left: number, renderWidth: number, imageWidth: number)
+  {
+    var height : number = elementWithBounds.bottom - elementWithBounds.top;
+    this.context!.drawImage(image, 0, 0, imageWidth, height, left, elementWithBounds.top, renderWidth, height);
+  }
+
+  renderElementImageTiledVFit(image: HTMLImageElement, elementWithBounds: LayoutElementWithBounds, left: number, renderWidth: number, imageWidth: number)
+  {
+    let imageHeight = image.height;
+    if (imageHeight <= 0)
+    {
+      return;
+    }
+    let curTop = 0;
+    var top : number = elementWithBounds.top;
+    var height : number = elementWithBounds.bottom - elementWithBounds.top;
+    while (curTop < height)
+    {
+      let drawHeight = (height < curTop + imageHeight) ? (height - curTop) : imageHeight;
+      this.context!.drawImage(image, 0, 0, imageWidth, drawHeight, left, top + curTop, renderWidth, drawHeight);
+      curTop += imageHeight;
+    }
+  }
+
+  renderElementImageScaledVFit(image: HTMLImageElement, elementWithBounds: LayoutElementWithBounds, left: number, renderWidth: number, imageWidth: number)
+  {
+    var renderHeight : number = elementWithBounds.bottom - elementWithBounds.top;
+    this.context!.drawImage(image, 0, 0, imageWidth, image.height, left, elementWithBounds.top, renderWidth, renderHeight);
   }
 
   renderElementImageSimple(image: HTMLImageElement, elementWithBounds: LayoutElementWithBounds)
