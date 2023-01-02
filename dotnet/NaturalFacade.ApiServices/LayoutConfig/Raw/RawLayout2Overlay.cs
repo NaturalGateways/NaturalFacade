@@ -181,7 +181,7 @@ namespace NaturalFacade.LayoutConfig.Raw
 
             // Check rules
             if (layoutElement.IsVisibleOp != null)
-                overlayObject.Add("isVisible", ConvertOperation(layoutElement.IsVisibleOp));
+                overlayObject.Add("isVisible", ConvertBooleanOperation(layoutElement.IsVisibleOp));
 
             // Return
             return overlayObject;
@@ -455,7 +455,7 @@ namespace NaturalFacade.LayoutConfig.Raw
             // Add text or text parameter
             if (layoutText.TextOp != null)
             {
-                data.Add("text", ConvertOperation(layoutText.TextOp));
+                data.Add("text", ConvertStringOperation(layoutText.TextOp));
             }
             else
             {
@@ -471,7 +471,33 @@ namespace NaturalFacade.LayoutConfig.Raw
         }
 
         /// <summary>Creates an overlay element from a layout element.</summary>
-        private Dictionary<string, object> ConvertOperation(RawLayoutConfigOperation operation)
+        private Dictionary<string, object> ConvertBooleanOperation(RawLayoutConfigBooleanOperation operation)
+        {
+            switch (operation.Op)
+            {
+                case "Prop":
+                    {
+                        PropertyRef property = GetPropertyFromName(operation.Name);
+                        return new Dictionary<string, object>
+                        {
+                            { "op", "Prop" },
+                            { "index", property.PropIndex.Value }
+                        };
+                    }
+                case "And":
+                case "Or":
+                    return new Dictionary<string, object>
+                    {
+                        { "op", operation.Op },
+                        { "items", operation.Children.Select(x => ConvertBooleanOperation(x)).ToArray() }
+                    };
+                default:
+                    throw new Exception($"Unknown operation type '{operation.Op}'.");
+            }
+        }
+
+        /// <summary>Creates an overlay element from a layout element.</summary>
+        private Dictionary<string, object> ConvertStringOperation(RawLayoutConfigStringOperation operation)
         {
             switch (operation.Op)
             {
@@ -494,7 +520,7 @@ namespace NaturalFacade.LayoutConfig.Raw
                     return new Dictionary<string, object>
                     {
                         { "op", "Cat" },
-                        { "items", operation.Children.Select(x => ConvertOperation(x)).ToArray() }
+                        { "items", operation.Children.Select(x => ConvertStringOperation(x)).ToArray() }
                     };
                 default:
                     throw new Exception($"Unknown operation type '{operation.Op}'.");
