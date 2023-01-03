@@ -541,7 +541,7 @@ namespace NaturalFacade.LayoutConfig.Raw
                         throw new Exception("'If' string operation must have an 'Then' operation.");
                     Dictionary<string, object> opOutput = new Dictionary<string, object>
                     {
-                        { "op", "Cat" },
+                        { "op", "If" },
                         { "if", ConvertBooleanCondition(operation.If) },
                         { "then", ConvertStringOperation(operation.Then) }
                     };
