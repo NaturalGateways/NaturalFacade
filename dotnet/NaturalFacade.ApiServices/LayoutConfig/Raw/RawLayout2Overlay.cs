@@ -181,7 +181,7 @@ namespace NaturalFacade.LayoutConfig.Raw
 
             // Check rules
             if (layoutElement.IsVisibleOp != null)
-                overlayObject.Add("isVisible", ConvertBooleanOperation(layoutElement.IsVisibleOp));
+                overlayObject.Add("isVisible", ConvertBooleanCondition(layoutElement.IsVisibleOp));
 
             // Return
             return overlayObject;
@@ -471,13 +471,13 @@ namespace NaturalFacade.LayoutConfig.Raw
         }
 
         /// <summary>Creates an overlay element from a layout element.</summary>
-        private Dictionary<string, object> ConvertBooleanOperation(RawLayoutConfigBooleanOperation operation)
+        private Dictionary<string, object> ConvertBooleanCondition(RawLayoutConfigBooleanCondition condition)
         {
-            switch (operation.Op)
+            switch (condition.Op)
             {
                 case "Prop":
                     {
-                        PropertyRef property = GetPropertyFromName(operation.Name);
+                        PropertyRef property = GetPropertyFromName(condition.Name);
                         return new Dictionary<string, object>
                         {
                             { "op", "Prop" },
@@ -486,13 +486,23 @@ namespace NaturalFacade.LayoutConfig.Raw
                     }
                 case "And":
                 case "Or":
+                    if ((condition.Children?.Any() ?? false) == false)
+                        throw new Exception($"'{condition.Op}' boolean conditions must have children.");
                     return new Dictionary<string, object>
                     {
-                        { "op", operation.Op },
-                        { "items", operation.Children.Select(x => ConvertBooleanOperation(x)).ToArray() }
+                        { "op", condition.Op },
+                        { "items", condition.Children.Select(x => ConvertBooleanCondition(x)).ToArray() }
+                    };
+                case "Not":
+                    if (condition.Child == null)
+                        throw new Exception("'Not' boolean conditions must have a child.");
+                    return new Dictionary<string, object>
+                    {
+                        { "op", condition.Op },
+                        { "item", ConvertBooleanCondition(condition.Child) }
                     };
                 default:
-                    throw new Exception($"Unknown operation type '{operation.Op}'.");
+                    throw new Exception($"Unknown operation type '{condition.Op}'.");
             }
         }
 
@@ -505,7 +515,7 @@ namespace NaturalFacade.LayoutConfig.Raw
                     return new Dictionary<string, object>
                     {
                         { "op", "Text" },
-                        { "text", operation.Text }
+                        { "text", operation.Text ?? string.Empty }
                     };
                 case "Prop":
                     {
@@ -517,11 +527,27 @@ namespace NaturalFacade.LayoutConfig.Raw
                         };
                     }
                 case "Cat":
+                    if ((operation.Children?.Any() ?? false) == false)
+                        throw new Exception("'Cat' string operation must have children.");
                     return new Dictionary<string, object>
                     {
                         { "op", "Cat" },
                         { "items", operation.Children.Select(x => ConvertStringOperation(x)).ToArray() }
                     };
+                case "If":
+                    if (operation.If == null)
+                        throw new Exception("'If' string operation must have an 'If' condition.");
+                    if (operation.Then == null)
+                        throw new Exception("'If' string operation must have an 'Then' operation.");
+                    Dictionary<string, object> opOutput = new Dictionary<string, object>
+                    {
+                        { "op", "Cat" },
+                        { "if", ConvertBooleanCondition(operation.If) },
+                        { "then", ConvertStringOperation(operation.Then) }
+                    };
+                    if (operation.Else != null)
+                        opOutput.Add("else", ConvertStringOperation(operation.Else));
+                    return opOutput;
                 default:
                     throw new Exception($"Unknown operation type '{operation.Op}'.");
             }
