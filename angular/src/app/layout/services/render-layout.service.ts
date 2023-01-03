@@ -80,7 +80,7 @@ export class RenderLayoutService {
     return elementWithBounds;
   }
 
-  getString(layoutData: LayoutData, object: any) {
+  getString(layoutData: LayoutData, object: any) : any {
     if (typeof object === "string")
     {
       return object;
@@ -101,10 +101,19 @@ export class RenderLayoutService {
       }
       return result;
     }
+    console.log("Cond op: " + object.op);
+    if (object.op === "If")
+    {
+      console.log("IF cond: " + this.checkCondition(object.if, false));
+      if (this.checkCondition(object.if, false))
+        return this.getString(layoutData, object.then);
+      else
+        return this.getString(layoutData, object.else);
+    }
     return object;
   }
 
-  checkCondition(condition: any, defaultValue: boolean) {
+  checkCondition(condition: any, defaultValue: boolean) : boolean {
     if (condition === undefined || condition == null)
     {
       return defaultValue;
@@ -112,6 +121,26 @@ export class RenderLayoutService {
     if (condition.op === "Prop")
     {
       return this.propValues[condition.index];
+    }
+    if (condition.op === "And")
+    {
+      for (var itemIndex in condition.items) {
+        if (this.checkCondition(condition.items[itemIndex], false) === false)
+          return false;
+      }
+      return true;
+    }
+    if (condition.op === "Or")
+    {
+      for (var itemIndex in condition.items) {
+        if (this.checkCondition(condition.items[itemIndex], false))
+          return true;
+      }
+      return false;
+    }
+    if (condition.op === "Not")
+    {
+      return !this.checkCondition(condition.item, false);
     }
     return defaultValue;
   }
@@ -689,8 +718,6 @@ export class RenderLayoutService {
 
   renderElementImage(elementWithBounds: LayoutElementWithBounds)
   {
-    console.log("Image: " + JSON.stringify(elementWithBounds));
-
     var image: HTMLImageElement = this.layoutData!.imageResources[elementWithBounds.element.res]!.imageElement!;
     switch (elementWithBounds.element.hfit)
     {
