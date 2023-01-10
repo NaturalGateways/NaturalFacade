@@ -28,6 +28,8 @@ namespace NaturalFacade.ItemModel
         public ItemLayoutControlsFieldInteger Integer { get; set; }
 
         public ItemLayoutControlsFieldSwitch Switch { get; set; }
+
+        public object Timer { get; set; }
     }
 
     public class ItemLayoutControlsFieldInteger

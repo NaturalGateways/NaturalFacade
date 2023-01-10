@@ -39,5 +39,50 @@ namespace NaturalFacade.LayoutConfig
             // Return
             return result;
         }
+
+        /// <summary>Converts a property value.</summary>
+        public static object ConvertPropValue(ApiDto.PropertyTypeDto valueType, object rawLayoutValue)
+        {
+            switch (valueType)
+            {
+                case ApiDto.PropertyTypeDto.String:
+                    return Natural.Json.JsonHelper.JsonFromObject(rawLayoutValue).AsString;
+                case ApiDto.PropertyTypeDto.Boolean:
+                    {
+                        bool? boolValue = Natural.Json.JsonHelper.JsonFromObject(rawLayoutValue).AsBoolean;
+                        if (boolValue.HasValue == false)
+                            throw new Exception($"Value is not a boolean.");
+                        return boolValue.Value;
+                    }
+                case ApiDto.PropertyTypeDto.Timer:
+                    {
+                        Natural.Json.IJsonObject jsonValue = Natural.Json.JsonHelper.JsonFromObject(rawLayoutValue);
+                        switch (jsonValue.ObjectType)
+                        {
+                            case Natural.Json.JsonObjectType.Long:
+                                return new Dictionary<string, object>
+                                {
+                                    { "Secs", jsonValue.AsLong.Value }
+                                };
+                            case Natural.Json.JsonObjectType.Dictionary:
+                                {
+                                    long? seconds = jsonValue.GetDictionaryLong("Secs");
+                                    string startDateTime = jsonValue.GetDictionaryString("StartDateTime");
+                                    Dictionary<string, object> returnObject = new Dictionary<string, object>
+                                    {
+                                        { "Secs", seconds ?? 0 }
+                                    };
+                                    if (string.IsNullOrEmpty(startDateTime) == false)
+                                        returnObject.Add("StartDateTime", startDateTime);
+                                    return returnObject;
+                                }
+                            default:
+                                throw new Exception($"Value is not a timer type: {jsonValue.ObjectType.ToString()}");
+                        }
+                    }
+                default:
+                    return rawLayoutValue;
+            }
+        }
     }
 }

@@ -106,9 +106,7 @@ namespace NaturalFacade.ApiDto
     {
         public int PropertyIndex { get; set; }
 
-        public string StringValue { get; set; }
-
-        public bool? BoolValue { get; set; }
+        public object Value { get; set; }
     }
 
     #endregion

@@ -18,7 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Natural.Aws" Version="1.0.7" />
+    <PackageReference Include="Natural.Aws" Version="1.0.9" />
+    <PackageReference Include="Natural.Json" Version="1.0.10" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
 

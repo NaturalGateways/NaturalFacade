@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace NaturalFacade.LayoutConfig.Raw
@@ -36,11 +37,12 @@ namespace NaturalFacade.LayoutConfig.Raw
             List<ApiDto.PropertyDto> newPropertyList = new List<ApiDto.PropertyDto>();
             foreach (PropertyRef usedProperty in instance.m_propertyUsedList)
             {
+                ApiDto.PropertyTypeDto valueType = GetTypeOfProperty(usedProperty);
                 ApiDto.PropertyDto newProperty = new ApiDto.PropertyDto
                 {
-                    ValueType = GetTypeOfProperty(usedProperty),
+                    ValueType = valueType,
                     Name = usedProperty.PropConfig.Name,
-                    DefaultValue = usedProperty.PropConfig.DefaultValue
+                    DefaultValue = Config2Layout.ConvertPropValue(valueType, usedProperty.PropConfig.DefaultValue)
                 };
                 if (oldPropertiesByName?.ContainsKey(usedProperty.PropConfig.Name) ?? false)
                 {
@@ -58,11 +60,9 @@ namespace NaturalFacade.LayoutConfig.Raw
         /// <summary>Getter for the property type of a property.</summary>
         private static ApiDto.PropertyTypeDto GetTypeOfProperty(PropertyRef propertyRef)
         {
-            if (propertyRef.PropConfig.Type == "Boolean")
-            {
-                return ApiDto.PropertyTypeDto.Boolean;
-            }
-            return ApiDto.PropertyTypeDto.String;
+            ApiDto.PropertyTypeDto parsedEnum = ApiDto.PropertyTypeDto.String;
+            Enum.TryParse<ApiDto.PropertyTypeDto>(propertyRef.PropConfig.Type, out parsedEnum);
+            return parsedEnum;
         }
 
         /// <summary>The properties and their indexes.</summary>
@@ -594,6 +594,8 @@ namespace NaturalFacade.LayoutConfig.Raw
                 destField.Integer = ConvertControlsFieldInteger(srcField.Integer);
             if (srcField.Switch != null)
                 destField.Switch = ConvertControlsFieldSwitch(srcField.Switch);
+            if (srcField.Timer != null)
+                destField.Timer = ConvertControlsFieldTimer(srcField.Timer);
             return destField;
         }
 
@@ -616,6 +618,20 @@ namespace NaturalFacade.LayoutConfig.Raw
                 FalseLabel = srcSwitch.FalseLabel,
                 TrueLabel = srcSwitch.TrueLabel
             };
+        }
+
+        /// <summary>Converts a controls object.</summary>
+        private object ConvertControlsFieldTimer(RawLayoutConfigControlsFieldTimer srcTimer)
+        {
+            Dictionary<string, object> destTimer = new Dictionary<string, object>
+            {
+                { "Direction", (srcTimer.Direction == -1) ? -1 : 1 }
+            };
+            if (srcTimer.MinValue.HasValue)
+                destTimer.Add("MinValue", srcTimer.MinValue.Value);
+            if (srcTimer.MaxValue.HasValue)
+                destTimer.Add("MaxValue", srcTimer.MaxValue.Value);
+            return destTimer;
         }
     }
 }

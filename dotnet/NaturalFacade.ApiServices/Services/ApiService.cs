@@ -350,15 +350,7 @@ namespace NaturalFacade.Services
             foreach (ApiDto.AuthPutLayoutPropertyValueDataRequestDto propertyValue in requestDto.payload.PutLayoutPropertyValues.Values)
             {
                 ApiDto.PropertyDto existingProperty = properties[propertyValue.PropertyIndex];
-                switch (existingProperty.ValueType)
-                {
-                    case ApiDto.PropertyTypeDto.String:
-                        existingProperty.UpdatedValue = propertyValue.StringValue;
-                        break;
-                    case ApiDto.PropertyTypeDto.Boolean:
-                        existingProperty.UpdatedValue = propertyValue.BoolValue;
-                        break;
-                }
+                existingProperty.UpdatedValue = LayoutConfig.Config2Layout.ConvertPropValue(existingProperty.ValueType, propertyValue.Value);
             }
 
             // Create new values

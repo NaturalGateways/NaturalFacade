@@ -52,6 +52,8 @@ namespace NaturalFacade.LayoutConfig.Raw
         public RawLayoutConfigControlsFieldInteger Integer { get; set; }
 
         public RawLayoutConfigControlsFieldSwitch Switch { get; set; }
+
+        public RawLayoutConfigControlsFieldTimer Timer { get; set; }
     }
 
     public class RawLayoutConfigControlsFieldInteger
@@ -68,6 +70,15 @@ namespace NaturalFacade.LayoutConfig.Raw
         public string FalseLabel { get; set; }
 
         public string TrueLabel { get; set; }
+    }
+
+    public class RawLayoutConfigControlsFieldTimer
+    {
+        public long? MinValue { get; set; }
+
+        public long? MaxValue { get; set; }
+
+        public int? Direction { get; set; }
     }
 
     public class RawLayoutConfigResource
