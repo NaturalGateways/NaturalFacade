@@ -15,6 +15,7 @@ phases:
       - "json=$(jq -n --arg ver \"$VERSION\" '{version: $ver}')"
       - echo $json > dotnet/NaturalFacade.ApiServices/AppConfig.json
       - cat dotnet/NaturalFacade.ApiServices/AppConfig.json
+      - rm dotnet/NuGet.config
   build:
     commands:
       - aws codeartifact login --tool dotnet --repository NaturalLibs --domain natural-libs --domain-owner 582929002414 --region ap-southeast-2
