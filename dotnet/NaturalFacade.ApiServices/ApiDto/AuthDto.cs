@@ -99,7 +99,7 @@ namespace NaturalFacade.ApiDto
     {
         public string LayoutId { get; set; }
 
-        public IEnumerable<AuthPutLayoutPropertyValueDataRequestDto> Values { get; set; }
+        public AuthPutLayoutPropertyValueDataRequestDto[] Values { get; set; }
     }
 
     public class AuthPutLayoutPropertyValueDataRequestDto
