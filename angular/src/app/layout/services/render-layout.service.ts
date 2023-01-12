@@ -91,6 +91,11 @@ export class RenderLayoutService {
     }
     if (object.op === "Prop")
     {
+      if (object.index < this.layoutData!.properties.length && this.layoutData!.properties[object.index].type == "Timer")
+      {
+        var date = new Date(2000, 1, 1, 0, 0, this.propValues[object.index].Secs, 0);
+        return date.toLocaleTimeString();
+      }
       return this.propValues[object.index];
     }
     if (object.op === "Cat")

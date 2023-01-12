@@ -1,9 +1,7 @@
 export class LayoutData {
   canvasSize: any = [];
   
-  parameters: Map<string, LayoutParameter> = new Map<string, LayoutParameter>();
-
-  parametersLoaded: boolean = false;
+  properties: Array<LayoutProperty> = new Array<LayoutProperty>();
 
   imageResources: Array<LayoutImageResource> = new Array<LayoutImageResource>();
 
@@ -14,8 +12,8 @@ export class LayoutData {
   rootElement: any;
 }
 
-export class LayoutParameter {
-  value: any | undefined;
+export class LayoutProperty {
+  type: string | undefined;
 
   constructor() { }
 }

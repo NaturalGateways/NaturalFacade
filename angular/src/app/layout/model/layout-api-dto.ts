@@ -11,7 +11,7 @@ export class ConvertedOverlayApiDto {
 export class OverlayApiDto {
   canvasSize: any = [];
 
-  parameters: { [key: string]: any } = {};
+  properties: any = [];
 
   imageResources: any = [];
 

@@ -1,7 +1,7 @@
 import type { } from "css-font-loading-module";
 
 import { OverlayApiDto } from '../model/layout-api-dto';
-import { LayoutData, LayoutParameter, LayoutImageResource, LayoutFontResource, LayoutFontConfig } from '../layout-data';
+import { LayoutData, LayoutProperty, LayoutImageResource, LayoutFontResource, LayoutFontConfig } from '../layout-data';
 
 export class LoadLayoutService {
 
@@ -61,16 +61,18 @@ export class LoadLayoutService {
   {
     var layoutData : LayoutData = new LayoutData();
     layoutData.canvasSize = apiDto.canvasSize;
-    if (apiDto.parameters !== undefined)
+    if (apiDto.properties !== undefined)
     {
-      for (var key in apiDto.parameters) {
-        layoutData.parameters.set(key, new LayoutParameter());
+      for (var propertyIndex in apiDto.properties) {
+        var newProp = new LayoutProperty();
+        newProp.type = apiDto.properties[propertyIndex].type;
+        layoutData.properties.push(newProp);
       }
     }
     if (apiDto.imageResources !== undefined)
     {
-      for (var key in apiDto.imageResources) {
-        layoutData.imageResources.push(new LayoutImageResource(apiDto.imageResources[key]));
+      for (var imageIndex in apiDto.imageResources) {
+        layoutData.imageResources.push(new LayoutImageResource(apiDto.imageResources[imageIndex]));
       }
     }
     if (apiDto.fontResources !== undefined)
