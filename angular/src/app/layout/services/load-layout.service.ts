@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import type { } from "css-font-loading-module";
 
-import { ConvertedOverlayApiDto, OverlayApiDto, LayoutApiDtoContainer } from '../model/layout-api-dto';
+import { OverlayApiDto } from '../model/layout-api-dto';
 import { LayoutData, LayoutParameter, LayoutImageResource, LayoutFontResource, LayoutFontConfig } from '../layout-data';
 
 export class LoadLayoutService {
@@ -57,11 +57,6 @@ export class LoadLayoutService {
     }
   }
 
-  fromJsonContainer(apiDto: LayoutApiDtoContainer) : LayoutData
-  {
-    return this.fromJson(apiDto.Payload);
-  }
-
   fromJson(apiDto: OverlayApiDto) : LayoutData
   {
     var layoutData : LayoutData = new LayoutData();
@@ -95,22 +90,5 @@ export class LoadLayoutService {
     }
     layoutData.rootElement = apiDto.rootElement;
     return layoutData;
-  }
-
-  loadParametersFromData(layoutData: LayoutData | undefined, dataJson: {[key: string]: any;}) {
-    // Set parameters
-    var parameters: Map<string, LayoutParameter> | undefined = layoutData?.parameters;
-    if (parameters === undefined)
-    {
-      return;
-    }
-
-    // Set parameters
-    for (var key in dataJson) {
-      if (parameters!.has(key)) {
-        parameters.get(key)!.value = dataJson[key]!;
-      }
-    }
-    layoutData!.parametersLoaded = true;
   }
 }
