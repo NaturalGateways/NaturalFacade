@@ -198,15 +198,9 @@ export class ApiService {
     this.executeAuthPostNoResponse(reqBody, successCallback, errorCallback);
   }
 
-  putLayoutStringPropertyValue(layoutId: string, propertyIndex: number, stringValue: string, successCallback: () => void, errorCallback: () => void)
+  putLayoutPropertyValue(layoutId: string, propertyIndex: number, anyValue: any, successCallback: () => void, errorCallback: () => void)
   {
-    var reqBody = {RequestType: "PutLayoutPropertyValues", PutLayoutPropertyValues: {LayoutId:layoutId,Values:[{PropertyIndex:propertyIndex,StringValue:stringValue}]}};
-    this.executeAuthPostNoResponse(reqBody, successCallback, errorCallback);
-  }
-
-  putLayoutBooleanPropertyValue(layoutId: string, propertyIndex: number, boolValue: boolean, successCallback: () => void, errorCallback: () => void)
-  {
-    var reqBody = {RequestType: "PutLayoutPropertyValues", PutLayoutPropertyValues: {LayoutId:layoutId,Values:[{PropertyIndex:propertyIndex,BoolValue:boolValue}]}};
+    var reqBody = {RequestType: "PutLayoutPropertyValues", PutLayoutPropertyValues: {LayoutId:layoutId,Values:[{PropertyIndex:propertyIndex,Value:anyValue}]}};
     this.executeAuthPostNoResponse(reqBody, successCallback, errorCallback);
   }
 }

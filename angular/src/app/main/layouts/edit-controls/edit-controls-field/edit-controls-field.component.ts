@@ -140,7 +140,7 @@ export class EditControlsFieldComponent {
   {
     this.isSaving = true;
     var propIndex: number = this.field!.control.PropIndex;
-    this.apiService.putLayoutStringPropertyValue(this.layoutId!, propIndex, stringValue, () =>
+    this.apiService.putLayoutPropertyValue(this.layoutId!, propIndex, stringValue, () =>
     {
       this.fieldStringValue = stringValue;
       this.fieldBoolValue = null;
@@ -157,7 +157,7 @@ export class EditControlsFieldComponent {
   {
     this.isSaving = true;
     var propIndex: number = this.field!.control.PropIndex;
-    this.apiService.putLayoutBooleanPropertyValue(this.layoutId!, propIndex, boolValue, () =>
+    this.apiService.putLayoutPropertyValue(this.layoutId!, propIndex, boolValue, () =>
     {
       var stringValue : string = boolValue ? this.switchTrueLabel : this.switchFalseLabel;
       this.fieldStringValue = null;

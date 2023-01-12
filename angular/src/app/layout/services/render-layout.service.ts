@@ -101,10 +101,8 @@ export class RenderLayoutService {
       }
       return result;
     }
-    console.log("Cond op: " + object.op);
     if (object.op === "If")
     {
-      console.log("IF cond: " + this.checkCondition(object.if, false));
       if (this.checkCondition(object.if, false))
         return this.getString(layoutData, object.then);
       else
