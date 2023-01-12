@@ -8,6 +8,8 @@ namespace NaturalFacade.ApiDto
     {
         public int[] canvasSize { get; set; }
 
+        public OverlayDtoProperty[] properties { get; set; }
+
         public string[] imageResources { get; set; }
 
         public string[] fontResources { get; set; }
@@ -15,6 +17,11 @@ namespace NaturalFacade.ApiDto
         public OverlayDtoFont[] fonts { get; set; }
 
         public object rootElement { get; set; }
+    }
+
+    public class OverlayDtoProperty
+    {
+        public string type { get; set; }
     }
 
     public class OverlayDtoFont

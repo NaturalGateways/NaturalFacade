@@ -19,6 +19,11 @@ namespace NaturalFacade.LayoutConfig.Raw
             result.Overlay.rootElement = instance.ConvertElement(layoutConfig.RootElement);
 
             // Set resources
+            if (instance.m_propertyUsedList.Any())
+                result.Overlay.properties = instance.m_propertyUsedList.Select(x => new ApiDto.OverlayDtoProperty
+                {
+                    type = x.PropConfig.Type
+                }).ToArray();
             if (instance.m_imageResourcesUsedList.Any())
                 result.Overlay.imageResources = instance.m_imageResourcesUsedList.Select(x => x.ResConfig.Url).ToArray();
             if (instance.m_fontResourcesUsedList.Any())
