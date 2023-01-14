@@ -8,6 +8,10 @@ namespace NaturalFacade.ApiDto
     {
         public int[] canvasSize { get; set; }
 
+        public int? redrawMillis { get; set; }
+
+        public int? apiFetchMillis { get; set; }
+
         public OverlayDtoProperty[] properties { get; set; }
 
         public string[] imageResources { get; set; }

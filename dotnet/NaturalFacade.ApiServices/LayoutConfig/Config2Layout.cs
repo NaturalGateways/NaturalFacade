@@ -36,6 +36,26 @@ namespace NaturalFacade.LayoutConfig
             // Compile property values
             result.PropertyValues = Properties2Values.GetValuesFromProperties(result.Properties);
 
+            // Set timing defaults
+            if (layoutConfig.RedrawMillis.HasValue)
+            {
+                if (0 < layoutConfig.RedrawMillis.Value)
+                    result.Overlay.redrawMillis = layoutConfig.RedrawMillis.Value;
+            }
+            else if (result.Properties?.Any(x => x.ValueType == ApiDto.PropertyTypeDto.Timer) ?? false)
+            {
+                result.Overlay.redrawMillis = 250;
+            }
+            if (layoutConfig.ApiFetchMillis.HasValue)
+            {
+                if (0 < layoutConfig.ApiFetchMillis.Value)
+                    result.Overlay.apiFetchMillis = layoutConfig.ApiFetchMillis.Value;
+            }
+            else if (result.Properties?.Any() ?? false)
+            {
+                result.Overlay.apiFetchMillis = 2500;
+            }
+
             // Return
             return result;
         }
@@ -68,12 +88,20 @@ namespace NaturalFacade.LayoutConfig
                                 {
                                     long? seconds = jsonValue.GetDictionaryLong("Secs");
                                     string startDateTime = jsonValue.GetDictionaryString("StartDateTime");
+                                    string direction = jsonValue.GetDictionaryString("Direction");
                                     Dictionary<string, object> returnObject = new Dictionary<string, object>
                                     {
                                         { "Secs", seconds ?? 0 }
                                     };
-                                    if (string.IsNullOrEmpty(startDateTime) == false)
+                                    if (string.IsNullOrEmpty(startDateTime) == false && string.IsNullOrEmpty(direction) == false)
+                                    {
                                         returnObject.Add("StartDateTime", startDateTime);
+                                        returnObject.Add("Direction", direction);
+                                    }
+                                    else if (string.IsNullOrEmpty(startDateTime) == false || string.IsNullOrEmpty(direction) == false)
+                                    {
+                                        throw new Exception("Cannot set a timer value with 'StartDateTime' XOR 'Direction'.");
+                                    }
                                     return returnObject;
                                 }
                             default:
