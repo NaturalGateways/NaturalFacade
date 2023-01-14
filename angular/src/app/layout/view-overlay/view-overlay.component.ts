@@ -17,8 +17,7 @@ export class ViewOverlayComponent {
 
   layoutRender: RenderLayoutService | undefined;
 
-  updateIndex: number = 0;
-  updatePerFetch: number = 8;
+  apiFetchMillisLeft: number = 0;
 
   constructor(private route: ActivatedRoute, private apiService: ApiService)
   {
@@ -58,18 +57,32 @@ export class ViewOverlayComponent {
             this.layoutRender!.setLayout(loadedLayout);
             this.layoutRender!.render(true);
 
-            setInterval(() => {
-              this.updateIndex += 1;
-              if (this.updateIndex == this.updatePerFetch)
-              {
-                this.onFetch();
-                this.updateIndex = 0;
-              }
-              else
-              {
+            if (layoutOverlay.redrawMillis !== undefined && layoutOverlay.apiFetchMillis !== undefined)
+            {
+              this.apiFetchMillisLeft = layoutOverlay.apiFetchMillis;
+              setInterval(() => {
+                if (this.apiFetchMillisLeft < layoutOverlay.redrawMillis!)
+                {
+                  this.onFetch();
+                  this.apiFetchMillisLeft = layoutOverlay.apiFetchMillis!;
+                }
+                else
+                {
+                  this.layoutRender!.render(true);
+                  this.apiFetchMillisLeft = this.apiFetchMillisLeft - layoutOverlay.redrawMillis!;
+                }
+              }, layoutOverlay.redrawMillis);
+            }
+            else if (layoutOverlay.redrawMillis !== undefined)
+            {
+              setInterval(() => {
                 this.layoutRender!.render(true);
-              }
-            }, 250);
+              }, layoutOverlay.redrawMillis);
+            }
+            else if (layoutOverlay.apiFetchMillis !== undefined)
+            {
+              setInterval(this.onFetch, layoutOverlay.apiFetchMillis);
+            }
           }, () =>
           {
             this.layoutRender!.loadingMessage = "Load Error.";

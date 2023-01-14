@@ -1,6 +1,10 @@
 export class LayoutData {
   canvasSize: any = [];
-  
+ 
+  redrawMillis: number | undefined;
+
+  apiFetchMillis: number | undefined;
+
   properties: Array<LayoutProperty> = new Array<LayoutProperty>();
 
   imageResources: Array<LayoutImageResource> = new Array<LayoutImageResource>();

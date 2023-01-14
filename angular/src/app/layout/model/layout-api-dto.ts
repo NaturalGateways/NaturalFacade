@@ -11,6 +11,10 @@ export class ConvertedOverlayApiDto {
 export class OverlayApiDto {
   canvasSize: any = [];
 
+  redrawMillis: number | undefined;
+
+  apiFetchMillis: number | undefined;
+
   properties: any = [];
 
   imageResources: any = [];
