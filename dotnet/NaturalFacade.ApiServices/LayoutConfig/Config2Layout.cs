@@ -127,6 +127,14 @@ namespace NaturalFacade.LayoutConfig
             return output;
         }
 
+        /// <summary>Getter for the property type of a property.</summary>
+        public static ApiDto.PropertyTypeDto GetTypeOfProperty(string propertyType)
+        {
+            ApiDto.PropertyTypeDto parsedEnum = ApiDto.PropertyTypeDto.String;
+            Enum.TryParse<ApiDto.PropertyTypeDto>(propertyType, out parsedEnum);
+            return parsedEnum;
+        }
+
         /// <summary>Converts a property value.</summary>
         public static object ConvertPropValue(ApiDto.PropertyTypeDto valueType, Natural.Json.IJsonObject valueJson)
         {

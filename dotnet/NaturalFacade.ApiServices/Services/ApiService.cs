@@ -350,8 +350,9 @@ namespace NaturalFacade.Services
             foreach (ApiDto.AuthPutLayoutPropertyValueDataRequestDto propertyValue in requestDto.payload.PutLayoutPropertyValues.Values)
             {
                 ApiDto.PropertyDto existingProperty = properties[propertyValue.PropertyIndex];
+                ApiDto.PropertyTypeDto propertyType = LayoutConfig.Config2Layout.GetTypeOfProperty(existingProperty.ValueType);
                 Natural.Json.IJsonObject valueJson = Natural.Json.JsonHelper.JsonFromObject(propertyValue.Value);
-                existingProperty.UpdatedValue = LayoutConfig.Config2Layout.ConvertPropValue(existingProperty.ValueType, valueJson);
+                existingProperty.UpdatedValue = LayoutConfig.Config2Layout.ConvertPropValue(propertyType, valueJson);
             }
 
             // Create new values

@@ -13,7 +13,7 @@ namespace NaturalFacade.ApiDto
 
     public class PropertyDto
     {
-        public PropertyTypeDto ValueType { get; set; }
+        public string ValueType { get; set; }
 
         public string Name { get; set; }
 
