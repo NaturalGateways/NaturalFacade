@@ -12,7 +12,7 @@ namespace NaturalFacade.ApiDto
 
         public int? apiFetchMillis { get; set; }
 
-        public OverlayDtoProperty[] properties { get; set; }
+        public object[] properties { get; set; }
 
         public string[] imageResources { get; set; }
 
@@ -21,11 +21,6 @@ namespace NaturalFacade.ApiDto
         public OverlayDtoFont[] fonts { get; set; }
 
         public object rootElement { get; set; }
-    }
-
-    public class OverlayDtoProperty
-    {
-        public string type { get; set; }
     }
 
     public class OverlayDtoFont

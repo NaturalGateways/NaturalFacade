@@ -20,5 +20,11 @@ namespace NaturalFacade.ApiDto
         public object DefaultValue { get; set; }
 
         public object UpdatedValue { get; set; }
+
+        public int? TimerDirection { get; set; }
+
+        public long? TimerMinValue { get; set; }
+
+        public long? TimerMaxValue { get; set; }
     }
 }

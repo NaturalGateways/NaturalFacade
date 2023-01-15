@@ -10,7 +10,7 @@ namespace NaturalFacade.LayoutConfig.Raw
     {
         public const string TYPENAME = "Raw";
 
-        public RawLayoutConfigProperty[] Properties { get; set; }
+        public object[] Properties { get; set; }
 
         public RawLayoutConfigControls[] Controls { get; set; }
 
@@ -19,15 +19,6 @@ namespace NaturalFacade.LayoutConfig.Raw
         public RawLayoutConfigFont[] Fonts { get; set; }
 
         public RawLayoutConfigElement RootElement { get; set; }
-    }
-
-    public class RawLayoutConfigProperty
-    {
-        public string Name { get; set; }
-
-        public string Type { get; set; }
-
-        public object DefaultValue { get; set; }
     }
 
     public class RawLayoutConfigControls
@@ -74,11 +65,7 @@ namespace NaturalFacade.LayoutConfig.Raw
 
     public class RawLayoutConfigControlsFieldTimer
     {
-        public long? MinValue { get; set; }
-
-        public long? MaxValue { get; set; }
-
-        public int? Direction { get; set; }
+        public bool? AllowClear { get; set; }
     }
 
     public class RawLayoutConfigResource

@@ -4,32 +4,31 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace NaturalFacade.LayoutConfig.Raw
 {
     public class RawLayout2Overlay
     {
         /// <summary>Converts the data.</summary>
-        public static void Convert(Config2LayoutResult result, RawLayoutConfig layoutConfig)
+        public static Config2LayoutOverlayOutput Convert(RawLayoutConfig layoutConfig)
         {
             // Create an instance
             RawLayout2Overlay instance = new RawLayout2Overlay(layoutConfig);
+            Config2LayoutOverlayOutput output = new Config2LayoutOverlayOutput();
 
             // Get root element
-            result.Overlay.rootElement = instance.ConvertElement(layoutConfig.RootElement);
+            output.RootElement = instance.ConvertElement(layoutConfig.RootElement);
 
             // Set resources
             if (instance.m_propertyUsedList.Any())
-                result.Overlay.properties = instance.m_propertyUsedList.Select(x => new ApiDto.OverlayDtoProperty
-                {
-                    type = x.PropConfig.Type
-                }).ToArray();
+                output.PropertyDefs = instance.m_propertyUsedList.Select(x => GetOverlayPropertyDef(x)).ToArray();
             if (instance.m_imageResourcesUsedList.Any())
-                result.Overlay.imageResources = instance.m_imageResourcesUsedList.Select(x => x.ResConfig.Url).ToArray();
+                output.ImageResources = instance.m_imageResourcesUsedList.Select(x => x.ResConfig.Url).ToArray();
             if (instance.m_fontResourcesUsedList.Any())
-                result.Overlay.fontResources = instance.m_fontResourcesUsedList.Select(x => x.ResConfig.Url).ToArray();
+                output.FontResources = instance.m_fontResourcesUsedList.Select(x => x.ResConfig.Url).ToArray();
             if (instance.m_fontObjUsedList.Any())
-                result.Overlay.fonts = instance.m_fontObjUsedList.Select(x => new ApiDto.OverlayDtoFont
+                output.Fonts = instance.m_fontObjUsedList.Select(x => new ApiDto.OverlayDtoFont
                 {
                     res = x.ResIndex.Value,
                     size = x.Font.Size,
@@ -37,36 +36,37 @@ namespace NaturalFacade.LayoutConfig.Raw
                     align = x.Font.Align
                 }).ToArray();
 
-            // Create new properties
-            Dictionary<string, ApiDto.PropertyDto> oldPropertiesByName = result.Properties?.ToDictionary(x => x.Name);
-            List<ApiDto.PropertyDto> newPropertyList = new List<ApiDto.PropertyDto>();
-            foreach (PropertyRef usedProperty in instance.m_propertyUsedList)
-            {
-                ApiDto.PropertyTypeDto valueType = GetTypeOfProperty(usedProperty);
-                ApiDto.PropertyDto newProperty = new ApiDto.PropertyDto
-                {
-                    ValueType = valueType,
-                    Name = usedProperty.PropConfig.Name,
-                    DefaultValue = Config2Layout.ConvertPropValue(valueType, usedProperty.PropConfig.DefaultValue)
-                };
-                if (oldPropertiesByName?.ContainsKey(usedProperty.PropConfig.Name) ?? false)
-                {
-                    ApiDto.PropertyDto oldProperty = oldPropertiesByName[usedProperty.PropConfig.Name];
-                    newProperty.UpdatedValue = oldProperty.UpdatedValue;
-                }
-                newPropertyList.Add(newProperty);
-            }
-            result.Properties = newPropertyList.ToArray();
-
             // Convert controls
-            result.ControlsArray = layoutConfig.Controls?.Select(x => instance.ConvertControls(x))?.ToArray();
+            output.ControlsArray = layoutConfig.Controls?.Select(x => instance.ConvertControls(x))?.ToArray();
+
+            // Return
+            return output;
+        }
+
+        /// <summary>Getter for the property type of a property.</summary>
+        private static Config2LayoutOverlayOutputPropertyDef GetOverlayPropertyDef(PropertyRef propertyRef)
+        {
+            ApiDto.PropertyTypeDto typeDto = GetTypeOfProperty(propertyRef);
+            Config2LayoutOverlayOutputPropertyDef output = new Config2LayoutOverlayOutputPropertyDef
+            {
+                ValueType = typeDto,
+                Name = propertyRef.PropName,
+                DefaultValue = Config2Layout.ConvertPropValue(typeDto, propertyRef.DefaultValueJson)
+            };
+            if (propertyRef.PropType == "Timer")
+            {
+                output.TimerDirection = (int)propertyRef.PropJson.GetDictionaryLong("Direction").Value;
+                output.TimerMinValue = propertyRef.PropJson.GetDictionaryLong("MinValue");
+                output.TimerMaxValue = propertyRef.PropJson.GetDictionaryLong("MaxValue");
+            }
+            return output;
         }
 
         /// <summary>Getter for the property type of a property.</summary>
         private static ApiDto.PropertyTypeDto GetTypeOfProperty(PropertyRef propertyRef)
         {
             ApiDto.PropertyTypeDto parsedEnum = ApiDto.PropertyTypeDto.String;
-            Enum.TryParse<ApiDto.PropertyTypeDto>(propertyRef.PropConfig.Type, out parsedEnum);
+            Enum.TryParse<ApiDto.PropertyTypeDto>(propertyRef.PropType, out parsedEnum);
             return parsedEnum;
         }
 
@@ -95,7 +95,7 @@ namespace NaturalFacade.LayoutConfig.Raw
         {
             if (layoutConfig.Properties?.Any() ?? false)
             {
-                m_propertyByName = layoutConfig.Properties.Select(x => new PropertyRef(x)).ToDictionary(x => x.PropConfig.Name);
+                m_propertyByName = layoutConfig.Properties.Select(x => new PropertyRef(x)).ToDictionary(x => x.PropName);
             }
             else
             {
@@ -124,13 +124,19 @@ namespace NaturalFacade.LayoutConfig.Raw
         /// <summary>A property with a boolean flag for whether it is used or not.</summary>
         private class PropertyRef
         {
-            public RawLayoutConfigProperty PropConfig { get; private set; }
+            public Natural.Json.IJsonObject PropJson { get; private set; }
+            public string PropName { get; private set; }
+            public string PropType { get; private set; }
+            public Natural.Json.IJsonObject DefaultValueJson { get; private set; }
 
             public int? PropIndex { get; set; }
 
-            public PropertyRef(RawLayoutConfigProperty propConfig)
+            public PropertyRef(object propConfig)
             {
-                this.PropConfig = propConfig;
+                this.PropJson = Natural.Json.JsonHelper.JsonFromObject(propConfig);
+                this.PropName = this.PropJson.GetDictionaryString("Name");
+                this.PropType = this.PropJson.GetDictionaryString("Type");
+                this.DefaultValueJson = this.PropJson.GetDictionaryObject("DefaultValue");
             }
         }
 
@@ -570,7 +576,7 @@ namespace NaturalFacade.LayoutConfig.Raw
         }
 
         /// <summary>Converts a controls object.</summary>
-        private ItemModel.ItemLayoutControlsField ConvertControlsField(RawLayoutConfigControlsField srcField)
+        private object ConvertControlsField(RawLayoutConfigControlsField srcField)
         {
             // Get property
             if (string.IsNullOrEmpty(srcField.PropName))
@@ -588,19 +594,20 @@ namespace NaturalFacade.LayoutConfig.Raw
             }
 
             // Create field
-            ItemModel.ItemLayoutControlsField destField = new ItemModel.ItemLayoutControlsField
+            Dictionary<string, object> destField = new Dictionary<string, object>
             {
-                Label = srcField.Label ?? propertyRef.PropConfig.Name,
-                PropIndex = propertyRef.PropIndex.Value,
-                AllowTextEdit = srcField.AllowTextEdit,
-                Options = srcField.Options
+                { "Label", srcField.Label ?? propertyRef.PropName },
+                { "PropIndex", propertyRef.PropIndex.Value },
+                { "AllowTextEdit", srcField.AllowTextEdit }
             };
+            if (srcField.Options?.Any() ?? false)
+                destField.Add("Options", srcField.Options);
             if (srcField.Integer != null)
-                destField.Integer = ConvertControlsFieldInteger(srcField.Integer);
+                destField.Add("Integer", ConvertControlsFieldInteger(srcField.Integer));
             if (srcField.Switch != null)
-                destField.Switch = ConvertControlsFieldSwitch(srcField.Switch);
+                destField.Add("Switch", ConvertControlsFieldSwitch(srcField.Switch));
             if (srcField.Timer != null)
-                destField.Timer = ConvertControlsFieldTimer(srcField.Timer);
+                destField.Add("Timer", ConvertControlsFieldTimer(srcField.Timer));
             return destField;
         }
 
@@ -628,15 +635,10 @@ namespace NaturalFacade.LayoutConfig.Raw
         /// <summary>Converts a controls object.</summary>
         private object ConvertControlsFieldTimer(RawLayoutConfigControlsFieldTimer srcTimer)
         {
-            Dictionary<string, object> destTimer = new Dictionary<string, object>
+            return new Dictionary<string, object>
             {
-                { "Direction", (srcTimer.Direction == -1) ? -1 : 1 }
+                { "AllowClear", srcTimer.AllowClear ?? true }
             };
-            if (srcTimer.MinValue.HasValue)
-                destTimer.Add("MinValue", srcTimer.MinValue.Value);
-            if (srcTimer.MaxValue.HasValue)
-                destTimer.Add("MaxValue", srcTimer.MaxValue.Value);
-            return destTimer;
         }
     }
 }

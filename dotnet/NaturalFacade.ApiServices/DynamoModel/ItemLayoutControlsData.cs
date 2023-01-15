@@ -12,24 +12,7 @@ namespace NaturalFacade.ItemModel
 
         public bool SaveAll { get; set; } = false;
 
-        public ItemLayoutControlsField[] Fields { get; set; }
-    }
-
-    public class ItemLayoutControlsField
-    {
-        public string Label { get; set; }
-
-        public int PropIndex { get; set; }
-
-        public bool AllowTextEdit { get; set; } = false;
-
-        public string[] Options { get; set; }
-
-        public ItemLayoutControlsFieldInteger Integer { get; set; }
-
-        public ItemLayoutControlsFieldSwitch Switch { get; set; }
-
-        public object Timer { get; set; }
+        public object[] Fields { get; set; }
     }
 
     public class ItemLayoutControlsFieldInteger
