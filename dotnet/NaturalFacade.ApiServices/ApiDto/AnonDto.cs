@@ -16,8 +16,7 @@ namespace NaturalFacade.ApiDto
         GetInfo,
         GetLayoutOverlay,
         GetLayoutOverlayPropValues,
-        ConvertLayoutToOverlay,
-        ConvertPropertiesToValues
+        ConvertLayoutToOverlay
     }
 
     public class AnonRequestPayloadDto
@@ -29,7 +28,5 @@ namespace NaturalFacade.ApiDto
         public string LayoutId { get; set; }
 
         public LayoutConfig.LayoutConfig LayoutConfig { get; set; }
-
-        public PropertyDto[] Properties { get; set; }
     }
 }

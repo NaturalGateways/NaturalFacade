@@ -14,20 +14,4 @@ namespace NaturalFacade.ItemModel
 
         public object[] Fields { get; set; }
     }
-
-    public class ItemLayoutControlsFieldInteger
-    {
-        public int? MinValue { get; set; }
-
-        public int? MaxValue { get; set; }
-
-        public int Step { get; set; } = 1;
-    }
-
-    public class ItemLayoutControlsFieldSwitch
-    {
-        public string FalseLabel { get; set; }
-
-        public string TrueLabel { get; set; }
-    }
 }

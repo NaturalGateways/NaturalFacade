@@ -28,8 +28,6 @@ namespace NaturalFacade.Services
                     return await HandleAnonGetLayoutOverlayPropValuesAsync(dynamoService, requestDto);
                 case ApiDto.AnonRequestType.ConvertLayoutToOverlay:
                     return await HandleAnonConvertLayoutToOverlayAsync(requestDto);
-                case ApiDto.AnonRequestType.ConvertPropertiesToValues:
-                    return HandleAnonConvertPropertiesToValues(requestDto);
                 default:
                     throw new FacadeApiException($"Unrecognised request type: {requestDto.RequestType}");
             }
@@ -95,17 +93,11 @@ namespace NaturalFacade.Services
                 { "overlay", result.Overlay },
                 { "propValues", result.PropertyValues }
             };
-            if (result.ControlsArray?.Any() ?? false)
+            if (result.Controls?.Any() ?? false)
             {
-                resultData.Add("controls", result.ControlsArray);
+                resultData.Add("controls", result.Controls);
             }
             return resultData;
-        }
-
-        /// <summary>Handle the request.</summary>
-        private static object HandleAnonConvertPropertiesToValues(ApiDto.AnonRequestPayloadDto requestDto)
-        {
-            return LayoutConfig.Properties2Values.GetValuesFromProperties(requestDto.Properties);
         }
 
         #endregion
@@ -273,19 +265,8 @@ namespace NaturalFacade.Services
                 throw new Exception($"Controls at index {controlsIndex} don't exist.");
             }
 
-            // Fetch properties
-            ApiDto.PropertyDto[] properties = await dynamoService.GetOverlayPropertiesAsync(layoutId);
-            if (properties == null)
-            {
-                throw new Exception($"Controls at index {controlsIndex} don't exist.");
-            }
-
-            // Get layout config
-            return new Dictionary<string, object>
-            {
-                { "controls", controls },
-                { "properties", properties }
-            };
+            // Return controls
+            return controls;
         }
 
         /// <summary>Handle the request.</summary>
@@ -350,13 +331,20 @@ namespace NaturalFacade.Services
             foreach (ApiDto.AuthPutLayoutPropertyValueDataRequestDto propertyValue in requestDto.payload.PutLayoutPropertyValues.Values)
             {
                 ApiDto.PropertyDto existingProperty = properties[propertyValue.PropertyIndex];
-                ApiDto.PropertyTypeDto propertyType = LayoutConfig.Config2Layout.GetTypeOfProperty(existingProperty.ValueType);
                 Natural.Json.IJsonObject valueJson = Natural.Json.JsonHelper.JsonFromObject(propertyValue.Value);
-                existingProperty.UpdatedValue = LayoutConfig.Config2Layout.ConvertPropValue(propertyType, valueJson);
+                existingProperty.Value = LayoutConfig.Config2Layout.ConvertPropValue(existingProperty.Type, valueJson);
             }
 
             // Create new values
-            object[] propValues = LayoutConfig.Properties2Values.GetValuesFromProperties(properties);
+            object[] propValues = null;
+            if (properties?.Any() ?? false)
+            {
+                propValues = properties.Select(x => x.Value).ToArray();
+            }
+            else
+            {
+                propValues = Array.Empty<object>();
+            }
 
             // Save
             await dynamoService.PutLayoutPropertyValuesAsync(layoutId, properties, propValues);

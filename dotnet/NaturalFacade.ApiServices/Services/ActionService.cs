@@ -87,7 +87,7 @@ namespace NaturalFacade.Services
 
             // Convert layout
             LayoutConfig.Config2LayoutResult convertResult = LayoutConfig.Config2Layout.Convert(action.LayoutConfig, properties);
-            summary.ControlsNameArray = convertResult.ControlsArray?.Select(x => x.Name)?.ToArray();
+            summary.ControlsNameArray = convertResult.Controls?.Select(x => x.Name)?.ToArray();
 
             // Save
             await dynamoService.PutLayoutConfigAsync(action.LayoutId, summary, action.LayoutConfig, convertResult);

@@ -19,7 +19,7 @@ namespace NaturalFacade.LayoutConfig
 
         public object RootElement { get; set; }
 
-        public ItemModel.ItemLayoutControlsData[] ControlsArray { get; set; }
+        public Config2LayoutOverlayOutputControlsDef[] ControlsArray { get; set; }
     }
 
     /// <summary>The output of a converstion of a layout type to the common data to convert to an overlay and properties.</summary>
@@ -38,14 +38,84 @@ namespace NaturalFacade.LayoutConfig
         public object DefaultValue { get; set; }
     }
 
+    /// <summary>The definition for controls.</summary>
+    public class Config2LayoutOverlayOutputControlsDef
+    {
+        public string Name { get; set; }
+
+        public bool SaveAll { get; set; } = false;
+
+        public Config2LayoutOverlayOutputControlsFieldDef[] Fields { get; set; }
+    }
+
+    /// <summary>The definition for a control field.</summary>
+    public class Config2LayoutOverlayOutputControlsFieldDef
+    {
+        public string Label { get; set; }
+
+        public int PropIndex { get; set; }
+
+        public object TextField { get; set; }
+
+        public object SelectOptions { get; set; }
+
+        public Config2LayoutOverlayOutputControlsFieldIntegerDef Integer { get; set; }
+
+        public Config2LayoutOverlayOutputControlsFieldSwitchDef Switch { get; set; }
+
+        public Config2LayoutOverlayOutputControlsFieldTimerDef Timer { get; set; }
+    }
+
+    /// <summary>The definition for an integer control field.</summary>
+    public class Config2LayoutOverlayOutputControlsFieldIntegerDef
+    {
+        public int Step { get; set; } = 1;
+
+        public int? MinValue { get; set; }
+
+        public int? MaxValue { get; set; }
+    }
+
+    /// <summary>The definition for an switch control field.</summary>
+    public class Config2LayoutOverlayOutputControlsFieldSwitchDef
+    {
+        public string FalseLabel { get; set; }
+
+        public string TrueLabel { get; set; }
+    }
+
+    /// <summary>The definition for an switch control field.</summary>
+    public class Config2LayoutOverlayOutputControlsFieldTimerDef
+    {
+        public bool AllowClear { get; set; } = true;
+    }
+
     public class Config2LayoutResult
     {
         public ApiDto.OverlayDto Overlay { get; set; }
 
-        public Dictionary<string, object>[] Properties { get; set; }
+        public ApiDto.PropertyDto[] Properties { get; set; }
 
         public object[] PropertyValues { get; set; }
 
-        public ItemModel.ItemLayoutControlsData[] ControlsArray { get; set; }
+        public Config2LayoutResultControls[] Controls { get; set; }
+    }
+
+    public class Config2LayoutResultControls
+    {
+        public string Name { get; set; }
+
+        public bool SaveAll { get; set; } = false;
+
+        public Config2LayoutResultControlsField[] Fields { get; set; }
+    }
+
+    public class Config2LayoutResultControlsField
+    {
+        public int PropIndex { get; set; }
+
+        public object FieldDef { get; set; }
+
+        public object DefaultValue { get; set; }
     }
 }

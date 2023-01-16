@@ -178,16 +178,16 @@ namespace NaturalFacade.Services
             await PutItemAsync(layoutId, "Overlay", convertResult.Overlay);
             await PutItemAsync(layoutId, "OverlayProperties", convertResult.Properties);
             await PutItemAsync(layoutId, "OverlayPropValues", convertResult.PropertyValues);
-            if (convertResult.ControlsArray?.Any() ?? false)
+            if (convertResult.Controls?.Any() ?? false)
             {
-                for (int controlsIndex = 0; controlsIndex != convertResult.ControlsArray.Length; ++controlsIndex)
+                for (int controlsIndex = 0; controlsIndex != convertResult.Controls.Length; ++controlsIndex)
                 {
-                    await PutItemAsync(layoutId, $"OverlayControls{controlsIndex:D2}", convertResult.ControlsArray[controlsIndex]);
+                    await PutItemAsync(layoutId, $"OverlayControls{controlsIndex:D2}", convertResult.Controls[controlsIndex]);
                 }
             }
         }
 
-        /// <summary>Puts a layout config and overlay.</summary>
+        /// <summary>Puts a layout's properties.</summary>
         public async Task PutLayoutPropertyValuesAsync(string layoutId, ApiDto.PropertyDto[] properties, object[] propValues)
         {
             await PutItemAsync(layoutId, "OverlayProperties", properties);

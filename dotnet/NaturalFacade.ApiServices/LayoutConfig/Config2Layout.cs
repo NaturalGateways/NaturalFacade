@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.XPath;
 
 namespace NaturalFacade.LayoutConfig
 {
@@ -35,8 +34,7 @@ namespace NaturalFacade.LayoutConfig
                     fontResources = convertOutput.FontResources,
                     fonts = convertOutput.Fonts,
                     rootElement = convertOutput.RootElement
-                },
-                ControlsArray = convertOutput.ControlsArray
+                }
             };
 
             // Check if we write the properties for property editing
@@ -44,7 +42,7 @@ namespace NaturalFacade.LayoutConfig
             {
                 int propertyNum = convertOutput.PropertyDefs.Length;
                 result.Overlay.properties = new object[propertyNum];
-                result.Properties = new Dictionary<string, object>[propertyNum];
+                result.Properties = new ApiDto.PropertyDto[propertyNum];
                 result.PropertyValues = new object[propertyNum];
                 Dictionary<string, int> indexByName = new Dictionary<string, int>();
                 for (int propertyIndex = 0; propertyIndex != propertyNum; ++propertyIndex)
@@ -62,8 +60,8 @@ namespace NaturalFacade.LayoutConfig
                         if (indexByName.ContainsKey(oldProperty.Name))
                         {
                             int propertyIndex = indexByName[oldProperty.Name];
-                            result.Properties[propertyIndex]["UpdatedValue"] = oldProperty.UpdatedValue;
-                            result.PropertyValues[propertyIndex] = oldProperty.UpdatedValue;
+                            result.Properties[propertyIndex].Value = oldProperty.Value;
+                            result.PropertyValues[propertyIndex] = oldProperty.Value;
                         }
                     }
                 }
@@ -89,6 +87,9 @@ namespace NaturalFacade.LayoutConfig
                 result.Overlay.apiFetchMillis = 2500;
             }
 
+            // Convert controls
+            result.Controls = convertOutput.ControlsArray?.Select(x => ConvertControlsToDto(convertOutput, x))?.Where(x => x != null)?.ToArray();
+
             // Return
             return result;
         }
@@ -98,32 +99,109 @@ namespace NaturalFacade.LayoutConfig
         {
             Dictionary<string, object> result = new Dictionary<string, object>
             {
-                { "ValueType", propertyDef.ValueType.ToString() }
+                { "type", propertyDef.ValueType.ToString() }
             };
-            if (propertyDef.TimerDirection.HasValue)
-                result.Add("TimerDirection", propertyDef.TimerDirection.Value);
-            if (propertyDef.TimerMinValue.HasValue)
-                result.Add("TimerMinValue", propertyDef.TimerMinValue.Value);
-            if (propertyDef.TimerMaxValue.HasValue)
-                result.Add("TimerMaxValue", propertyDef.TimerMaxValue.Value);
+            switch (propertyDef.ValueType)
+            {
+                case ApiDto.PropertyTypeDto.Timer:
+                    result.Add("direction", propertyDef.TimerDirection ?? 1);
+                    if (propertyDef.TimerMinValue.HasValue)
+                        result.Add("minValue", propertyDef.TimerMinValue.Value);
+                    if (propertyDef.TimerMaxValue.HasValue)
+                        result.Add("maxValue", propertyDef.TimerMaxValue.Value);
+                    break;
+            }
             return result;
         }
 
         /// <summary>Converts a prop def to an property modified by a control.</summary>
-        private static Dictionary<string, object> ConvertPropDefToPropDto(Config2LayoutOverlayOutputPropertyDef propertyDef)
+        private static ApiDto.PropertyDto ConvertPropDefToPropDto(Config2LayoutOverlayOutputPropertyDef propertyDef)
+        {
+            return new ApiDto.PropertyDto
+            {
+                Type = propertyDef.ValueType,
+                Name = propertyDef.Name,
+                Value = propertyDef.DefaultValue
+            };
+        }
+
+        /// <summary>Converts a set of controls.</summary>
+        private static Config2LayoutResultControls ConvertControlsToDto(Config2LayoutOverlayOutput convertOutput, Config2LayoutOverlayOutputControlsDef controlsDef)
+        {
+            Config2LayoutResultControlsField[] fieldArray = controlsDef.Fields?.Select(x => ConvertControlsFieldToDto(convertOutput, x))?.Where(x => x != null)?.ToArray();
+            if ((fieldArray?.Any() ?? false) == false)
+            {
+                return null;
+            }
+            return new Config2LayoutResultControls
+            {
+                Name = controlsDef.Name,
+                SaveAll = controlsDef.SaveAll,
+                Fields = fieldArray
+            };
+        }
+
+        /// <summary>Converts a control field.</summary>
+        private static Config2LayoutResultControlsField ConvertControlsFieldToDto(Config2LayoutOverlayOutput convertOutput, Config2LayoutOverlayOutputControlsFieldDef fieldDef)
+        {
+            Config2LayoutOverlayOutputPropertyDef propertyDef = convertOutput.PropertyDefs[fieldDef.PropIndex];
+            return new Config2LayoutResultControlsField
+            {
+                PropIndex = fieldDef.PropIndex,
+                FieldDef = ConvertControlsFieldToFieldDefDto(fieldDef, propertyDef),
+                DefaultValue = propertyDef.DefaultValue
+            };
+        }
+
+        /// <summary>Converts a control field.</summary>
+        private static object ConvertControlsFieldToFieldDefDto(Config2LayoutOverlayOutputControlsFieldDef fieldDef, Config2LayoutOverlayOutputPropertyDef propertyDef)
         {
             Dictionary<string, object> output = new Dictionary<string, object>
             {
-                { "ValueType", propertyDef.ValueType.ToString() },
-                { "Name", propertyDef.Name },
-                { "DefaultValue", propertyDef.DefaultValue }
+                { "Label", fieldDef.Label },
+                { "PropIndex", fieldDef.PropIndex }
             };
-            if (propertyDef.TimerDirection.HasValue)
-                output.Add("TimerDirection", propertyDef.TimerDirection.Value);
-            if (propertyDef.TimerMinValue.HasValue)
-                output.Add("TimerMinValue", propertyDef.TimerMinValue.Value);
-            if (propertyDef.TimerMaxValue.HasValue)
-                output.Add("TimerMaxValue", propertyDef.TimerMaxValue.Value);
+            if (fieldDef.TextField != null)
+            {
+                output.Add("TextField", fieldDef.TextField);
+            }
+            if (fieldDef.SelectOptions != null)
+            {
+                output.Add("SelectOptions", fieldDef.SelectOptions);
+            }
+            if (fieldDef.Integer != null)
+            {
+                Dictionary<string, object> subOutput = new Dictionary<string, object>
+                {
+                    { "Step", fieldDef.Integer.Step }
+                };
+                if (fieldDef.Integer.MinValue.HasValue)
+                    subOutput.Add("MinValue", fieldDef.Integer.MinValue.Value);
+                if (fieldDef.Integer.MaxValue.HasValue)
+                    subOutput.Add("MaxValue", fieldDef.Integer.MaxValue.Value);
+                output.Add("Integer", subOutput);
+            }
+            if (fieldDef.Switch != null)
+            {
+                output.Add("Switch", new Dictionary<string, object>
+                {
+                    { "FalseLabel", fieldDef.Switch.FalseLabel },
+                    { "TrueLabel", fieldDef.Switch.TrueLabel }
+                });
+            }
+            if (fieldDef.Timer != null)
+            {
+                Dictionary<string, object> subOutput = new Dictionary<string, object>
+                {
+                    { "AllowClear", fieldDef.Timer.AllowClear },
+                    { "Direction", propertyDef.TimerDirection }
+                };
+                if (propertyDef.TimerMinValue.HasValue)
+                    subOutput.Add("MinValue", propertyDef.TimerMinValue.Value);
+                if (propertyDef.TimerMaxValue.HasValue)
+                    subOutput.Add("MaxValue", propertyDef.TimerMaxValue.Value);
+                output.Add("Timer", subOutput);
+            }
             return output;
         }
 

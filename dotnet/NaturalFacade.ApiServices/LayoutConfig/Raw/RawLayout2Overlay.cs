@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Text.Json.Nodes;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace NaturalFacade.LayoutConfig.Raw
 {
@@ -46,7 +42,7 @@ namespace NaturalFacade.LayoutConfig.Raw
         /// <summary>Getter for the property type of a property.</summary>
         private static Config2LayoutOverlayOutputPropertyDef GetOverlayPropertyDef(PropertyRef propertyRef)
         {
-            ApiDto.PropertyTypeDto typeDto = GetTypeOfProperty(propertyRef);
+            ApiDto.PropertyTypeDto typeDto = Config2Layout.GetTypeOfProperty(propertyRef.PropType);
             Config2LayoutOverlayOutputPropertyDef output = new Config2LayoutOverlayOutputPropertyDef
             {
                 ValueType = typeDto,
@@ -60,14 +56,6 @@ namespace NaturalFacade.LayoutConfig.Raw
                 output.TimerMaxValue = propertyRef.PropJson.GetDictionaryLong("MaxValue");
             }
             return output;
-        }
-
-        /// <summary>Getter for the property type of a property.</summary>
-        private static ApiDto.PropertyTypeDto GetTypeOfProperty(PropertyRef propertyRef)
-        {
-            ApiDto.PropertyTypeDto parsedEnum = ApiDto.PropertyTypeDto.String;
-            Enum.TryParse<ApiDto.PropertyTypeDto>(propertyRef.PropType, out parsedEnum);
-            return parsedEnum;
         }
 
         /// <summary>The properties and their indexes.</summary>
@@ -565,9 +553,9 @@ namespace NaturalFacade.LayoutConfig.Raw
         }
 
         /// <summary>Converts a controls object.</summary>
-        private ItemModel.ItemLayoutControlsData ConvertControls(RawLayoutConfigControls srcControls)
+        private Config2LayoutOverlayOutputControlsDef ConvertControls(RawLayoutConfigControls srcControls)
         {
-            return new ItemModel.ItemLayoutControlsData
+            return new Config2LayoutOverlayOutputControlsDef
             {
                 Name = srcControls.Name,
                 SaveAll = srcControls.SaveAll,
@@ -576,7 +564,7 @@ namespace NaturalFacade.LayoutConfig.Raw
         }
 
         /// <summary>Converts a controls object.</summary>
-        private object ConvertControlsField(RawLayoutConfigControlsField srcField)
+        private Config2LayoutOverlayOutputControlsFieldDef ConvertControlsField(RawLayoutConfigControlsField srcField)
         {
             // Get property
             if (string.IsNullOrEmpty(srcField.PropName))
@@ -594,38 +582,44 @@ namespace NaturalFacade.LayoutConfig.Raw
             }
 
             // Create field
-            Dictionary<string, object> destField = new Dictionary<string, object>
+            Config2LayoutOverlayOutputControlsFieldDef destField = new Config2LayoutOverlayOutputControlsFieldDef
+            {
+                Label = srcField.Label ?? propertyRef.PropName,
+                PropIndex = propertyRef.PropIndex.Value
+            };
+            Dictionary<string, object> destField2 = new Dictionary<string, object>
             {
                 { "Label", srcField.Label ?? propertyRef.PropName },
-                { "PropIndex", propertyRef.PropIndex.Value },
-                { "AllowTextEdit", srcField.AllowTextEdit }
+                { "PropIndex", propertyRef.PropIndex.Value }
             };
+            if (srcField.AllowTextEdit)
+                destField.TextField = new object();
             if (srcField.Options?.Any() ?? false)
-                destField.Add("Options", srcField.Options);
+                destField.SelectOptions = srcField.Options;
             if (srcField.Integer != null)
-                destField.Add("Integer", ConvertControlsFieldInteger(srcField.Integer));
+                destField.Integer = ConvertControlsFieldInteger(srcField.Integer);
             if (srcField.Switch != null)
-                destField.Add("Switch", ConvertControlsFieldSwitch(srcField.Switch));
+                destField.Switch = ConvertControlsFieldSwitch(srcField.Switch);
             if (srcField.Timer != null)
-                destField.Add("Timer", ConvertControlsFieldTimer(srcField.Timer));
+                destField.Timer = ConvertControlsFieldTimer(srcField.Timer);
             return destField;
         }
 
         /// <summary>Converts a controls object.</summary>
-        private ItemModel.ItemLayoutControlsFieldInteger ConvertControlsFieldInteger(RawLayoutConfigControlsFieldInteger srcInteger)
+        private Config2LayoutOverlayOutputControlsFieldIntegerDef ConvertControlsFieldInteger(RawLayoutConfigControlsFieldInteger srcInteger)
         {
-            return new ItemModel.ItemLayoutControlsFieldInteger
+            return new Config2LayoutOverlayOutputControlsFieldIntegerDef
             {
+                Step = srcInteger.Step,
                 MinValue = srcInteger.MinValue,
-                MaxValue = srcInteger.MaxValue,
-                Step = srcInteger.Step
+                MaxValue = srcInteger.MaxValue
             };
         }
 
         /// <summary>Converts a controls object.</summary>
-        private ItemModel.ItemLayoutControlsFieldSwitch ConvertControlsFieldSwitch(RawLayoutConfigControlsFieldSwitch srcSwitch)
+        private Config2LayoutOverlayOutputControlsFieldSwitchDef ConvertControlsFieldSwitch(RawLayoutConfigControlsFieldSwitch srcSwitch)
         {
-            return new ItemModel.ItemLayoutControlsFieldSwitch
+            return new Config2LayoutOverlayOutputControlsFieldSwitchDef
             {
                 FalseLabel = srcSwitch.FalseLabel,
                 TrueLabel = srcSwitch.TrueLabel
@@ -633,11 +627,11 @@ namespace NaturalFacade.LayoutConfig.Raw
         }
 
         /// <summary>Converts a controls object.</summary>
-        private object ConvertControlsFieldTimer(RawLayoutConfigControlsFieldTimer srcTimer)
+        private Config2LayoutOverlayOutputControlsFieldTimerDef ConvertControlsFieldTimer(RawLayoutConfigControlsFieldTimer srcTimer)
         {
-            return new Dictionary<string, object>
+            return new Config2LayoutOverlayOutputControlsFieldTimerDef
             {
-                { "AllowClear", srcTimer.AllowClear ?? true }
+                AllowClear = srcTimer.AllowClear ?? true
             };
         }
     }
