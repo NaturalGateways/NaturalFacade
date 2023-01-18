@@ -27,17 +27,27 @@ export class EditControlsComponent {
     this.route.queryParams.subscribe(params => {
       this.layoutId = params['layoutId'];
       this.controlsIndex = Number(params['controlsIndex']);
-      this.apiService.getLayoutControls(this.layoutId!, this.controlsIndex!, (response) =>
+      this.apiService.getLayoutControls(this.layoutId!, this.controlsIndex!, (controlsResponse) =>
       {
-        response.controls!.Fields?.forEach((child: any) =>
+        this.apiService.getLayoutPropValues(this.layoutId!, (valuesResponse) =>
         {
-          let propertyIndex : number = child.PropIndex as number;
-          let field = new EditControlsField();
-          field.control = child;
-          field.property = response.properties![propertyIndex];
-          this.fields.push(field);
+          controlsResponse!.Fields?.forEach((child: any) =>
+          {
+            let propertyIndex : number = child.PropIndex as number;
+            let field = new EditControlsField();
+            field.propIndex = propertyIndex;
+            field.valueType = child.ValueType;
+            field.label = child.Label;
+            field.fieldDef = child.FieldDef;
+            field.defaultValue = child.DefaultValue;
+            field.value = valuesResponse![propertyIndex];
+            this.fields.push(field);
+          });
+          this.isLoaded = true;
+        }, () =>
+        {
+          //
         });
-        this.isLoaded = true;
       }, () =>
       {
         //

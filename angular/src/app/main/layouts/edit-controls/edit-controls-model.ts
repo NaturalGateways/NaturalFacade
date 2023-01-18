@@ -1,6 +1,14 @@
 export class EditControlsField
 {
-  control: any | undefined;
+  propIndex: number | undefined;
   
-  property: any | undefined;
+  valueType: string | undefined;
+  
+  label: string | undefined;
+  
+  fieldDef: any | undefined;
+  
+  defaultValue: any;
+  
+  value: any;
 }

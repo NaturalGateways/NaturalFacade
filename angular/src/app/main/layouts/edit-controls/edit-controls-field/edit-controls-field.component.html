@@ -2,31 +2,31 @@
     <div><label class="fieldLabel">{{fieldLabel}}</label></div>
     
     <div class="inputRow" *ngIf="switchVisible">
-        <p-toggleButton offIcon="pi pi-circle-off" [offLabel]="switchFalseLabel" onIcon="pi pi-check-circle" [onLabel]="switchTrueLabel" [(ngModel)]="switchEditedValue" [disabled]="switchSavedValue !== switchEditedValue" (onChange)="onSwitchToggled($event)"></p-toggleButton>
+        <p-toggleButton offIcon="pi pi-circle-off" [offLabel]="switchFalseLabel" onIcon="pi pi-check-circle" [onLabel]="switchTrueLabel" [(ngModel)]="switchValue" [disabled]="switchValue !== savedBoolValue" (onChange)="onSwitchToggled($event)"></p-toggleButton>
     </div>
 
-    <div class="inputRow" *ngIf="numericVisible">
+    <div class="inputRow" *ngIf="integerVisible">
         <div class="flex flex-row">
-            <p-inputNumber class="flex-auto" [(ngModel)]="numericValue" [showButtons]="true" buttonLayout="horizontal" inputId="horizontal" spinnerMode="horizontal" [step]="1" decrementButtonIcon="pi pi-minus" incrementButtonIcon="pi pi-plus" [min]="minValue" [max]="maxValue" [disabled]="isSaving" (onInput)="onNumericChanged()"></p-inputNumber>
+            <p-inputNumber class="flex-auto" [(ngModel)]="integerValue" [showButtons]="true" buttonLayout="horizontal" inputId="horizontal" spinnerMode="horizontal" [step]="1" decrementButtonIcon="pi pi-minus" incrementButtonIcon="pi pi-plus" [min]="integerMinValue" [max]="integerMaxValue" [disabled]="isSaving" (onInput)="onIntegerChanged()"></p-inputNumber>
             <div class="flex-1"></div>
             <button class="flex-auto" pButton pRipple type="button" icon="pi pi-replay" class="p-button" [disabled]="isSaving" (click)="onNumericClear()"></button>
         </div>
     </div>
     
-    <div class="inputRow" *ngIf="optionsVisible">
+    <div class="inputRow" *ngIf="selectOptionsVisible">
         <div class="flex flex-row">
-            <div class="flex-1"><label class="fieldValue">{{fieldStringValue}}</label></div>
+            <div class="flex-1"><label class="fieldValue">{{savedStringValue}}</label></div>
             <div class="rightSaveButton">
                 <button pButton pRipple type="button" icon="pi pi-th-large" class="p-button" [disabled]="isSaving" (click)="onShowContextMenu($event, optionsCM)"></button>
-                <p-contextMenu #optionsCM [model]="optionsModel!"></p-contextMenu>
+                <p-contextMenu #optionsCM [model]="selectOptionsModel!"></p-contextMenu>
             </div>
         </div>
     </div>
     
-    <div class="inputRow" *ngIf="freeTextVisible">
+    <div class="inputRow" *ngIf="textFieldVisible">
         <div class="flex flex-row">
-            <input class="flex-1" type="text" pInputText [(ngModel)]="freeTextText">
-            <div class="rightSaveButton"><button pButton pRipple type="button" icon="pi pi-save" class="p-button" [disabled]="freeTextText === fieldStringValue || isSaving" (click)="saveFreeText()"></button></div>
+            <input class="flex-1" type="text" pInputText [(ngModel)]="textFieldText">
+            <div class="rightSaveButton"><button pButton pRipple type="button" icon="pi pi-save" class="p-button" [disabled]="textFieldText === savedStringValue || isSaving" (click)="onSaveTextField()"></button></div>
         </div>
     </div>
 </div>

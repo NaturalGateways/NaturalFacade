@@ -1,13 +1,19 @@
 export class LayoutControlsApiDto
 {
-  controls: LayoutControlsControlsApiDto | undefined;
-  
-  properties: any[] | undefined;
-}
-
-export class LayoutControlsControlsApiDto
-{
   Name: string | undefined;
   
-  Fields: any[] | undefined;
+  Fields: LayoutControlsFieldApiDto[] | undefined;
+}
+
+export class LayoutControlsFieldApiDto
+{
+  PropIndex: number | undefined;
+  
+  ValueType: string | undefined;
+  
+  Label: string | undefined;
+  
+  FieldDef: any[] | undefined;
+  
+  DefaultValue: any;
 }

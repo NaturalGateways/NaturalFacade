@@ -180,10 +180,10 @@ export class ApiService {
     this.executeAuthPostWithResponse<LayoutControlsApiDto>(reqBody, successCallback, errorCallback);
   }
 
-  getLayoutPropValues(layoutId: string, successCallback: (propValues: any) => void, errorCallback: () => void)
+  getLayoutPropValues(layoutId: string, successCallback: (propValues: any[]) => void, errorCallback: () => void)
   {
     let queryParams: string = "RequestType=GetLayoutOverlayPropValues&LayoutId=" + layoutId;
-    this.executeAnonGetWithResponse<any>(queryParams, successCallback, errorCallback);
+    this.executeAnonGetWithResponse<any[]>(queryParams, successCallback, errorCallback);
   }
 
   createLayout(layoutName: string, successCallback: () => void, errorCallback: () => void)

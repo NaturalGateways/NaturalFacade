@@ -13,7 +13,7 @@ import { LoadLayoutService } from '../services/load-layout.service';
 })
 export class ViewOverlayComponent {
 
-  layoutId: string| null = null;
+  layoutId: string | undefined;
 
   layoutRender: RenderLayoutService | undefined;
 
@@ -57,7 +57,7 @@ export class ViewOverlayComponent {
             this.layoutRender!.setLayout(loadedLayout);
             this.layoutRender!.render(true);
 
-            if (layoutOverlay.redrawMillis !== undefined && layoutOverlay.apiFetchMillis !== undefined)
+            if (layoutOverlay.redrawMillis !== null && layoutOverlay.apiFetchMillis !== null)
             {
               this.apiFetchMillisLeft = layoutOverlay.apiFetchMillis;
               setInterval(() => {
@@ -73,15 +73,15 @@ export class ViewOverlayComponent {
                 }
               }, layoutOverlay.redrawMillis);
             }
-            else if (layoutOverlay.redrawMillis !== undefined)
+            else if (layoutOverlay.redrawMillis !== null)
             {
               setInterval(() => {
                 this.layoutRender!.render(true);
               }, layoutOverlay.redrawMillis);
             }
-            else if (layoutOverlay.apiFetchMillis !== undefined)
+            else if (layoutOverlay.apiFetchMillis !== null)
             {
-              setInterval(this.onFetch, layoutOverlay.apiFetchMillis);
+              setInterval(() => { this.onFetch(); }, layoutOverlay.apiFetchMillis);
             }
           }, () =>
           {

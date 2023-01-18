@@ -61,8 +61,10 @@ export class LoadLayoutService {
   {
     var layoutData : LayoutData = new LayoutData();
     layoutData.canvasSize = apiDto.canvasSize;
-    layoutData.redrawMillis = apiDto.redrawMillis;
-    layoutData.apiFetchMillis = apiDto.apiFetchMillis;
+    if (apiDto.redrawMillis !== null)
+      layoutData.redrawMillis = apiDto.redrawMillis;
+    if (apiDto.apiFetchMillis !== null)
+      layoutData.apiFetchMillis = apiDto.apiFetchMillis;
     if (apiDto.properties !== undefined)
     {
       for (var propertyIndex in apiDto.properties) {

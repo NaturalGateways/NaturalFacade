@@ -1,3 +1,4 @@
+import { JsonPipe } from '@angular/common';
 import { Component, Input } from '@angular/core';
 
 import { MenuItem } from 'primeng/api';
@@ -19,25 +20,25 @@ export class EditControlsFieldComponent {
   isSaving: boolean = false;
 
   fieldLabel : string | undefined;
-  fieldStringValue : string | null = null;
-  fieldBoolValue : boolean | null = null;
+  savedStringValue : string | undefined;
+  savedNumberValue : number | undefined;
+  savedBoolValue : boolean = false;
 
   switchVisible : boolean = false;
   switchFalseLabel : string = "False";
   switchTrueLabel : string = "True";
-  switchSavedValue : boolean = false;
-  switchEditedValue : boolean = false;
+  switchValue : boolean = false;
 
-  numericVisible : boolean = false;
-  numericValue : number = 0;
-  minValue : number = 0;
-  maxValue : number = 0;
+  integerVisible : boolean = false;
+  integerValue : number = 0;
+  integerMinValue : number = 0;
+  integerMaxValue : number = 0;
 
-  optionsVisible : boolean = false;
-  optionsModel : MenuItem[] = [];
+  selectOptionsVisible : boolean = false;
+  selectOptionsModel : MenuItem[] = [];
 
-  freeTextVisible : boolean = false;
-  freeTextText : string | undefined;
+  textFieldVisible : boolean = false;
+  textFieldText : string | undefined;
 
   constructor(private apiService: ApiService)
   {
@@ -45,83 +46,92 @@ export class EditControlsFieldComponent {
   }
 
   ngOnInit(): void {
-    this.fieldLabel = this.field!.control.Label;
-    var fieldValue : any = this.field!.property.UpdatedValue ?? this.field!.property.DefaultValue;
-
-    // Check type
-    switch (this.field!.property.ValueType)
-    {
-      // String
-      case 0:
-        this.fieldStringValue = fieldValue;
-        this.freeTextText = fieldValue;
-        break;
-      // Boolean
-      case 1:
-        this.fieldBoolValue = Boolean(fieldValue);
-        this.freeTextText = this.fieldBoolValue ? this.switchTrueLabel : this.switchFalseLabel;
-        break;
-    }
+    this.fieldLabel = this.field!.label;
 
     // Setup switch
-    if (this.field!.control.Switch !== undefined && this.field!.control.Switch !== null)
+    if (this.field!.fieldDef.Switch !== undefined && this.field!.fieldDef.Switch !== null)
     {
       this.switchVisible = true;
-      var switchObj = this.field!.control.Switch;
-      if (switchObj.FalseLabel !== undefined && switchObj.FalseLabel !== null)
+      var switchObj = this.field!.fieldDef.Switch;
+      if (switchObj.FalseLabel !== undefined)
         this.switchFalseLabel = switchObj.FalseLabel;
-      if (switchObj.TrueLabel !== undefined && switchObj.TrueLabel !== null)
+      if (switchObj.TrueLabel !== undefined)
         this.switchTrueLabel = switchObj.TrueLabel;
-      this.switchSavedValue = this.fieldBoolValue ?? false;
-      this.switchEditedValue = this.switchSavedValue;
     }
 
     // Setup numeric
-    if (this.field!.control.Integer !== undefined && this.field!.control.Integer !== null)
+    if (this.field!.fieldDef.Integer !== undefined)
     {
-      this.numericVisible = true;
-      this.numericValue = Number(fieldValue);
-      if (this.field!.control.Integer.MinValue !== undefined && this.field!.control.Integer.MinValue !== null)
-        this.minValue = this.field!.control.Integer.MinValue;
+      this.integerVisible = true;
+      var integerObj = this.field!.fieldDef.Integer;
+      if (integerObj.MinValue !== undefined)
+        this.integerMinValue = integerObj.MinValue;
       else
-        this.minValue = Number.MIN_VALUE;
-      if (this.field!.control.Integer.MaxValue !== undefined && this.field!.control.Integer.MaXValue !== null)
-        this.maxValue = this.field!.control.Integer.MaxValue;
+        this.integerMinValue = Number.MIN_VALUE;
+      if (integerObj.MaxValue !== undefined)
+        this.integerMaxValue = integerObj.MaxValue;
       else
-        this.maxValue = Number.MAX_VALUE;
+        this.integerMaxValue = Number.MAX_VALUE;
     }
 
     // Setup choices
-    if (this.field!.control.Options !== undefined && this.field!.control.Options !== null)
+    if (this.field!.fieldDef.SelectOptions !== undefined)
     {
-      this.optionsVisible = true;
-      var optionValues : string[] = this.field!.control.Options;
+      this.selectOptionsVisible = true;
+      var optionValues : string[] = this.field!.fieldDef.SelectOptions;
       optionValues.forEach(optionValue => {
         var controlsMenuItems : MenuItem =
         {
           label: optionValue,
           icon:'pi pi-fw pi-stop',
-          command: e => this.saveString(optionValue)
+          command: e => this.upload(optionValue)
         };
-        this.optionsModel.push(controlsMenuItems);
+        this.selectOptionsModel.push(controlsMenuItems);
       });
     }
 
     // Setup free text
-    this.freeTextVisible = this.field!.control.AllowTextEdit;
+    if (this.field!.fieldDef.TextField !== undefined)
+    {
+      this.textFieldVisible = true;
+    }
+
+    // Set value
+    this.setSavedValue(this.field!.value);
+  }
+
+  setSavedValue(value: any)
+  {
+    switch (this.field!.valueType)
+    {
+      case "String":
+        this.savedStringValue = value;
+        this.textFieldText = value;
+        if (this.field!.fieldDef.Integer !== undefined)
+        {
+          this.savedNumberValue = Number(value);
+          this.integerValue = this.savedNumberValue;
+        }
+        break;
+      case "Boolean":
+        this.savedBoolValue = Boolean(value);
+        this.switchValue = this.savedBoolValue;
+        this.savedStringValue = this.savedBoolValue ? this.switchTrueLabel : this.switchFalseLabel;
+        break;
+    }
   }
 
   onSwitchToggled(event: any)
   {
-    this.saveBoolean(event.checked);
+    this.upload(event.checked);
   }
 
-  onNumericChanged() {
-    this.saveString(String(this.numericValue));
+  onIntegerChanged() {
+    this.upload(this.integerValue);
   }
 
   onNumericClear() {
-    this.saveString(this.field!.property.DefaultValue);
+    this.upload(this.field!.defaultValue);
   }
 
   onShowContextMenu(event: MouseEvent, contextMenu : ContextMenu)
@@ -131,40 +141,18 @@ export class EditControlsFieldComponent {
     event.stopPropagation();
   }
 
-  saveFreeText()
+  onSaveTextField()
   {
-    this.saveString(this.freeTextText!);
+    this.upload(this.textFieldText!);
   }
 
-  saveString(stringValue: string)
+  upload(value: any)
   {
     this.isSaving = true;
-    var propIndex: number = this.field!.control.PropIndex;
-    this.apiService.putLayoutPropertyValue(this.layoutId!, propIndex, stringValue, () =>
+    var propIndex: number = this.field!.propIndex!;
+    this.apiService.putLayoutPropertyValue(this.layoutId!, propIndex, value, () =>
     {
-      this.fieldStringValue = stringValue;
-      this.fieldBoolValue = null;
-      this.numericValue = Number(stringValue);
-      this.freeTextText = stringValue;
-      this.isSaving = false;
-    }, () =>
-    {
-      this.isSaving = false;
-    });
-  }
-
-  saveBoolean(boolValue: boolean)
-  {
-    this.isSaving = true;
-    var propIndex: number = this.field!.control.PropIndex;
-    this.apiService.putLayoutPropertyValue(this.layoutId!, propIndex, boolValue, () =>
-    {
-      var stringValue : string = boolValue ? this.switchTrueLabel : this.switchFalseLabel;
-      this.fieldStringValue = null;
-      this.fieldBoolValue = boolValue;
-      this.numericValue = Number(stringValue);
-      this.freeTextText = stringValue;
-      this.switchSavedValue = boolValue;
+      this.setSavedValue(value);
       this.isSaving = false;
     }, () =>
     {
