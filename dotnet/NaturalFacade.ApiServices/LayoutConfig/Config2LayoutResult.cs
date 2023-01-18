@@ -114,6 +114,10 @@ namespace NaturalFacade.LayoutConfig
     {
         public int PropIndex { get; set; }
 
+        public string ValueType { get; set; }
+
+        public string Label { get; set; }
+
         public object FieldDef { get; set; }
 
         public object DefaultValue { get; set; }

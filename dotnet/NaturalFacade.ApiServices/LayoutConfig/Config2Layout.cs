@@ -148,6 +148,8 @@ namespace NaturalFacade.LayoutConfig
             return new Config2LayoutResultControlsField
             {
                 PropIndex = fieldDef.PropIndex,
+                ValueType = propertyDef.ValueType.ToString(),
+                Label = fieldDef.Label,
                 FieldDef = ConvertControlsFieldToFieldDefDto(fieldDef, propertyDef),
                 DefaultValue = propertyDef.DefaultValue
             };
@@ -156,11 +158,7 @@ namespace NaturalFacade.LayoutConfig
         /// <summary>Converts a control field.</summary>
         private static object ConvertControlsFieldToFieldDefDto(Config2LayoutOverlayOutputControlsFieldDef fieldDef, Config2LayoutOverlayOutputPropertyDef propertyDef)
         {
-            Dictionary<string, object> output = new Dictionary<string, object>
-            {
-                { "Label", fieldDef.Label },
-                { "PropIndex", fieldDef.PropIndex }
-            };
+            Dictionary<string, object> output = new Dictionary<string, object>();
             if (fieldDef.TextField != null)
             {
                 output.Add("TextField", fieldDef.TextField);
