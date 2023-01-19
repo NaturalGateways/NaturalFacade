@@ -17,6 +17,8 @@ export class LayoutData {
 }
 
 export class LayoutProperty {
+  propDef: any;
+
   type: string | undefined;
 
   constructor() { }

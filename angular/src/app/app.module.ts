@@ -10,6 +10,7 @@ import { DataViewModule } from 'primeng/dataview';
 import { DividerModule } from 'primeng/divider';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { InputSwitchModule } from 'primeng/inputswitch';
 import { InputTextModule } from 'primeng/inputtext';
 import { MenubarModule } from 'primeng/menubar';
 import { PanelModule } from 'primeng/panel';
@@ -66,6 +67,7 @@ import { RootComponent } from './root/root.component';
     DividerModule,
     InputTextareaModule,
     InputNumberModule,
+    InputSwitchModule,
     InputTextModule,
     MenubarModule,
     PanelModule,

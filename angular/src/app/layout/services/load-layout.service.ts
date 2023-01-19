@@ -69,7 +69,8 @@ export class LoadLayoutService {
     {
       for (var propertyIndex in apiDto.properties) {
         var newProp = new LayoutProperty();
-        newProp.type = apiDto.properties[propertyIndex].type;
+        newProp.propDef = apiDto.properties[propertyIndex];
+        newProp.type = newProp.propDef.type;
         layoutData.properties.push(newProp);
       }
     }

@@ -14,7 +14,16 @@
     width: 100%;
 }
 
-.rightSaveButton {
-    flex: 0 0 auto;
-    margin-left: 1em;
-}
+.timerSwitchButton { 
+    flex: 0 0 auto; 
+} 
+ 
+.timerLabel { 
+    flex: 0 0 auto; 
+    margin-left: 1em; 
+} 
+ 
+.rightSaveButton, .timerClearButton { 
+    flex: 0 0 auto; 
+    margin-left: 1em; 
+} 

@@ -1,6 +1,7 @@
+import { ComponentFactoryResolver } from '@angular/core';
 import { Console } from 'console';
 
-import { LayoutData, LayoutFontConfig } from '../layout-data';
+import { LayoutData, LayoutFontConfig, LayoutProperty } from '../layout-data';
 
 enum RenderLayoutSizeType { Pixel, Min, Max }
 
@@ -91,12 +92,7 @@ export class RenderLayoutService {
     }
     if (object.op === "Prop")
     {
-      if (object.index < this.layoutData!.properties.length && this.layoutData!.properties[object.index].type == "Timer")
-      {
-        var date = new Date(2000, 1, 1, 0, 0, this.propValues[object.index].Secs, 0);
-        return date.toLocaleTimeString();
-      }
-      return this.propValues[object.index];
+      return this.getPropString(this.layoutData!.properties[object.index], this.propValues[object.index]);
     }
     if (object.op === "Cat")
     {
@@ -114,6 +110,30 @@ export class RenderLayoutService {
         return this.getString(layoutData, object.else);
     }
     return object;
+  }
+
+  getPropString(propDef: LayoutProperty, value: any) : any {
+    if (propDef.type == "Timer")
+    {
+      var valueSecs : number = value.Secs;
+      if (value.StartDateTime !== undefined)
+      {
+        // Adjust for running timer
+        var startDateTime = new Date(value.StartDateTime);
+        var curDateTime = new Date();
+        var deltaMillis = curDateTime.getTime() - startDateTime.getTime();
+        var deltaSecs = Math.floor(deltaMillis / 1000);
+        valueSecs = valueSecs + propDef.propDef.direction * deltaSecs;
+        // Clamp to limits
+        if (propDef.propDef.minValue !== undefined && valueSecs < propDef.propDef.minValue)
+          valueSecs = propDef.propDef.minValue;
+        if (propDef.propDef.maxValue !== undefined && propDef.propDef.maxValue < valueSecs)
+          valueSecs = propDef.propDef.maxValue;
+      }
+      var date = new Date(2000, 1, 1, 0, 0, valueSecs, 0);
+      return date.toLocaleTimeString();
+    }
+    return value;
   }
 
   checkCondition(condition: any, defaultValue: boolean) : boolean {

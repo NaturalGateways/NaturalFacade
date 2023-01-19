@@ -29,4 +29,13 @@
             <div class="rightSaveButton"><button pButton pRipple type="button" icon="pi pi-save" class="p-button" [disabled]="textFieldText === savedStringValue || isSaving" (click)="onSaveTextField()"></button></div>
         </div>
     </div>
+    
+    <div class="inputRow" *ngIf="timerVisible">
+        <div class="flex flex-row">
+            <p-inputSwitch class="timerSwitchButton" [(ngModel)]="timerRunning" [disabled]="timerRunning !== savedTimerRunning || isSaving" (onChange)="saveTimerRunning($event)"></p-inputSwitch>
+            <label class="timerLabel">{{timerText}}</label>
+            <div class="flex-1"></div>
+            <div class="timerClearButton"><button pButton pRipple type="button" icon="pi pi-replay" class="p-button" [disabled]="timerRunning !== savedTimerRunning || isSaving" (click)="clearTimer()"></button></div>
+        </div>
+    </div>
 </div>

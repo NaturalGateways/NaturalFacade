@@ -3,6 +3,7 @@ import { Component, Input } from '@angular/core';
 
 import { MenuItem } from 'primeng/api';
 import { ContextMenu } from 'primeng/contextmenu';
+import { InputSwitchOnChangeEvent } from 'primeng/inputswitch';
 
 import { ApiService } from '../../../../api/api.service';
 
@@ -23,6 +24,9 @@ export class EditControlsFieldComponent {
   savedStringValue : string | undefined;
   savedNumberValue : number | undefined;
   savedBoolValue : boolean = false;
+  savedTimerRunning : boolean = false;
+  savedTimerSecs : number | undefined;
+  savedTimerStartDateTime : Date | undefined;
 
   switchVisible : boolean = false;
   switchFalseLabel : string = "False";
@@ -39,6 +43,10 @@ export class EditControlsFieldComponent {
 
   textFieldVisible : boolean = false;
   textFieldText : string | undefined;
+
+  timerVisible : boolean = false;
+  timerRunning : boolean = false;
+  timerText : string | undefined;
 
   constructor(private apiService: ApiService)
   {
@@ -96,6 +104,12 @@ export class EditControlsFieldComponent {
       this.textFieldVisible = true;
     }
 
+    // Setup timer
+    if (this.field!.fieldDef.Timer !== undefined)
+    {
+      this.timerVisible = true;
+    }
+
     // Set value
     this.setSavedValue(this.field!.value);
   }
@@ -104,6 +118,11 @@ export class EditControlsFieldComponent {
   {
     switch (this.field!.valueType)
     {
+      case "Boolean":
+        this.savedBoolValue = Boolean(value);
+        this.switchValue = this.savedBoolValue;
+        this.savedStringValue = this.savedBoolValue ? this.switchTrueLabel : this.switchFalseLabel;
+        break;
       case "String":
         this.savedStringValue = value;
         this.textFieldText = value;
@@ -113,11 +132,22 @@ export class EditControlsFieldComponent {
           this.integerValue = this.savedNumberValue;
         }
         break;
-      case "Boolean":
-        this.savedBoolValue = Boolean(value);
-        this.switchValue = this.savedBoolValue;
-        this.savedStringValue = this.savedBoolValue ? this.switchTrueLabel : this.switchFalseLabel;
-        break;
+        case "Timer":
+          this.savedTimerRunning = value.StartDateTime !== undefined;
+          this.savedTimerSecs = value.Secs;
+          this.timerRunning = this.savedTimerRunning;
+          if (this.savedTimerRunning)
+          {
+            this.savedTimerStartDateTime = new Date(value.StartDateTime);
+            this.timerText = "Running";
+          }
+          else
+          {
+            this.savedTimerStartDateTime = undefined;
+            var date = new Date(2000, 1, 1, 0, 0, this.savedTimerSecs, 0);
+            this.timerText = date.toLocaleTimeString();
+          }
+          break;
     }
   }
 
@@ -144,6 +174,36 @@ export class EditControlsFieldComponent {
   onSaveTextField()
   {
     this.upload(this.textFieldText!);
+  }
+
+  saveTimerRunning(event: InputSwitchOnChangeEvent)
+  {
+    if (event.checked)
+    {
+      var curDateTime = new Date();
+      var curDateTimeUtc = curDateTime.toISOString();
+      this.upload({Secs:this.savedTimerSecs,StartDateTime:curDateTimeUtc});
+    }
+    else
+    {
+      // Work out new timespan in secs
+      var curDateTime = new Date();
+      var deltaMillis = curDateTime.getTime() - this.savedTimerStartDateTime!.getTime();
+      var deltaSecs = Math.floor(deltaMillis / 1000);
+      var newTimerSecs = this.savedTimerSecs! + this.field!.fieldDef.Timer.Direction * deltaSecs;
+      // Clamp to limits
+      if (this.field!.fieldDef.Timer.MinValue !== undefined && newTimerSecs < this.field!.fieldDef.Timer.MinValue)
+        newTimerSecs = this.field!.fieldDef.Timer.MinValue;
+      if (this.field!.fieldDef.Timer.MaxValue !== undefined && this.field!.fieldDef.Timer.MaxValue < newTimerSecs)
+        newTimerSecs = this.field!.fieldDef.Timer.MaxValue;
+      // Upload
+      this.upload({Secs:newTimerSecs});
+    }
+  }
+
+  clearTimer()
+  {
+    this.upload(this.field!.defaultValue);
   }
 
   upload(value: any)
