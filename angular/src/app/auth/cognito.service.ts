@@ -43,10 +43,22 @@ export class CognitoService {
     {
       this.apiAuthModel = JSON.parse(authJson);
       this.authentication = CognitoServiceAuthStatus.Authenticated;
-      if (environment.production)
-      {
-        this.router.navigate(['/dashboard']);
-      }
+    }
+  }
+
+  checkNotAuthenticated()
+  {
+    if (this.authentication == CognitoServiceAuthStatus.Authenticated)
+    {
+      this.router.navigate(['/']);
+    }
+  }
+
+  checkAuthenticated()
+  {
+    if (this.authentication == CognitoServiceAuthStatus.None)
+    {
+      this.router.navigate(['/dashboard']);
     }
   }
 

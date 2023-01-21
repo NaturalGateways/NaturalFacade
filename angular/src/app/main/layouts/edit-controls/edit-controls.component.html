@@ -3,16 +3,6 @@
     <p-card class="flex-auto card" *ngIf="isLoaded">
         <form>
             <app-edit-controls-field *ngFor="let field of fields" [layoutId]="layoutId!" [field]="field"></app-edit-controls-field>
-    
-            <p-divider></p-divider>
-    
-            <div class="submitGroup">
-                <div>
-                    <span>
-                        <button pButton pRipple type="button" label="Back" class="p-button-secondary" routerLink="/layouts"></button>
-                    </span>
-                </div>
-            </div>
         </form>
     </p-card>
     <div class="flex-1"></div>
