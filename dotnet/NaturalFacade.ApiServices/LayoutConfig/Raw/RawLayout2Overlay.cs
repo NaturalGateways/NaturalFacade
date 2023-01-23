@@ -500,6 +500,20 @@ namespace NaturalFacade.LayoutConfig.Raw
                         { "op", condition.Op },
                         { "item", ConvertBooleanCondition(condition.Child) }
                     };
+                case "IntLessThan":
+                case "IntLessThanEquals":
+                case "IntGreaterThan":
+                case "IntGreaterThanEquals":
+                    if (condition.IntLhs == null)
+                        throw new Exception($"'{condition.Op}' boolean conditions must have a lhs.");
+                    if (condition.IntRhs == null)
+                        throw new Exception($"'{condition.Op}' boolean conditions must have a rhs.");
+                    return new Dictionary<string, object>
+                    {
+                        { "op", condition.Op },
+                        { "lhs", ConvertIntegerOperation(condition.IntLhs) },
+                        { "rhs", ConvertIntegerOperation(condition.IntRhs) }
+                    };
                 default:
                     throw new Exception($"Unknown operation type '{condition.Op}'.");
             }
@@ -547,6 +561,44 @@ namespace NaturalFacade.LayoutConfig.Raw
                     if (operation.Else != null)
                         opOutput.Add("else", ConvertStringOperation(operation.Else));
                     return opOutput;
+                default:
+                    throw new Exception($"Unknown operation type '{operation.Op}'.");
+            }
+        }
+
+        /// <summary>Creates an overlay element from a layout element.</summary>
+        private Dictionary<string, object> ConvertIntegerOperation(RawLayoutConfigIntegerOperation operation)
+        {
+            switch (operation.Op)
+            {
+                case "Value":
+                    return new Dictionary<string, object>
+                    {
+                        { "op", "Value" },
+                        { "value", operation.Value }
+                    };
+                case "Prop":
+                    PropertyRef property = GetPropertyFromName(operation.Name);
+                    return new Dictionary<string, object>
+                    {
+                        { "op", "Prop" },
+                        { "index", property.PropIndex.Value }
+                    };
+                case "Add":
+                case "Subtract":
+                case "Multiply":
+                case "Divide":
+                case "Modulo":
+                    if (operation.IntLhs == null)
+                        throw new Exception($"'{operation.Op}' integer conditions must have a lhs.");
+                    if (operation.IntRhs == null)
+                        throw new Exception($"'{operation.Op}' integer conditions must have a rhs.");
+                    return new Dictionary<string, object>
+                    {
+                        { "op", operation.Op },
+                        { "lhs", ConvertIntegerOperation(operation.IntLhs) },
+                        { "rhs", ConvertIntegerOperation(operation.IntRhs) }
+                    };
                 default:
                     throw new Exception($"Unknown operation type '{operation.Op}'.");
             }
