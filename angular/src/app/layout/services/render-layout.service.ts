@@ -136,6 +136,29 @@ export class RenderLayoutService {
     return value;
   }
 
+  getPropInteger(propDef: LayoutProperty, value: any) : any {
+    if (propDef.type == "Timer")
+    {
+      var valueSecs : number = value.Secs;
+      if (value.StartDateTime !== undefined)
+      {
+        // Adjust for running timer
+        var startDateTime = new Date(value.StartDateTime);
+        var curDateTime = new Date();
+        var deltaMillis = curDateTime.getTime() - startDateTime.getTime();
+        var deltaSecs = Math.floor(deltaMillis / 1000);
+        valueSecs = valueSecs + propDef.propDef.direction * deltaSecs;
+        // Clamp to limits
+        if (propDef.propDef.minValue !== undefined && valueSecs < propDef.propDef.minValue)
+          valueSecs = propDef.propDef.minValue;
+        if (propDef.propDef.maxValue !== undefined && propDef.propDef.maxValue < valueSecs)
+          valueSecs = propDef.propDef.maxValue;
+      }
+      return valueSecs;
+    }
+    return value;
+  }
+
   checkCondition(condition: any, defaultValue: boolean) : boolean {
     if (condition === undefined || condition == null)
     {
@@ -165,7 +188,56 @@ export class RenderLayoutService {
     {
       return !this.checkCondition(condition.item, false);
     }
+    if (condition.op === "IntLessThan")
+    {
+      return this.getInteger(condition.lhs) < this.getInteger(condition.rhs);
+    }
+    if (condition.op === "IntLessThanEquals")
+    {
+      return this.getInteger(condition.lhs) <= this.getInteger(condition.rhs);
+    }
+    if (condition.op === "IntGreaterThan")
+    {
+      return this.getInteger(condition.lhs) > this.getInteger(condition.rhs);
+    }
+    if (condition.op === "IntGreaterThanEquals")
+    {
+      return this.getInteger(condition.lhs) >= this.getInteger(condition.rhs);
+    }
     return defaultValue;
+  }
+
+  getInteger(integerObj: any): number
+  {
+    if (integerObj.op === "Value")
+    {
+      return integerObj.value;
+    }
+    if (integerObj.op === "Prop")
+    {
+      return this.getPropInteger(this.layoutData!.properties[integerObj.index], this.propValues[integerObj.index]);
+    }
+    if (integerObj.op === "Add")
+    {
+      return this.getInteger(integerObj.lhs) + this.getInteger(integerObj.rhs);
+    }
+    if (integerObj.op === "Subtract")
+    {
+      return this.getInteger(integerObj.lhs) - this.getInteger(integerObj.rhs);
+    }
+    if (integerObj.op === "Multiply")
+    {
+      return this.getInteger(integerObj.lhs) * this.getInteger(integerObj.rhs);
+    }
+    if (integerObj.op === "Divide")
+    {
+      return this.getInteger(integerObj.lhs) / this.getInteger(integerObj.rhs);
+    }
+    if (integerObj.op === "Modulo")
+    {
+      return this.getInteger(integerObj.lhs) % this.getInteger(integerObj.rhs);
+    }
+    return 0;
   }
 
   setTransform(actWidth: number, actHeight: number)
@@ -307,7 +379,7 @@ export class RenderLayoutService {
       // Apply widths and heights
       if (parentMinWidth < child.minWidth)
         parentMinWidth = child.minWidth;
-      parentMinHeight = child.minHeight;
+      parentMinHeight += child.minHeight;
     });
     element.minWidth = parentMinWidth;
     element.minHeight = parentMinHeight;
