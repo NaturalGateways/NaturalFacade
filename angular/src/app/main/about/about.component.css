@@ -1,0 +1,44 @@
+.panelTitle {
+    font-size: x-large;
+    font-weight: bold;
+}
+
+.fieldGroup {
+    margin-bottom: 0.5em;
+}
+
+.fieldLabel {
+    font-size: large;
+    font-weight: bold;
+}
+
+.fieldValue {
+    font-size: large;
+    vertical-align: middle;
+}
+
+:host ::ng-deep .custom-spinner .p-progress-spinner-circle {
+    animation: custom-progress-spinner-dash 1.5s ease-in-out infinite, custom-progress-spinner-color 6s ease-in-out infinite;
+}
+
+@keyframes custom-progress-spinner-color {
+    100%,
+    0% {
+        stroke: #82C0CC;
+    }
+}
+
+@keyframes custom-progress-spinner-dash {
+    0% {
+        stroke-dasharray: 1, 200;
+        stroke-dashoffset: 0;
+    }
+    50% {
+        stroke-dasharray: 89, 200;
+        stroke-dashoffset: -35px;
+    }
+    100% {
+        stroke-dasharray: 89, 200;
+        stroke-dashoffset: -124px;
+    }
+}

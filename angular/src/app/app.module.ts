@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
@@ -36,6 +37,7 @@ import { LayoutListItemComponent } from './main/layouts/layout-item/layout-list-
 import { EditControlsComponent } from './main/layouts/edit-controls/edit-controls.component';
 import { EditControlsFieldComponent } from './main/layouts/edit-controls/edit-controls-field/edit-controls-field.component';
 import { RootComponent } from './root/root.component';
+import { AboutComponent } from './main/about/about.component';
 
 @NgModule({
   declarations: [
@@ -52,10 +54,12 @@ import { RootComponent } from './root/root.component';
     LayoutListItemComponent,
     EditControlsComponent,
     EditControlsFieldComponent,
-    RootComponent
+    RootComponent,
+    AboutComponent
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     HttpClientModule,
     FormsModule,
     AppRoutingModule,

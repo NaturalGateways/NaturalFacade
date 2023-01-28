@@ -144,6 +144,12 @@ export class ApiService {
     });
   }
 
+  getInfo(successCallback: (response: any) => void, errorCallback: () => void)
+  {
+    let queryParams: string = "RequestType=GetInfo";
+    this.executeAnonGetWithResponse<any>(queryParams, successCallback, errorCallback);
+  }
+
   updateCurrentUser(newName: string, successCallback: (response: CurrentUserApiDto) => void, errorCallback: () => void)
   {
     var reqBody = {RequestType: "UpdateCurrentUser", UpdateCurrentUser: {Name:newName}};

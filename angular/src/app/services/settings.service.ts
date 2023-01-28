@@ -10,56 +10,46 @@ export class SettingsService {
 
   constructor(private http: HttpClient)
   {
-    this.http.get("./assets/config.json");
+    //
   }
 
-  getApiUrl(callback: (apiUrl: string) => void)
+  getConfig(callback: (apiUrl: any) => void)
   {
     // Check config is loaded
     var config = this.config;
     if (config !== null)
     {
-      callback(config.apiUrl);
+      callback(config);
       return;
     }
 
     // Get config
     this.http.get<any>("./assets/config.json").subscribe(data => {
       this.config = data;
+      callback(data);
+    });
+  }
+
+  getApiUrl(callback: (apiUrl: string) => void)
+  {
+    this.getConfig((data) =>
+    {
       callback(data.apiUrl);
     });
   }
 
   getCognitoClientId(callback: (cognitoClientId: string) => void)
   {
-    // Check config is loaded
-    var config = this.config;
-    if (config !== null)
+    this.getConfig((data) =>
     {
-      callback(config.cognitoClientId);
-      return;
-    }
-
-    // Get config
-    this.http.get<any>("./assets/config.json").subscribe(data => {
-      this.config = data;
       callback(data.cognitoClientId);
     });
   }
 
   getCognitoClientIdAndCallbackUrl(callback: (cognitoClientId: string, cognitoCallbackUrl: string) => void)
   {
-    // Check config is loaded
-    var config = this.config;
-    if (config !== null)
+    this.getConfig((data) =>
     {
-      callback(config.cognitoClientId, config.cognitoCallbackUrl);
-      return;
-    }
-
-    // Get config
-    this.http.get<any>("./assets/config.json").subscribe(data => {
-      this.config = data;
       callback(data.cognitoClientId, data.cognitoCallbackUrl);
     });
   }

@@ -8,6 +8,7 @@ import { ViewCurrentUserComponent } from './admin/view-current-user/view-current
 
 import { RootComponent } from './root/root.component';
 import { MainComponent } from './main/main.component';
+import { AboutComponent } from './main/about/about.component';
 import { DashboardComponent } from './main/dashboard/dashboard.component';
 
 import { LayoutsComponent } from './main/layouts/layouts.component';
@@ -24,6 +25,7 @@ const routes: Routes = [
     ]},
     { path: 'login', component:LoginComponent },
     { path: '', component: MainComponent, children:[
+      { path: 'about', component: AboutComponent },
       { path: 'dashboard', component: DashboardComponent },
       { path: 'layouts', component: LayoutsComponent }
     ]},

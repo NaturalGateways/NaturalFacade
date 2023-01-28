@@ -1,0 +1,107 @@
+<div class="grid">
+    <div class="col-12 sm:col-6 lg:col-offset-3 lg:col-3">
+        <div class="my-2">
+            <p-panel>
+                <ng-template pTemplate="header">
+                    <div class="panelTitle">Site</div>
+                </ng-template>
+                <div *ngIf="siteVars === undefined">
+                    <p-progressSpinner [style]="{width: '40px', height: '40px'}" styleClass="custom-spinner" strokeWidth="6"></p-progressSpinner>
+                </div>
+                <div *ngIf="siteVars !== undefined">
+                    <div class="fieldGroup">
+                        <div class="fieldLabel">Environment</div>
+                        <div class="fieldValue">{{siteVars.environment}}</div>
+                    </div>
+                    <div class="fieldGroup">
+                        <div class="fieldLabel">Version</div>
+                        <div class="fieldValue">{{siteVars.version}}</div>
+                    </div>
+                </div>
+            </p-panel>
+        </div>
+        <div class="sm:mb-2">
+            <p-panel>
+                <ng-template pTemplate="header">
+                    <div class="panelTitle">API</div>
+                </ng-template>
+                <div *ngIf="apiVars === undefined">
+                    <p-progressSpinner [style]="{width: '40px', height: '40px'}" styleClass="custom-spinner" strokeWidth="6"></p-progressSpinner>
+                </div>
+                <div *ngIf="apiVars !== undefined">
+                    <div class="fieldGroup">
+                        <div class="fieldLabel">Environment</div>
+                        <div class="fieldValue">{{apiVars.environment}}</div>
+                    </div>
+                    <div class="fieldGroup">
+                        <div class="fieldLabel">Version</div>
+                        <div class="fieldValue">{{apiVars.version}}</div>
+                    </div>
+                </div>
+            </p-panel>
+        </div>
+    </div>
+    <div class="col-12 sm:col-6 lg:col-3">
+        <div class="mt-0 mb-2 sm:mt-2">
+            <p-panel class="myPanel">
+                <ng-template pTemplate="header">
+                    <div class="panelTitle">Frontend</div>
+                </ng-template>
+                <div class="fieldGroup">
+                    <div class="fieldLabel">Framework</div>
+                    <div class="fieldValue">Angular CLI</div>
+                </div>
+                <div class="fieldGroup">
+                    <div class="fieldLabel">Styling</div>
+                    <div class="fieldValue">PrimeNG</div>
+                </div>
+                <div class="fieldGroup">
+                    <div class="fieldLabel">Hosting</div>
+                    <div class="fieldValue">AWS S3 &amp; CloudFront</div>
+                </div>
+            </p-panel>
+        </div>
+        <div class="mb-2">
+            <p-panel class="myPanel">
+                <ng-template pTemplate="header">
+                    <div class="panelTitle">Backend</div>
+                </ng-template>
+                <div class="fieldGroup">
+                    <div class="fieldLabel">API Implementation</div>
+                    <div class="fieldValue">AWS Lambda</div>
+                </div>
+                <div class="fieldGroup">
+                    <div class="fieldLabel">API Interface</div>
+                    <div class="fieldValue">AWS API Gateway</div>
+                </div>
+                <div class="fieldGroup">
+                    <div class="fieldLabel">Database</div>
+                    <div class="fieldValue">AWS DynamoDB</div>
+                </div>
+            </p-panel>
+        </div>
+        <div class="mb-2">
+            <p-panel class="myPanel">
+                <ng-template pTemplate="header">
+                    <div class="panelTitle">Management</div>
+                </ng-template>
+                <div class="fieldGroup">
+                    <div class="fieldLabel">Source Control</div>
+                    <div class="fieldValue">GitHub</div>
+                </div>
+                <div class="fieldGroup">
+                    <div class="fieldLabel">Builds</div>
+                    <div class="fieldValue">AWS CodeBuild</div>
+                </div>
+                <div class="fieldGroup">
+                    <div class="fieldLabel">Backend deploy</div>
+                    <div class="fieldValue">AWS CloudFormation</div>
+                </div>
+                <div class="fieldGroup">
+                    <div class="fieldLabel">Frontend deploy</div>
+                    <div class="fieldValue">Custom AWS Lambda</div>
+                </div>
+            </p-panel>
+        </div>
+    </div>
+</div>

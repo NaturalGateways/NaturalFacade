@@ -1,4 +1,5 @@
 {
+  "environment": "LOCAL",
   "apiUrl":"TODO",
   "cognitoClientId":"TODO",
   "cognitoCallbackUrl":"TODO"

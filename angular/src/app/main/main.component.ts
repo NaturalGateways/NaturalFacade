@@ -20,7 +20,8 @@ export class MainComponent implements OnInit {
     // Create nav items
     this.navItems = [
       { label: 'Home', icon: 'pi pi-fw pi-home', routerLink: "/dashboard" },
-      { label: 'Layouts', icon: 'pi pi-fw pi-file', routerLink: "/layouts" }
+      { label: 'Layouts', icon: 'pi pi-fw pi-file', routerLink: "/layouts" },
+      { label: 'About', icon: 'pi pi-fw pi-info-circle', routerLink: "/about" }
     ];
     this.navActiveItem = this.navItems[0];
   }

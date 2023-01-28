@@ -5,6 +5,8 @@
 export const environment = {
   production: false,
 
+  version: "0.0.0",
+
   cognitoUrl:"TODO",
 
   openLinkNewTab: true
