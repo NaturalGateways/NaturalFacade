@@ -6,214 +6,592 @@ namespace NaturalFacade.LayoutConfig.Raw
 {
     public class RawLayout2Overlay
     {
+        #region Static facade
+
         /// <summary>Converts the data.</summary>
-        public static Config2LayoutOverlayOutput Convert(RawLayoutConfig layoutConfig)
+        public static Config2LayoutOverlayOutput Convert(object layoutConfig)
         {
-            // Create an instance
-            RawLayout2Overlay instance = new RawLayout2Overlay(layoutConfig);
-            Config2LayoutOverlayOutput output = new Config2LayoutOverlayOutput();
-
-            // Get root element
-            output.RootElement = instance.ConvertElement(layoutConfig.RootElement);
-
-            // Set resources
-            if (instance.m_propertyUsedList.Any())
-                output.PropertyDefs = instance.m_propertyUsedList.Select(x => GetOverlayPropertyDef(x)).ToArray();
-            if (instance.m_imageResourcesUsedList.Any())
-                output.ImageResources = instance.m_imageResourcesUsedList.Select(x => x.ResConfig.Url).ToArray();
-            if (instance.m_fontResourcesUsedList.Any())
-                output.FontResources = instance.m_fontResourcesUsedList.Select(x => x.ResConfig.Url).ToArray();
-            if (instance.m_fontObjUsedList.Any())
-                output.Fonts = instance.m_fontObjUsedList.Select(x => new ApiDto.OverlayDtoFont
-                {
-                    res = x.ResIndex.Value,
-                    size = x.Font.Size,
-                    colour = x.Font.Colour,
-                    align = x.Font.Align
-                }).ToArray();
-
-            // Convert controls
-            output.ControlsArray = layoutConfig.Controls?.Select(x => instance.ConvertControls(x))?.ToArray();
-
-            // Return
-            return output;
+            RawLayout2Overlay instance = new RawLayout2Overlay();
+            string jsonString = Natural.Json.JsonHelper.SerialiseObject(layoutConfig);
+            Natural.Json.IJsonObject jsonObject = Natural.Json.JsonHelper.JsonFromString(jsonString);
+            instance.ReadJson(jsonObject);
+            return instance.CreateOutput();
         }
 
-        /// <summary>Getter for the property type of a property.</summary>
-        private static Config2LayoutOverlayOutputPropertyDef GetOverlayPropertyDef(PropertyRef propertyRef)
+        #endregion
+
+        #region Base
+
+        /// <summary>The read root element.</summary>
+        private object m_rootElement = null;
+
+        /// <summary>The array of controls.</summary>
+        private Config2LayoutOverlayOutputControlsDef[] m_controlsArray = null;
+
+        /// <summary>Creates an output object.</summary>
+        public Config2LayoutOverlayOutput CreateOutput()
         {
-            ApiDto.PropertyTypeDto typeDto = Config2Layout.GetTypeOfProperty(propertyRef.PropType);
-            Config2LayoutOverlayOutputPropertyDef output = new Config2LayoutOverlayOutputPropertyDef
+            Config2LayoutOverlayOutput output = new Config2LayoutOverlayOutput
             {
-                ValueType = typeDto,
-                Name = propertyRef.PropName,
-                DefaultValue = Config2Layout.ConvertPropValue(typeDto, propertyRef.DefaultValueJson)
+                PropertyDefs = m_propertyRefsUsedList.Select(x => ConvertPropertyDef(x)).ToArray(),
+                ImageResources = m_imageResourcesUsedList.Select(x => x.Url).ToArray(),
+                FontResources = m_fontResourcesUsedList.Select(x => x.Url).ToArray(),
+                Fonts = m_fontRefsUsedList.Select(x => ConvertFontReference(x)).Where(x => x != null).ToArray(),
+                RootElement = m_rootElement,
+                ControlsArray = m_controlsArray
             };
-            if (propertyRef.PropType == "Timer")
-            {
-                output.TimerDirection = (int)propertyRef.PropJson.GetDictionaryLong("Direction").Value;
-                output.TimerMinValue = propertyRef.PropJson.GetDictionaryLong("MinValue");
-                output.TimerMaxValue = propertyRef.PropJson.GetDictionaryLong("MaxValue");
-            }
             return output;
         }
 
-        /// <summary>The properties and their indexes.</summary>
-        private Dictionary<string, PropertyRef> m_propertyByName = new Dictionary<string, PropertyRef>();
-        /// <summary>The properties and their indexes.</summary>
-        private List<PropertyRef> m_propertyUsedList = new List<PropertyRef>();
-
-        /// <summary>The resources indexed.</summary>
-        private Dictionary<string, ResourceRef> m_imageResourcesByName = null;
-        /// <summary>The resources indexed.</summary>
-        private List<ResourceRef> m_imageResourcesUsedList = new List<ResourceRef>();
-
-        /// <summary>The resources indexed.</summary>
-        private Dictionary<string, ResourceRef> m_fontResourcesByName = null;
-        /// <summary>The resources indexed.</summary>
-        private List<ResourceRef> m_fontResourcesUsedList = new List<ResourceRef>();
-        
-        /// <summary>The font definitions.</summary>
-        private Dictionary<string, FontObjResource> m_fontObjsByName = null;
-        /// <summary>The font definitions.</summary>
-        private List<FontObjResource> m_fontObjUsedList = new List<FontObjResource>();
-
-        /// <summary>Constructor.</summary>
-        private RawLayout2Overlay(RawLayoutConfig layoutConfig)
+        /// <summary>converts a font to the API DTO.</summary>
+        private Config2LayoutOverlayOutputPropertyDef ConvertPropertyDef(PropertyRef propertyRef)
         {
-            if (layoutConfig.Properties?.Any() ?? false)
+            return new Config2LayoutOverlayOutputPropertyDef
             {
-                m_propertyByName = layoutConfig.Properties.Select(x => new PropertyRef(x)).ToDictionary(x => x.PropName);
-            }
-            else
-            {
-                m_propertyByName = new Dictionary<string, PropertyRef>();
-            }
-            if (layoutConfig.Resources?.Any() ?? false)
-            {
-                m_imageResourcesByName = layoutConfig.Resources.Where(x => x.Type == "Image").Select(x => new ResourceRef(x)).ToDictionary(x => x.ResConfig.Name);
-                m_fontResourcesByName = layoutConfig.Resources.Where(x => x.Type == "Font").Select(x => new ResourceRef(x)).ToDictionary(x => x.ResConfig.Name);
-            }
-            else
-            {
-                m_imageResourcesByName = new Dictionary<string, ResourceRef>();
-                m_fontResourcesByName = new Dictionary<string, ResourceRef>();
-            }
-            if (layoutConfig.Fonts?.Any() ?? false)
-            {
-                m_fontObjsByName = layoutConfig.Fonts.Select(x => new FontObjResource(x)).ToDictionary(x => x.Font.Name);
-            }
-            else
-            {
-                m_fontObjsByName = new Dictionary<string, FontObjResource>();
-            }
+                ValueType = propertyRef.Type,
+                Name = propertyRef.Name,
+                DefaultValue = propertyRef.DefaultValue,
+                TimerMinValue = propertyRef.IntMinValue,
+                TimerMaxValue = propertyRef.IntMaxValue,
+                TimerDirection = propertyRef.IntDirection
+            };
         }
 
-        /// <summary>A property with a boolean flag for whether it is used or not.</summary>
+        /// <summary>converts a font to the API DTO.</summary>
+        private ApiDto.OverlayDtoFont ConvertFontReference(FontRef fontRef)
+        {
+            if (fontRef.FontRefIndex.HasValue && fontRef.FontResourceIndex.HasValue)
+            {
+                return new ApiDto.OverlayDtoFont
+                {
+                    res = fontRef.FontResourceIndex.Value,
+                    size = fontRef.Size,
+                    colour = fontRef.Colour,
+                    align = fontRef.Align
+                };
+            }
+            return null;
+        }
+
+        #endregion
+
+        #region Reference tracking
+
+        #region Property tracking
+
+        /// <summary>A property referenced in the file.</summary>
         private class PropertyRef
         {
-            public Natural.Json.IJsonObject PropJson { get; private set; }
-            public string PropName { get; private set; }
-            public string PropType { get; private set; }
-            public Natural.Json.IJsonObject DefaultValueJson { get; private set; }
+            public string Name { get; set; }
+            public ApiDto.PropertyTypeDto Type { get; set; }
+
+            public object DefaultValue { get; set; }
+
+            public long? IntMinValue { get; set; }
+            public long? IntMaxValue { get; set; }
+            public long? IntDirection { get; set; }
 
             public int? PropIndex { get; set; }
 
-            public PropertyRef(object propConfig)
+            public PropertyRef(string name, ApiDto.PropertyTypeDto type, object defaultValue)
             {
-                this.PropJson = Natural.Json.JsonHelper.JsonFromObject(propConfig);
-                this.PropName = this.PropJson.GetDictionaryString("Name");
-                this.PropType = this.PropJson.GetDictionaryString("Type");
-                this.DefaultValueJson = this.PropJson.GetDictionaryObject("DefaultValue");
+                this.Name = name;
+                this.Type = type;
+                this.DefaultValue = defaultValue;
             }
         }
+
+        /// <summary>The resources indexed.</summary>
+        private Dictionary<string, PropertyRef> m_propertyRefsByName = new Dictionary<string, PropertyRef>();
+        /// <summary>The resources indexed.</summary>
+        private List<PropertyRef> m_propertyRefsUsedList = new List<PropertyRef>();
 
         /// <summary>Getter for the property with the given name, marking it as used.</summary>
         private PropertyRef GetPropertyFromName(string name)
         {
-            if (m_propertyByName.ContainsKey(name) == false)
+            if (m_propertyRefsByName.ContainsKey(name) == false)
             {
                 throw new Exception($"Undefined property '{name}'.");
             }
-            PropertyRef property = m_propertyByName[name];
+            PropertyRef property = m_propertyRefsByName[name];
             if (property.PropIndex.HasValue == false)
             {
-                property.PropIndex = m_propertyUsedList.Count;
-                m_propertyUsedList.Add(property);
+                property.PropIndex = m_propertyRefsUsedList.Count;
+                m_propertyRefsUsedList.Add(property);
             }
             return property;
         }
 
-        /// <summary>A resource with a boolean flag for whether it is used or not.</summary>
-        private class ResourceRef
+        #endregion
+
+        #region Font reference tracking
+
+        /// <summary>An font referenced in the file.</summary>
+        private class FontRef
         {
-            public RawLayoutConfigResource ResConfig { get; private set; }
+            public string FontRes { get; set; }
 
-            public int? ResIndex { get; set; }
+            public string Size { get; set; }
 
-            public ResourceRef(RawLayoutConfigResource resConfig)
+            public string Colour { get; set; }
+
+            public string Align { get; set; }
+
+            public int? FontRefIndex { get; set; }
+            public int? FontResourceIndex { get; set; }
+
+            public FontRef(string fontRes, string size, string colour, string align)
             {
-                this.ResConfig = resConfig;
+                this.FontRes = fontRes;
+                this.Size = size;
+                this.Colour = colour;
+                this.Align = align;
             }
         }
 
-        /// <summary>A resource with a boolean flag for whether it is used or not.</summary>
-        private class FontObjResource
-        {
-            public RawLayoutConfigFont Font { get; private set; }
+        /// <summary>The resources indexed.</summary>
+        private Dictionary<string, FontRef> m_fontRefsByName = new Dictionary<string, FontRef>();
+        /// <summary>The resources indexed.</summary>
+        private List<FontRef> m_fontRefsUsedList = new List<FontRef>();
 
-            public int? FontIndex { get; set; }
+        #endregion
+
+        #region Font resource tracking
+
+        /// <summary>An font referenced in the file.</summary>
+        private class FontResource
+        {
+            public string Url { get; private set; }
 
             public int? ResIndex { get; set; }
 
-            public FontObjResource(RawLayoutConfigFont font)
+            public FontResource(string url)
             {
-                this.Font = font;
+                this.Url = url;
             }
         }
+
+        /// <summary>The resources indexed.</summary>
+        private Dictionary<string, FontResource> m_fontResourcesByName = new Dictionary<string, FontResource>();
+        /// <summary>The resources indexed.</summary>
+        private List<FontResource> m_fontResourcesUsedList = new List<FontResource>();
+
+        #endregion
+
+        #region Image resource tracking
+
+        /// <summary>An image referenced in the file.</summary>
+        private class ImageResource
+        {
+            public string Url { get; private set; }
+
+            public int? ResIndex { get; set; }
+
+            public ImageResource(string url)
+            {
+                this.Url = url;
+            }
+        }
+
+        /// <summary>The resources indexed.</summary>
+        private Dictionary<string, ImageResource> m_imageResourcesByName = new Dictionary<string, ImageResource>();
+        /// <summary>The resources indexed.</summary>
+        private List<ImageResource> m_imageResourcesUsedList = new List<ImageResource>();
+
+        #endregion
+
+        #endregion
+
+        #region JSON Reading
+
+        /// <summary>Reads the layout JSON.</summary>
+        public void ReadJson(Natural.Json.IJsonObject layoutJson)
+        {
+            // Get property references
+            {
+                Natural.Json.IJsonObject resourcesElement = layoutJson.GetDictionaryObject("Properties");
+                if (resourcesElement.ObjectType == Natural.Json.JsonObjectType.Array)
+                {
+                    ReadPropertyReferences(resourcesElement);
+                }
+            }
+
+            // Get resource references
+            {
+                Natural.Json.IJsonObject resourcesElement = layoutJson.GetDictionaryObject("Resources");
+                if (resourcesElement.ObjectType == Natural.Json.JsonObjectType.Array)
+                {
+                    ReadResourceReferences(resourcesElement);
+                }
+            }
+
+            // Get font references
+            {
+                Natural.Json.IJsonObject fontsJson = layoutJson.GetDictionaryObject("Fonts");
+                if (fontsJson.ObjectType == Natural.Json.JsonObjectType.Array)
+                {
+                    ReadFontReferences(fontsJson);
+                }
+            }
+
+            // Get the root element
+            {
+                Natural.Json.IJsonObject rootElement = layoutJson.GetDictionaryObject("RootElement");
+                if (rootElement.ObjectType == Natural.Json.JsonObjectType.Dictionary)
+                {
+                    m_rootElement = ReadElement(rootElement);
+                }
+            }
+
+            // Get the controls
+            {
+                Natural.Json.IJsonObject controlsElement = layoutJson.GetDictionaryObject("Controls");
+                m_controlsArray = controlsElement.AsObjectArray.Select(x => ConvertControls(x)).ToArray();
+            }
+        }
+
+        #endregion
+
+        #region Reference reading
+
+        /// <summary>Reads the image resources.</summary>
+        private void ReadPropertyReferences(Natural.Json.IJsonObject arrayJson)
+        {
+            foreach (Natural.Json.IJsonObject resourceJson in arrayJson.AsObjectArray)
+            {
+                ReadPropertyReference(resourceJson);
+            }
+        }
+
+        /// <summary>Reads the image resources.</summary>
+        private void ReadPropertyReference(Natural.Json.IJsonObject resourceJson)
+        {
+            string propName = resourceJson.GetDictionaryString("Name");
+            ApiDto.PropertyTypeDto type = ApiDto.PropertyTypeDto.String;
+            object defaultValue = null;
+            switch (resourceJson.GetDictionaryString("Type"))
+            {
+                case "String":
+                    type = ApiDto.PropertyTypeDto.String;
+                    defaultValue = resourceJson.GetDictionaryString("DefaultValue");
+                    break;
+                case "Boolean":
+                    type = ApiDto.PropertyTypeDto.Boolean;
+                    defaultValue = resourceJson.GetDictionaryBoolean("DefaultValue");
+                    break;
+                case "Timer":
+                    {
+                        type = ApiDto.PropertyTypeDto.Timer;
+                        long? secsDefaultValue = resourceJson.GetDictionaryLong("DefaultValue");
+                        if (secsDefaultValue.HasValue)
+                            defaultValue = new Dictionary<string, object> { { "Secs", secsDefaultValue.Value } };
+                        break;
+                    }
+            }
+            PropertyRef propertyRef = new PropertyRef(propName, type, defaultValue);
+            propertyRef.IntMinValue = resourceJson.GetDictionaryLong("MinValue");
+            propertyRef.IntMaxValue = resourceJson.GetDictionaryLong("MaxValue");
+            propertyRef.IntDirection = resourceJson.GetDictionaryLong("Direction");
+            m_propertyRefsByName.Add(propName, propertyRef);
+        }
+
+        /// <summary>Reads the image resources.</summary>
+        private void ReadResourceReferences(Natural.Json.IJsonObject arrayJson)
+        {
+            foreach (Natural.Json.IJsonObject resourceJson in arrayJson.AsObjectArray)
+            {
+                ReadResourceReference(resourceJson);
+            }
+        }
+
+        /// <summary>Reads the image resources.</summary>
+        private void ReadResourceReference(Natural.Json.IJsonObject resourceJson)
+        {
+            string resName = resourceJson.GetDictionaryString("Name");
+            switch (resourceJson.GetDictionaryString("Type"))
+            {
+                case "Font":
+                    {
+                        string url = resourceJson.GetDictionaryString("Url");
+                        m_fontResourcesByName.Add(resName, new FontResource(url));
+                        break;
+                    }
+                case "Image":
+                    {
+                        string url = resourceJson.GetDictionaryString("Url");
+                        m_imageResourcesByName.Add(resName, new ImageResource(url));
+                        break;
+                    }
+            }
+        }
+
+        /// <summary>Reads the image resources.</summary>
+        private void ReadFontReferences(Natural.Json.IJsonObject arrayJson)
+        {
+            foreach (Natural.Json.IJsonObject resourceJson in arrayJson.AsObjectArray)
+            {
+                ReadFontReference(resourceJson);
+            }
+        }
+
+        /// <summary>Reads the image resources.</summary>
+        private void ReadFontReference(Natural.Json.IJsonObject resourceJson)
+        {
+            string resName = resourceJson.GetDictionaryString("Name");
+            string fontRes = resourceJson.GetDictionaryString("FontRes");
+            string size = resourceJson.GetDictionaryString("Size");
+            string colour = resourceJson.GetDictionaryString("Colour");
+            string align = resourceJson.GetDictionaryString("Align");
+            m_fontRefsByName.Add(resName, new FontRef(fontRes, size, colour, align));
+        }
+
+        #endregion
+
+        #region Operation reading
+
+        #region String operation reading
 
         /// <summary>Creates an overlay element from a layout element.</summary>
-        private Dictionary<string, object> ConvertElement(RawLayoutConfigElement layoutElement)
+        private Dictionary<string, object> ConvertStringOperation(Natural.Json.IJsonObject conditionJson)
+        {
+            string op = conditionJson.GetDictionaryString("Op");
+            switch (op)
+            {
+                case "Text":
+                    {
+                        string text = conditionJson.GetDictionaryString("Text");
+                        return new Dictionary<string, object>
+                        {
+                            { "op", op },
+                            { "text", text ?? string.Empty }
+                        };
+                    }
+                case "Prop":
+                    {
+                        string name = conditionJson.GetDictionaryString("Name");
+                        PropertyRef property = GetPropertyFromName(name);
+                        return new Dictionary<string, object>
+                        {
+                            { "op", "Prop" },
+                            { "index", property.PropIndex.Value }
+                        };
+                    }
+                case "Cat":
+                    {
+                        Natural.Json.IJsonObject[] childJsonArray = conditionJson.GetDictionaryObject("Children").AsObjectArray;
+                        if ((childJsonArray?.Any() ?? false) == false)
+                            throw new Exception("'Cat' string operation must have children.");
+                        return new Dictionary<string, object>
+                        {
+                            { "op", op },
+                            { "items", childJsonArray.Select(x => ConvertStringOperation(x)).ToArray() }
+                        };
+                    }
+                case "If":
+                    {
+                        Natural.Json.IJsonObject ifJson = conditionJson.GetDictionaryObject("If");
+                        Natural.Json.IJsonObject thenJson = conditionJson.GetDictionaryObject("Then");
+                        Natural.Json.IJsonObject elseJson = conditionJson.GetDictionaryObject("Else");
+                        if (ifJson.ObjectType == Natural.Json.JsonObjectType.Null)
+                            throw new Exception("'If' string operation must have an 'If' condition.");
+                        if (thenJson.ObjectType == Natural.Json.JsonObjectType.Null)
+                            throw new Exception("'If' string operation must have an 'Then' operation.");
+                        Dictionary<string, object> opOutput = new Dictionary<string, object>
+                        {
+                            { "op", op },
+                            { "if", ConvertBooleanCondition(ifJson) },
+                            { "then", ConvertStringOperation(thenJson) }
+                        };
+                        if (elseJson.ObjectType != Natural.Json.JsonObjectType.Null)
+                            opOutput.Add("else", ConvertStringOperation(elseJson));
+                        return opOutput;
+                    }
+                default:
+                    throw new Exception($"Unknown operation type '{op}'.");
+            }
+        }
+
+        #endregion
+
+        #region Integer operation reading
+
+        /// <summary>Creates an overlay element from a layout element.</summary>
+        private Dictionary<string, object> ConvertIntegerOperation(Natural.Json.IJsonObject conditionJson)
+        {
+            string op = conditionJson.GetDictionaryString("Op");
+            switch (op)
+            {
+                case "Value":
+                    {
+                        long value = conditionJson.GetDictionaryLong("Value") ?? 0;
+                        return new Dictionary<string, object>
+                        {
+                            { "op", "Value" },
+                            { "value", value }
+                        };
+                    }
+                case "Prop":
+                    {
+                        string name = conditionJson.GetDictionaryString("Name");
+                        PropertyRef property = GetPropertyFromName(name);
+                        return new Dictionary<string, object>
+                        {
+                            { "op", op },
+                            { "index", property.PropIndex.Value }
+                        };
+                    }
+                case "Add":
+                case "Subtract":
+                case "Multiply":
+                case "Divide":
+                case "Modulo":
+                    {
+                        Natural.Json.IJsonObject lhsJson = conditionJson.GetDictionaryObject("Lhs");
+                        Natural.Json.IJsonObject rhsJson = conditionJson.GetDictionaryObject("Rhs");
+                        if (lhsJson.ObjectType == Natural.Json.JsonObjectType.Null)
+                            throw new Exception($"'{op}' integer conditions must have a lhs.");
+                        if (rhsJson.ObjectType == Natural.Json.JsonObjectType.Null)
+                            throw new Exception($"'{op}' integer conditions must have a rhs.");
+                        return new Dictionary<string, object>
+                        {
+                            { "op", op },
+                            { "lhs", ConvertIntegerOperation(lhsJson) },
+                            { "rhs", ConvertIntegerOperation(rhsJson) }
+                        };
+                    }
+                default:
+                    throw new Exception($"Unknown operation type '{op}'.");
+            }
+        }
+
+        #endregion
+
+        #region Boolean operation reading
+
+        /// <summary>Creates an overlay element from a layout element.</summary>
+        private Dictionary<string, object> ConvertBooleanCondition(Natural.Json.IJsonObject conditionJson)
+        {
+            string op = conditionJson.GetDictionaryString("Op");
+            switch (op)
+            {
+                case "Prop":
+                    {
+                        string name = conditionJson.GetDictionaryString("Name");
+                        PropertyRef property = GetPropertyFromName(name);
+                        return new Dictionary<string, object>
+                        {
+                            { "op", op },
+                            { "index", property.PropIndex.Value }
+                        };
+                    }
+                case "And":
+                case "Or":
+                    {
+                        Natural.Json.IJsonObject[] childJsonArray = conditionJson.GetDictionaryObject("Children").AsObjectArray;
+                        if ((childJsonArray?.Any() ?? false) == false)
+                            throw new Exception($"'{op}' boolean conditions must have children.");
+                        return new Dictionary<string, object>
+                        {
+                            { "op", op },
+                            { "items", childJsonArray.Select(x => ConvertBooleanCondition(x)).ToArray() }
+                        };
+                    }
+                case "Not":
+                    {
+                        Natural.Json.IJsonObject childJson = conditionJson.GetDictionaryObject("Child");
+                        if (childJson.ObjectType != Natural.Json.JsonObjectType.Dictionary)
+                            throw new Exception("'Not' boolean conditions must have a child.");
+                        return new Dictionary<string, object>
+                        {
+                            { "op", op },
+                            { "item", ConvertBooleanCondition(childJson) }
+                        };
+                    }
+                case "IntLessThan":
+                case "IntLessThanEquals":
+                case "IntGreaterThan":
+                case "IntGreaterThanEquals":
+                    {
+                        Natural.Json.IJsonObject lhsJson = conditionJson.GetDictionaryObject("Lhs");
+                        Natural.Json.IJsonObject rhsJson = conditionJson.GetDictionaryObject("Rhs");
+                        if (lhsJson.ObjectType == Natural.Json.JsonObjectType.Null)
+                            throw new Exception($"'{op}' boolean conditions must have a lhs.");
+                        if (rhsJson.ObjectType == Natural.Json.JsonObjectType.Null)
+                            throw new Exception($"'{op}' boolean conditions must have a rhs.");
+                        return new Dictionary<string, object>
+                    {
+                        { "op", op },
+                        { "lhs", ConvertIntegerOperation(lhsJson) },
+                        { "rhs", ConvertIntegerOperation(rhsJson) }
+                    };
+                    }
+                default:
+                    throw new Exception($"Unknown operation type '{op}'.");
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+        #region JSON Element Reading
+
+        /// <summary>Reads an element object.</summary>
+        public Dictionary<string, object> ReadElement(Natural.Json.IJsonObject elementJson)
         {
             // Convert for specific type
-            Dictionary<string, object> overlayObject = ConvertElementType(layoutElement);
+            Dictionary<string, object> overlayObject = ReadElementType(elementJson);
 
             // Check rules
-            if (layoutElement.IsVisibleOp != null)
-                overlayObject.Add("isVisible", ConvertBooleanCondition(layoutElement.IsVisibleOp));
+            Natural.Json.IJsonObject isVisibleJson = elementJson.GetDictionaryObject("IsVisibleOp");
+            if (isVisibleJson.ObjectType == Natural.Json.JsonObjectType.Dictionary)
+                overlayObject.Add("isVisible", ConvertBooleanCondition(isVisibleJson));
 
             // Return
             return overlayObject;
         }
-        
-        /// <summary>Creates an overlay element from a layout element of a specfic type.</summary>
-        private Dictionary<string, object> ConvertElementType(RawLayoutConfigElement layoutElement)
+
+        /// <summary>Reads an element object.</summary>
+        public Dictionary<string, object> ReadElementType(Natural.Json.IJsonObject elementJson)
         {
-            if (layoutElement.HFloat != null)
-                return ConvertHFloatElement(layoutElement.HFloat);
-            if (layoutElement.Rows != null)
-                return ConvertRowsElement(layoutElement.Rows);
-            if (layoutElement.Stack != null)
-                return ConvertStackElement(layoutElement.Stack);
-            if (layoutElement.VFloat != null)
-                return ConvertVFloatElement(layoutElement.VFloat);
-            if (layoutElement.ColouredQuad != null)
-                return ConvertColouredQuadElement(layoutElement.ColouredQuad);
-            if (layoutElement.Image != null)
-                return ConvertImageElement(layoutElement.Image);
-            if (layoutElement.Text != null)
-                return ConvertTextElement(layoutElement.Text);
-            throw new Exception("Unrecognized element type.");
+            string elementType = elementJson.GetDictionaryString("ElementType");
+            switch (elementType)
+            {
+                // Element types
+                case "ColouredQuad":
+                    return ReadElementColouredQuad(elementJson);
+                case "Image":
+                    return ReadElementImage(elementJson);
+                case "Text":
+                    return ReadElementText(elementJson);
+                // Layout types
+                case "HFloat":
+                    return ReadElementHFloat(elementJson);
+                case "Rows":
+                    return ReadElementRows(elementJson);
+                case "Stack":
+                    return ReadElementStack(elementJson);
+                case "VFloat":
+                    return ReadElementVFloat(elementJson);
+            }
+            return null;
         }
 
-        /// <summary>Creates an overlay element from a layout element.</summary>
-        private Dictionary<string, object> ConvertHFloatElement(RawLayoutConfigElementHFloat layoutHFloat)
+        /// <summary>Reads an element object.</summary>
+        public Dictionary<string, object> ReadElementHFloat(Natural.Json.IJsonObject elementJson)
         {
-            int spacing = layoutHFloat.Spacing ?? 0;
-            int marginLeft = layoutHFloat.MarginLeft ?? layoutHFloat.MarginHorizontal ?? layoutHFloat.Margin ?? 0;
-            int marginRight = layoutHFloat.MarginRight ?? layoutHFloat.MarginHorizontal ?? layoutHFloat.Margin ?? 0;
-            int marginTop = layoutHFloat.MarginTop ?? layoutHFloat.MarginVertical ?? layoutHFloat.Margin ?? 0;
-            int marginBottom = layoutHFloat.MarginBottom ?? layoutHFloat.MarginVertical ?? layoutHFloat.Margin ?? 0;
+            Natural.Json.IJsonObject hFloatJson = elementJson.GetDictionaryObject("HFloat");
+            long spacing = hFloatJson.GetDictionaryLong("Spacing") ?? 0;
+            long margin = hFloatJson.GetDictionaryLong("Margin") ?? 0;
+            long marginHorizontal = hFloatJson.GetDictionaryLong("MarginHorizontal") ?? margin;
+            long marginVertical = hFloatJson.GetDictionaryLong("MarginVertical") ?? margin;
+            long marginLeft = hFloatJson.GetDictionaryLong("MarginLeft") ?? marginHorizontal;
+            long marginRight = hFloatJson.GetDictionaryLong("MarginRight") ?? marginHorizontal;
+            long marginTop = hFloatJson.GetDictionaryLong("MarginTop") ?? marginVertical;
+            long marginBottom = hFloatJson.GetDictionaryLong("MarginBottom") ?? marginVertical;
+            Natural.Json.IJsonObject leftElement = hFloatJson.GetDictionaryObject("Left");
+            Natural.Json.IJsonObject middleElement = hFloatJson.GetDictionaryObject("Middle");
+            Natural.Json.IJsonObject rightElement = hFloatJson.GetDictionaryObject("Right");
             Dictionary<string, object> overlayObject = new Dictionary<string, object>
             {
                 { "elTyp", "HFloat" }
@@ -228,39 +606,106 @@ namespace NaturalFacade.LayoutConfig.Raw
                 overlayObject.Add("marginTop", marginTop);
             if (marginBottom != 0)
                 overlayObject.Add("marginBottom", marginBottom);
-            if (layoutHFloat.Left != null)
-                overlayObject.Add("left", ConvertElement(layoutHFloat.Left));
-            if (layoutHFloat.Middle != null)
-                overlayObject.Add("middle", ConvertElement(layoutHFloat.Middle));
-            if (layoutHFloat.Right != null)
-                overlayObject.Add("right", ConvertElement(layoutHFloat.Right));
+            if (leftElement.ObjectType == Natural.Json.JsonObjectType.Dictionary)
+                overlayObject.Add("left", ReadElement(leftElement));
+            if (middleElement.ObjectType == Natural.Json.JsonObjectType.Dictionary)
+                overlayObject.Add("middle", ReadElement(middleElement));
+            if (rightElement.ObjectType == Natural.Json.JsonObjectType.Dictionary)
+                overlayObject.Add("right", ReadElement(rightElement));
             return overlayObject;
         }
 
-        /// <summary>Creates an overlay element from a layout element.</summary>
-        private Dictionary<string, object> ConvertRowsElement(RawLayoutConfigElementRows layoutRows)
+        /// <summary>Reads an element object.</summary>
+        public Dictionary<string, object> ReadElementRows(Natural.Json.IJsonObject elementJson)
         {
             // Get defaults
-            int spacing = layoutRows.Spacing ?? 0;
+            Natural.Json.IJsonObject rowsJson = elementJson.GetDictionaryObject("Rows");
+            long spacing = rowsJson.GetDictionaryLong("Spacing") ?? 0;
+
+            // Get list of children
+            List<object> childList = new List<object>();
+            foreach (Natural.Json.IJsonObject childJson in rowsJson.GetDictionaryObject("Children").AsObjectArray)
+            {
+                object childObject = ReadElement(childJson);
+                if (childObject != null)
+                {
+                    childList.Add(childObject);
+                }
+            }
+
             // Create data
             Dictionary<string, object> data = new Dictionary<string, object>
             {
                 { "elTyp", "Rows" },
-                { "children", layoutRows.Children.Select(x => ConvertElement(x)).ToArray() }
+                { "children", childList }
             };
             if (spacing != 0)
                 data.Add("spacing", spacing);
             return data;
         }
 
-        /// <summary>Creates an overlay element from a layout element.</summary>
-        private Dictionary<string, object> ConvertStackElement(RawLayoutConfigElementStack layoutStack)
+        /// <summary>Reads an element object.</summary>
+        public Dictionary<string, object> ReadElementStack(Natural.Json.IJsonObject elementJson)
         {
+            // Get list of children
+            List<object> childList = new List<object>();
+            foreach (Natural.Json.IJsonObject childJson in elementJson.GetDictionaryObject("Stack").GetDictionaryObject("Children").AsObjectArray)
+            {
+                object childObject = ReadElementStackChild(childJson);
+                if (childObject != null)
+                {
+                    childList.Add(childObject);
+                }
+            }
+
+            // Return
             return new Dictionary<string, object>
             {
                 { "elTyp", "Stack" },
-                { "children", layoutStack.Children.Select(x => ConvertStackChildElement(x)).ToArray() }
+                { "children", childList }
             };
+        }
+
+        /// <summary>Reads an element object.</summary>
+        public Dictionary<string, object> ReadElementStackChild(Natural.Json.IJsonObject stackChildJson)
+        {
+            // Get element
+            Natural.Json.IJsonObject elementJson = stackChildJson.GetDictionaryObject("Element");
+            Dictionary<string, object> overlayObject = ReadElement(elementJson);
+            if (overlayObject == null)
+            {
+                return null;
+            }
+
+            // Add stack attributes
+            RawLayoutConfigElementStackHAlignment hAlign = ConvertStringToStackHAlign(stackChildJson.GetDictionaryString("HAlign"), RawLayoutConfigElementStackHAlignment.Fill);
+            RawLayoutConfigElementStackVAlignment vAlign = ConvertStringToStackVAlign(stackChildJson.GetDictionaryString("VAlign"), RawLayoutConfigElementStackVAlignment.Fill);
+            long widthPixels = stackChildJson.GetDictionaryLong("WidthPixels") ?? 0;
+            long heightPixels = stackChildJson.GetDictionaryLong("HeightPixels") ?? 0;
+            long? margin = stackChildJson.GetDictionaryLong("Margin");
+            long? marginHorizontal = stackChildJson.GetDictionaryLong("MarginHorizontal") ?? margin;
+            long? marginVertical = stackChildJson.GetDictionaryLong("MarginVertical") ?? margin;
+            long marginLeft = stackChildJson.GetDictionaryLong("MarginLeft") ?? marginHorizontal ?? 0;
+            long marginRight = stackChildJson.GetDictionaryLong("MarginRight") ?? marginHorizontal ?? 0;
+            long marginTop = stackChildJson.GetDictionaryLong("MarginTop") ?? marginVertical ?? 0;
+            long marginBottom = stackChildJson.GetDictionaryLong("MarginBottom") ?? marginVertical ?? 0;
+            if (hAlign != RawLayoutConfigElementStackHAlignment.Fill)
+                overlayObject.Add("halign", hAlign.ToString());
+            if (vAlign != RawLayoutConfigElementStackVAlignment.Fill)
+                overlayObject.Add("valign", vAlign.ToString());
+            if (widthPixels != 0)
+                overlayObject.Add("width", widthPixels);
+            if (heightPixels != 0)
+                overlayObject.Add("height", heightPixels);
+            if (marginLeft != 0)
+                overlayObject.Add("stackMarginLeft", marginLeft);
+            if (marginRight != 0)
+                overlayObject.Add("stackMarginRight", marginRight);
+            if (marginTop != 0)
+                overlayObject.Add("stackMarginTop", marginTop);
+            if (marginBottom != 0)
+                overlayObject.Add("stackMarginBottom", marginBottom);
+            return overlayObject;
         }
 
         /// <summary>Converts a string to a stack alignment.</summary>
@@ -293,48 +738,21 @@ namespace NaturalFacade.LayoutConfig.Raw
             throw new Exception($"Unrecognised stack halign: '{attValue}'");
         }
 
-        /// <summary>Creates an overlay element from a layout element.</summary>
-        private Dictionary<string, object> ConvertStackChildElement(RawLayoutConfigElementStackChild layoutStackChild)
+        /// <summary>Reads an element object.</summary>
+        public Dictionary<string, object> ReadElementVFloat(Natural.Json.IJsonObject elementJson)
         {
-            // Get element
-            Dictionary<string, object> overlayObject = ConvertElement(layoutStackChild.Element);
-
-            // Add stack attributes
-            RawLayoutConfigElementStackHAlignment hAlign = ConvertStringToStackHAlign(layoutStackChild.HAlign, RawLayoutConfigElementStackHAlignment.Fill);
-            RawLayoutConfigElementStackVAlignment vAlign = ConvertStringToStackVAlign(layoutStackChild.VAlign, RawLayoutConfigElementStackVAlignment.Fill);
-            int widthPixels = layoutStackChild.WidthPixels ?? 0;
-            int heightPixels = layoutStackChild.HeightPixels ?? 0;
-            int marginLeft = layoutStackChild.MarginLeft ?? layoutStackChild.MarginHorizontal ?? layoutStackChild.Margin ?? 0;
-            int marginRight = layoutStackChild.MarginRight ?? layoutStackChild.MarginHorizontal ?? layoutStackChild.Margin ?? 0;
-            int marginTop = layoutStackChild.MarginTop ?? layoutStackChild.MarginVertical ?? layoutStackChild.Margin ?? 0;
-            int marginBottom = layoutStackChild.MarginBottom ?? layoutStackChild.MarginVertical ?? layoutStackChild.Margin ?? 0;
-            if (hAlign != RawLayoutConfigElementStackHAlignment.Fill)
-                overlayObject.Add("halign", hAlign.ToString());
-            if (vAlign != RawLayoutConfigElementStackVAlignment.Fill)
-                overlayObject.Add("valign", vAlign.ToString());
-            if (widthPixels != 0)
-                overlayObject.Add("width", widthPixels);
-            if (heightPixels != 0)
-                overlayObject.Add("height", heightPixels);
-            if (marginLeft != 0)
-                overlayObject.Add("stackMarginLeft", marginLeft);
-            if (marginRight != 0)
-                overlayObject.Add("stackMarginRight", marginRight);
-            if (marginTop != 0)
-                overlayObject.Add("stackMarginTop", marginTop);
-            if (marginBottom != 0)
-                overlayObject.Add("stackMarginBottom", marginBottom);
-            return overlayObject;
-        }
-
-        /// <summary>Creates an overlay element from a layout element.</summary>
-        private Dictionary<string, object> ConvertVFloatElement(RawLayoutConfigElementVFloat layoutVFloat)
-        {
-            int spacing = layoutVFloat.Spacing ?? 0;
-            int marginLeft = layoutVFloat.MarginLeft ?? layoutVFloat.MarginHorizontal ?? layoutVFloat.Margin ?? 0;
-            int marginRight = layoutVFloat.MarginRight ?? layoutVFloat.MarginHorizontal ?? layoutVFloat.Margin ?? 0;
-            int marginTop = layoutVFloat.MarginTop ?? layoutVFloat.MarginVertical ?? layoutVFloat.Margin ?? 0;
-            int marginBottom = layoutVFloat.MarginBottom ?? layoutVFloat.MarginVertical ?? layoutVFloat.Margin ?? 0;
+            Natural.Json.IJsonObject vFloatJson = elementJson.GetDictionaryObject("VFloat");
+            long spacing = vFloatJson.GetDictionaryLong("Spacing") ?? 0;
+            long margin = vFloatJson.GetDictionaryLong("Margin") ?? 0;
+            long marginHorizontal = vFloatJson.GetDictionaryLong("MarginHorizontal") ?? margin;
+            long marginVertical = vFloatJson.GetDictionaryLong("MarginVertical") ?? margin;
+            long marginLeft = vFloatJson.GetDictionaryLong("MarginLeft") ?? marginHorizontal;
+            long marginRight = vFloatJson.GetDictionaryLong("MarginRight") ?? marginHorizontal;
+            long marginTop = vFloatJson.GetDictionaryLong("MarginTop") ?? marginVertical;
+            long marginBottom = vFloatJson.GetDictionaryLong("MarginBottom") ?? marginVertical;
+            Natural.Json.IJsonObject topElement = vFloatJson.GetDictionaryObject("Top");
+            Natural.Json.IJsonObject middleElement = vFloatJson.GetDictionaryObject("Middle");
+            Natural.Json.IJsonObject bottomElement = vFloatJson.GetDictionaryObject("Bottom");
             Dictionary<string, object> overlayObject = new Dictionary<string, object>
             {
                 { "elTyp", "VFloat" }
@@ -349,13 +767,64 @@ namespace NaturalFacade.LayoutConfig.Raw
                 overlayObject.Add("marginTop", marginTop);
             if (marginBottom != 0)
                 overlayObject.Add("marginBottom", marginBottom);
-            if (layoutVFloat.Top != null)
-                overlayObject.Add("top", ConvertElement(layoutVFloat.Top));
-            if (layoutVFloat.Middle != null)
-                overlayObject.Add("middle", ConvertElement(layoutVFloat.Middle));
-            if (layoutVFloat.Bottom != null)
-                overlayObject.Add("bottom", ConvertElement(layoutVFloat.Bottom));
+            if (topElement.ObjectType == Natural.Json.JsonObjectType.Dictionary)
+                overlayObject.Add("top", ReadElement(topElement));
+            if (middleElement.ObjectType == Natural.Json.JsonObjectType.Dictionary)
+                overlayObject.Add("middle", ReadElement(middleElement));
+            if (bottomElement.ObjectType == Natural.Json.JsonObjectType.Dictionary)
+                overlayObject.Add("bottom", ReadElement(bottomElement));
             return overlayObject;
+        }
+
+        /// <summary>Reads an element object.</summary>
+        public Dictionary<string, object> ReadElementColouredQuad(Natural.Json.IJsonObject elementJson)
+        {
+            Natural.Json.IJsonObject colouredQuadJson = elementJson.GetDictionaryObject("ColouredQuad");
+            long? width = colouredQuadJson.GetDictionaryLong("Width");
+            long? height = colouredQuadJson.GetDictionaryLong("Height");
+            Dictionary<string, object> data = new Dictionary<string, object>
+            {
+                { "elTyp", "ColouredQuad" },
+                { "hex", colouredQuadJson.GetDictionaryString("Hex") }
+            };
+            if (width.HasValue)
+                data.Add("width", width.Value);
+            if (height.HasValue)
+                data.Add("height", height.Value);
+            return data;
+        }
+
+        /// <summary>Reads an element object.</summary>
+        public Dictionary<string, object> ReadElementImage(Natural.Json.IJsonObject elementJson)
+        {
+            // Get data
+            Natural.Json.IJsonObject imageJson = elementJson.GetDictionaryObject("Image");
+            string fit = imageJson.GetDictionaryString("Fit");
+            string hFit = imageJson.GetDictionaryString("HFit");
+            string vFit = imageJson.GetDictionaryString("VFit");
+
+            // Check image res exists
+            string imageName = imageJson.GetDictionaryString("Res");
+            if (m_imageResourcesByName.ContainsKey(imageName) == false)
+            {
+                throw new Exception($"Image resource '{imageName}' is not defined.");
+            }
+            ImageResource imageFile = m_imageResourcesByName[imageName];
+            // Check if we mark font as used
+            if (imageFile.ResIndex.HasValue == false)
+            {
+                imageFile.ResIndex = m_imageResourcesUsedList.Count;
+                m_imageResourcesUsedList.Add(imageFile);
+            }
+
+            // Return
+            return new Dictionary<string, object>
+            {
+                { "elTyp", "Image" },
+                { "hfit", ConvertStringToImageFit(hFit ?? fit).ToString() },
+                { "vfit", ConvertStringToImageFit(vFit ?? fit).ToString() },
+                { "res", imageFile.ResIndex.Value }
+            };
         }
 
         /// <summary>Converts a string to an image fit enum.</summary>
@@ -373,95 +842,60 @@ namespace NaturalFacade.LayoutConfig.Raw
             throw new Exception($"Unrecognised image fit: '{fitString}'");
         }
 
-        /// <summary>Creates an overlay element from a layout element.</summary>
-        private Dictionary<string, object> ConvertColouredQuadElement(RawLayoutConfigElementColouredQuad layoutColouredQuad)
+        /// <summary>Reads an element object.</summary>
+        public Dictionary<string, object> ReadElementText(Natural.Json.IJsonObject elementJson)
         {
-            Dictionary<string, object> data = new Dictionary<string, object>
-            {
-                { "elTyp", "ColouredQuad" },
-                { "hex", layoutColouredQuad.Hex }
-            };
-            if (layoutColouredQuad.Width.HasValue)
-                data.Add("width", layoutColouredQuad.Width.Value);
-            if (layoutColouredQuad.Height.HasValue)
-                data.Add("height", layoutColouredQuad.Height.Value);
-            return data;
-        }
+            // Get data
+            Natural.Json.IJsonObject textJson = elementJson.GetDictionaryObject("Text");
 
-        /// <summary>Creates an overlay element from a layout element.</summary>
-        private Dictionary<string, object> ConvertImageElement(RawLayoutConfigElementImage layoutImage)
-        {
-            // Check font res exists
-            if (m_imageResourcesByName.ContainsKey(layoutImage.Res) == false)
+            // Check font reference exists
+            string fontName = textJson.GetDictionaryString("Font");
+            if (m_fontRefsByName.ContainsKey(fontName) == false)
             {
-                throw new Exception($"Image resource '{layoutImage.Res}' is not defined.");
+                throw new Exception($"Font reference '{fontName}' is not defined.");
             }
-            ResourceRef imageFile = m_imageResourcesByName[layoutImage.Res];
+            FontRef fontRef = m_fontRefsByName[fontName];
             // Check if we mark font as used
-            if (imageFile.ResIndex.HasValue == false)
+            if (fontRef.FontRefIndex.HasValue == false)
             {
-                imageFile.ResIndex = m_imageResourcesUsedList.Count;
-                m_imageResourcesUsedList.Add(imageFile);
-            }
-
-            // Return object
-            return new Dictionary<string, object>
-            {
-                { "elTyp", "Image" },
-                { "hfit", ConvertStringToImageFit(layoutImage.HFit ?? layoutImage.Fit).ToString() },
-                { "vfit", ConvertStringToImageFit(layoutImage.VFit ?? layoutImage.Fit).ToString() },
-                { "res", imageFile.ResIndex.Value }
-            };
-        }
-
-        /// <summary>Creates an overlay element from a layout element.</summary>
-        private Dictionary<string, object> ConvertTextElement(RawLayoutConfigElementText layoutText)
-        {
-            // Check font exists
-            if (m_fontObjsByName.ContainsKey(layoutText.Font) == false)
-            {
-                throw new Exception($"Font '{layoutText.Font}' is not defined.");
-            }
-            FontObjResource fontObj = m_fontObjsByName[layoutText.Font];
-            // Check if we mark font as used
-            if (fontObj.FontIndex.HasValue == false)
-            {
-                fontObj.FontIndex = m_fontObjUsedList.Count;
-                m_fontObjUsedList.Add(fontObj);
+                fontRef.FontRefIndex = m_fontRefsUsedList.Count;
+                m_fontRefsUsedList.Add(fontRef);
             }
 
             // Check font res exists
-            if (m_fontResourcesByName.ContainsKey(fontObj.Font.FontRes) == false)
+            if (m_fontResourcesByName.ContainsKey(fontRef.FontRes) == false)
             {
-                throw new Exception($"Font resource '{fontObj.Font.FontRes}' is not defined.");
+                throw new Exception($"Font resource '{fontRef.FontRes}' is not defined.");
             }
-            ResourceRef fontFile = m_fontResourcesByName[fontObj.Font.FontRes];
+            FontResource fontResource = m_fontResourcesByName[fontRef.FontRes];
             // Check if we mark font as used
-            if (fontFile.ResIndex.HasValue == false)
+            if (fontResource.ResIndex.HasValue == false)
             {
-                fontFile.ResIndex = m_fontResourcesUsedList.Count;
-                m_fontResourcesUsedList.Add(fontFile);
+                fontResource.ResIndex = m_fontResourcesUsedList.Count;
+                m_fontResourcesUsedList.Add(fontResource);
             }
-            fontObj.ResIndex = fontFile.ResIndex;
+            // Set resource index on font config
+            fontRef.FontResourceIndex = fontResource.ResIndex;
 
             // Create object
             Dictionary<string, object> data = new Dictionary<string, object>
             {
                 { "elTyp", "Text" },
-                { "font", fontObj.FontIndex.Value }
+                { "font", fontRef.FontRefIndex.Value }
             };
 
             // Add text or text parameter
-            if (layoutText.TextOp != null)
+            Natural.Json.IJsonObject textOp = textJson.GetDictionaryObject("TextOp");
+            if (textOp.ObjectType == Natural.Json.JsonObjectType.Dictionary)
             {
-                data.Add("text", ConvertStringOperation(layoutText.TextOp));
+                data.Add("text", ConvertStringOperation(textOp));
             }
             else
             {
                 data.Add("text", new Dictionary<string, object>
                 {
                     { "op", "Text" },
-                    { "text", layoutText.Text }
+                    { "text", textJson.GetDictionaryString("Text") }
                 });
             }
 
@@ -469,222 +903,104 @@ namespace NaturalFacade.LayoutConfig.Raw
             return data;
         }
 
-        /// <summary>Creates an overlay element from a layout element.</summary>
-        private Dictionary<string, object> ConvertBooleanCondition(RawLayoutConfigBooleanCondition condition)
-        {
-            switch (condition.Op)
-            {
-                case "Prop":
-                    {
-                        PropertyRef property = GetPropertyFromName(condition.Name);
-                        return new Dictionary<string, object>
-                        {
-                            { "op", "Prop" },
-                            { "index", property.PropIndex.Value }
-                        };
-                    }
-                case "And":
-                case "Or":
-                    if ((condition.Children?.Any() ?? false) == false)
-                        throw new Exception($"'{condition.Op}' boolean conditions must have children.");
-                    return new Dictionary<string, object>
-                    {
-                        { "op", condition.Op },
-                        { "items", condition.Children.Select(x => ConvertBooleanCondition(x)).ToArray() }
-                    };
-                case "Not":
-                    if (condition.Child == null)
-                        throw new Exception("'Not' boolean conditions must have a child.");
-                    return new Dictionary<string, object>
-                    {
-                        { "op", condition.Op },
-                        { "item", ConvertBooleanCondition(condition.Child) }
-                    };
-                case "IntLessThan":
-                case "IntLessThanEquals":
-                case "IntGreaterThan":
-                case "IntGreaterThanEquals":
-                    if (condition.IntLhs == null)
-                        throw new Exception($"'{condition.Op}' boolean conditions must have a lhs.");
-                    if (condition.IntRhs == null)
-                        throw new Exception($"'{condition.Op}' boolean conditions must have a rhs.");
-                    return new Dictionary<string, object>
-                    {
-                        { "op", condition.Op },
-                        { "lhs", ConvertIntegerOperation(condition.IntLhs) },
-                        { "rhs", ConvertIntegerOperation(condition.IntRhs) }
-                    };
-                default:
-                    throw new Exception($"Unknown operation type '{condition.Op}'.");
-            }
-        }
+        #endregion
 
-        /// <summary>Creates an overlay element from a layout element.</summary>
-        private Dictionary<string, object> ConvertStringOperation(RawLayoutConfigStringOperation operation)
-        {
-            switch (operation.Op)
-            {
-                case "Text":
-                    return new Dictionary<string, object>
-                    {
-                        { "op", "Text" },
-                        { "text", operation.Text ?? string.Empty }
-                    };
-                case "Prop":
-                    {
-                        PropertyRef property = GetPropertyFromName(operation.Name);
-                        return new Dictionary<string, object>
-                        {
-                            { "op", "Prop" },
-                            { "index", property.PropIndex.Value }
-                        };
-                    }
-                case "Cat":
-                    if ((operation.Children?.Any() ?? false) == false)
-                        throw new Exception("'Cat' string operation must have children.");
-                    return new Dictionary<string, object>
-                    {
-                        { "op", "Cat" },
-                        { "items", operation.Children.Select(x => ConvertStringOperation(x)).ToArray() }
-                    };
-                case "If":
-                    if (operation.If == null)
-                        throw new Exception("'If' string operation must have an 'If' condition.");
-                    if (operation.Then == null)
-                        throw new Exception("'If' string operation must have an 'Then' operation.");
-                    Dictionary<string, object> opOutput = new Dictionary<string, object>
-                    {
-                        { "op", "If" },
-                        { "if", ConvertBooleanCondition(operation.If) },
-                        { "then", ConvertStringOperation(operation.Then) }
-                    };
-                    if (operation.Else != null)
-                        opOutput.Add("else", ConvertStringOperation(operation.Else));
-                    return opOutput;
-                default:
-                    throw new Exception($"Unknown operation type '{operation.Op}'.");
-            }
-        }
-
-        /// <summary>Creates an overlay element from a layout element.</summary>
-        private Dictionary<string, object> ConvertIntegerOperation(RawLayoutConfigIntegerOperation operation)
-        {
-            switch (operation.Op)
-            {
-                case "Value":
-                    return new Dictionary<string, object>
-                    {
-                        { "op", "Value" },
-                        { "value", operation.Value }
-                    };
-                case "Prop":
-                    PropertyRef property = GetPropertyFromName(operation.Name);
-                    return new Dictionary<string, object>
-                    {
-                        { "op", "Prop" },
-                        { "index", property.PropIndex.Value }
-                    };
-                case "Add":
-                case "Subtract":
-                case "Multiply":
-                case "Divide":
-                case "Modulo":
-                    if (operation.IntLhs == null)
-                        throw new Exception($"'{operation.Op}' integer conditions must have a lhs.");
-                    if (operation.IntRhs == null)
-                        throw new Exception($"'{operation.Op}' integer conditions must have a rhs.");
-                    return new Dictionary<string, object>
-                    {
-                        { "op", operation.Op },
-                        { "lhs", ConvertIntegerOperation(operation.IntLhs) },
-                        { "rhs", ConvertIntegerOperation(operation.IntRhs) }
-                    };
-                default:
-                    throw new Exception($"Unknown operation type '{operation.Op}'.");
-            }
-        }
+        #region Controls reading
 
         /// <summary>Converts a controls object.</summary>
-        private Config2LayoutOverlayOutputControlsDef ConvertControls(RawLayoutConfigControls srcControls)
+        private Config2LayoutOverlayOutputControlsDef ConvertControls(Natural.Json.IJsonObject controlsElement)
         {
             return new Config2LayoutOverlayOutputControlsDef
             {
-                Name = srcControls.Name,
-                SaveAll = srcControls.SaveAll,
-                Fields = srcControls.Fields.Select(x => ConvertControlsField(x)).Where(x => x != null).ToArray()
+                Name = controlsElement.GetDictionaryString("Name"),
+                SaveAll = controlsElement.GetDictionaryBoolean("SaveAll") ?? false,
+                Fields = controlsElement.GetDictionaryObject("Fields").AsObjectArray.Select(x => ConvertControlsField(x)).Where(x => x != null).ToArray()
             };
         }
 
         /// <summary>Converts a controls object.</summary>
-        private Config2LayoutOverlayOutputControlsFieldDef ConvertControlsField(RawLayoutConfigControlsField srcField)
+        private Config2LayoutOverlayOutputControlsFieldDef ConvertControlsField(Natural.Json.IJsonObject fieldElement)
         {
             // Get property
-            if (string.IsNullOrEmpty(srcField.PropName))
+            string propName = fieldElement.GetDictionaryString("PropName");
+            if (string.IsNullOrEmpty(propName))
             {
                 throw new Exception("Prop name for a controls field must be provided.");
             }
-            if (m_propertyByName.ContainsKey(srcField.PropName) == false)
+            if (m_propertyRefsByName.ContainsKey(propName) == false)
             {
-                throw new Exception($"Prop name '{srcField.PropName}' not found.");
+                throw new Exception($"Prop name '{propName}' not found.");
             }
-            PropertyRef propertyRef = m_propertyByName[srcField.PropName];
+            PropertyRef propertyRef = m_propertyRefsByName[propName];
             if (propertyRef.PropIndex.HasValue == false)
             {
                 return null;
             }
 
             // Create field
+            string label = fieldElement.GetDictionaryString("Label");
             Config2LayoutOverlayOutputControlsFieldDef destField = new Config2LayoutOverlayOutputControlsFieldDef
             {
-                Label = srcField.Label ?? propertyRef.PropName,
+                Label = label ?? propName,
                 PropIndex = propertyRef.PropIndex.Value
             };
-            Dictionary<string, object> destField2 = new Dictionary<string, object>
-            {
-                { "Label", srcField.Label ?? propertyRef.PropName },
-                { "PropIndex", propertyRef.PropIndex.Value }
-            };
-            if (srcField.AllowTextEdit)
+            bool allowTextEdit = fieldElement.GetDictionaryBoolean("AllowTextEdit") ?? false;
+            if (allowTextEdit)
                 destField.TextField = new object();
-            if (srcField.Options?.Any() ?? false)
-                destField.SelectOptions = srcField.Options;
-            if (srcField.Integer != null)
-                destField.Integer = ConvertControlsFieldInteger(srcField.Integer);
-            if (srcField.Switch != null)
-                destField.Switch = ConvertControlsFieldSwitch(srcField.Switch);
-            if (srcField.Timer != null)
-                destField.Timer = ConvertControlsFieldTimer(srcField.Timer);
+            destField.SelectOptions = ConvertControlsFieldSelectOptions(fieldElement.GetDictionaryObject("Options"));
+            destField.Integer = ConvertControlsFieldInteger(fieldElement.GetDictionaryObject("Integer"));
+            destField.Switch = ConvertControlsFieldSwitch(fieldElement.GetDictionaryObject("Switch"));
+            destField.Timer = ConvertControlsFieldTimer(fieldElement.GetDictionaryObject("Timer"));
             return destField;
         }
 
         /// <summary>Converts a controls object.</summary>
-        private Config2LayoutOverlayOutputControlsFieldIntegerDef ConvertControlsFieldInteger(RawLayoutConfigControlsFieldInteger srcInteger)
+        private object ConvertControlsFieldSelectOptions(Natural.Json.IJsonObject fieldJson)
         {
+            Natural.Json.IJsonObject[] optionJsonArray = fieldJson.AsObjectArray;
+            if (optionJsonArray?.Any() ?? false)
+            {
+                return optionJsonArray.Select(x => x.AsString).ToArray();
+            }
+            return null;
+        }
+
+        /// <summary>Converts a controls object.</summary>
+        private Config2LayoutOverlayOutputControlsFieldIntegerDef ConvertControlsFieldInteger(Natural.Json.IJsonObject fieldJson)
+        {
+            if (fieldJson.ObjectType != Natural.Json.JsonObjectType.Dictionary)
+                return null;
             return new Config2LayoutOverlayOutputControlsFieldIntegerDef
             {
-                Step = srcInteger.Step,
-                MinValue = srcInteger.MinValue,
-                MaxValue = srcInteger.MaxValue
+                Step = fieldJson.GetDictionaryLong("Step") ?? 1,
+                MinValue = fieldJson.GetDictionaryLong("MinValue"),
+                MaxValue = fieldJson.GetDictionaryLong("MaxValue")
             };
         }
 
         /// <summary>Converts a controls object.</summary>
-        private Config2LayoutOverlayOutputControlsFieldSwitchDef ConvertControlsFieldSwitch(RawLayoutConfigControlsFieldSwitch srcSwitch)
+        private Config2LayoutOverlayOutputControlsFieldSwitchDef ConvertControlsFieldSwitch(Natural.Json.IJsonObject fieldJson)
         {
+            if (fieldJson.ObjectType != Natural.Json.JsonObjectType.Dictionary)
+                return null;
             return new Config2LayoutOverlayOutputControlsFieldSwitchDef
             {
-                FalseLabel = srcSwitch.FalseLabel,
-                TrueLabel = srcSwitch.TrueLabel
+                FalseLabel = fieldJson.GetDictionaryString("FalseLabel"),
+                TrueLabel = fieldJson.GetDictionaryString("TrueLabel")
             };
         }
 
         /// <summary>Converts a controls object.</summary>
-        private Config2LayoutOverlayOutputControlsFieldTimerDef ConvertControlsFieldTimer(RawLayoutConfigControlsFieldTimer srcTimer)
+        private Config2LayoutOverlayOutputControlsFieldTimerDef ConvertControlsFieldTimer(Natural.Json.IJsonObject fieldJson)
         {
+            if (fieldJson.ObjectType != Natural.Json.JsonObjectType.Dictionary)
+                return null;
             return new Config2LayoutOverlayOutputControlsFieldTimerDef
             {
-                AllowClear = srcTimer.AllowClear ?? true
+                AllowClear = fieldJson.GetDictionaryBoolean("AllowClear") ?? true
             };
         }
+
+        #endregion
     }
 }

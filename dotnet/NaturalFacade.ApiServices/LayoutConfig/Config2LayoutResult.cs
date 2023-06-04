@@ -29,7 +29,7 @@ namespace NaturalFacade.LayoutConfig
 
         public string Name { get; set; }
 
-        public int? TimerDirection { get; set; }
+        public long? TimerDirection { get; set; }
 
         public long? TimerMinValue { get; set; }
 
@@ -69,11 +69,11 @@ namespace NaturalFacade.LayoutConfig
     /// <summary>The definition for an integer control field.</summary>
     public class Config2LayoutOverlayOutputControlsFieldIntegerDef
     {
-        public int Step { get; set; } = 1;
+        public long Step { get; set; } = 1;
 
-        public int? MinValue { get; set; }
+        public long? MinValue { get; set; }
 
-        public int? MaxValue { get; set; }
+        public long? MaxValue { get; set; }
     }
 
     /// <summary>The definition for an switch control field.</summary>

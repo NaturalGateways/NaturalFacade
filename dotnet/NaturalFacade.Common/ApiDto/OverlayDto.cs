@@ -25,7 +25,7 @@ namespace NaturalFacade.ApiDto
 
     public class OverlayDtoFont
     {
-        public int res { get; set; }
+        public long res { get; set; }
 
         public string size { get; set; }
 
