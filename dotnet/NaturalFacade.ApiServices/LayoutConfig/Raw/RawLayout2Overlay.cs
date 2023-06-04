@@ -580,18 +580,17 @@ namespace NaturalFacade.LayoutConfig.Raw
         /// <summary>Reads an element object.</summary>
         public Dictionary<string, object> ReadElementHFloat(Natural.Json.IJsonObject elementJson)
         {
-            Natural.Json.IJsonObject hFloatJson = elementJson.GetDictionaryObject("HFloat");
-            long spacing = hFloatJson.GetDictionaryLong("Spacing") ?? 0;
-            long margin = hFloatJson.GetDictionaryLong("Margin") ?? 0;
-            long marginHorizontal = hFloatJson.GetDictionaryLong("MarginHorizontal") ?? margin;
-            long marginVertical = hFloatJson.GetDictionaryLong("MarginVertical") ?? margin;
-            long marginLeft = hFloatJson.GetDictionaryLong("MarginLeft") ?? marginHorizontal;
-            long marginRight = hFloatJson.GetDictionaryLong("MarginRight") ?? marginHorizontal;
-            long marginTop = hFloatJson.GetDictionaryLong("MarginTop") ?? marginVertical;
-            long marginBottom = hFloatJson.GetDictionaryLong("MarginBottom") ?? marginVertical;
-            Natural.Json.IJsonObject leftElement = hFloatJson.GetDictionaryObject("Left");
-            Natural.Json.IJsonObject middleElement = hFloatJson.GetDictionaryObject("Middle");
-            Natural.Json.IJsonObject rightElement = hFloatJson.GetDictionaryObject("Right");
+            long spacing = elementJson.GetDictionaryLong("Spacing") ?? 0;
+            long margin = elementJson.GetDictionaryLong("Margin") ?? 0;
+            long marginHorizontal = elementJson.GetDictionaryLong("MarginHorizontal") ?? margin;
+            long marginVertical = elementJson.GetDictionaryLong("MarginVertical") ?? margin;
+            long marginLeft = elementJson.GetDictionaryLong("MarginLeft") ?? marginHorizontal;
+            long marginRight = elementJson.GetDictionaryLong("MarginRight") ?? marginHorizontal;
+            long marginTop = elementJson.GetDictionaryLong("MarginTop") ?? marginVertical;
+            long marginBottom = elementJson.GetDictionaryLong("MarginBottom") ?? marginVertical;
+            Natural.Json.IJsonObject leftElement = elementJson.GetDictionaryObject("Left");
+            Natural.Json.IJsonObject middleElement = elementJson.GetDictionaryObject("Middle");
+            Natural.Json.IJsonObject rightElement = elementJson.GetDictionaryObject("Right");
             Dictionary<string, object> overlayObject = new Dictionary<string, object>
             {
                 { "elTyp", "HFloat" }
@@ -619,12 +618,11 @@ namespace NaturalFacade.LayoutConfig.Raw
         public Dictionary<string, object> ReadElementRows(Natural.Json.IJsonObject elementJson)
         {
             // Get defaults
-            Natural.Json.IJsonObject rowsJson = elementJson.GetDictionaryObject("Rows");
-            long spacing = rowsJson.GetDictionaryLong("Spacing") ?? 0;
+            long spacing = elementJson.GetDictionaryLong("Spacing") ?? 0;
 
             // Get list of children
             List<object> childList = new List<object>();
-            foreach (Natural.Json.IJsonObject childJson in rowsJson.GetDictionaryObject("Children").AsObjectArray)
+            foreach (Natural.Json.IJsonObject childJson in elementJson.GetDictionaryObject("Children").AsObjectArray)
             {
                 object childObject = ReadElement(childJson);
                 if (childObject != null)
@@ -649,7 +647,7 @@ namespace NaturalFacade.LayoutConfig.Raw
         {
             // Get list of children
             List<object> childList = new List<object>();
-            foreach (Natural.Json.IJsonObject childJson in elementJson.GetDictionaryObject("Stack").GetDictionaryObject("Children").AsObjectArray)
+            foreach (Natural.Json.IJsonObject childJson in elementJson.GetDictionaryObject("Children").AsObjectArray)
             {
                 object childObject = ReadElementStackChild(childJson);
                 if (childObject != null)
@@ -670,25 +668,24 @@ namespace NaturalFacade.LayoutConfig.Raw
         public Dictionary<string, object> ReadElementStackChild(Natural.Json.IJsonObject stackChildJson)
         {
             // Get element
-            Natural.Json.IJsonObject elementJson = stackChildJson.GetDictionaryObject("Element");
-            Dictionary<string, object> overlayObject = ReadElement(elementJson);
+            Dictionary<string, object> overlayObject = ReadElement(stackChildJson);
             if (overlayObject == null)
             {
                 return null;
             }
 
             // Add stack attributes
-            RawLayoutConfigElementStackHAlignment hAlign = ConvertStringToStackHAlign(stackChildJson.GetDictionaryString("HAlign"), RawLayoutConfigElementStackHAlignment.Fill);
-            RawLayoutConfigElementStackVAlignment vAlign = ConvertStringToStackVAlign(stackChildJson.GetDictionaryString("VAlign"), RawLayoutConfigElementStackVAlignment.Fill);
-            long widthPixels = stackChildJson.GetDictionaryLong("WidthPixels") ?? 0;
-            long heightPixels = stackChildJson.GetDictionaryLong("HeightPixels") ?? 0;
-            long? margin = stackChildJson.GetDictionaryLong("Margin");
-            long? marginHorizontal = stackChildJson.GetDictionaryLong("MarginHorizontal") ?? margin;
-            long? marginVertical = stackChildJson.GetDictionaryLong("MarginVertical") ?? margin;
-            long marginLeft = stackChildJson.GetDictionaryLong("MarginLeft") ?? marginHorizontal ?? 0;
-            long marginRight = stackChildJson.GetDictionaryLong("MarginRight") ?? marginHorizontal ?? 0;
-            long marginTop = stackChildJson.GetDictionaryLong("MarginTop") ?? marginVertical ?? 0;
-            long marginBottom = stackChildJson.GetDictionaryLong("MarginBottom") ?? marginVertical ?? 0;
+            RawLayoutConfigElementStackHAlignment hAlign = ConvertStringToStackHAlign(stackChildJson.GetDictionaryString("Stack.HAlign"), RawLayoutConfigElementStackHAlignment.Fill);
+            RawLayoutConfigElementStackVAlignment vAlign = ConvertStringToStackVAlign(stackChildJson.GetDictionaryString("Stack.VAlign"), RawLayoutConfigElementStackVAlignment.Fill);
+            long widthPixels = stackChildJson.GetDictionaryLong("Stack.WidthPixels") ?? 0;
+            long heightPixels = stackChildJson.GetDictionaryLong("Stack.HeightPixels") ?? 0;
+            long? margin = stackChildJson.GetDictionaryLong("Stack.Margin");
+            long? marginHorizontal = stackChildJson.GetDictionaryLong("Stack.MarginHorizontal") ?? margin;
+            long? marginVertical = stackChildJson.GetDictionaryLong("Stack.MarginVertical") ?? margin;
+            long marginLeft = stackChildJson.GetDictionaryLong("Stack.MarginLeft") ?? marginHorizontal ?? 0;
+            long marginRight = stackChildJson.GetDictionaryLong("Stack.MarginRight") ?? marginHorizontal ?? 0;
+            long marginTop = stackChildJson.GetDictionaryLong("Stack.MarginTop") ?? marginVertical ?? 0;
+            long marginBottom = stackChildJson.GetDictionaryLong("Stack.MarginBottom") ?? marginVertical ?? 0;
             if (hAlign != RawLayoutConfigElementStackHAlignment.Fill)
                 overlayObject.Add("halign", hAlign.ToString());
             if (vAlign != RawLayoutConfigElementStackVAlignment.Fill)
@@ -741,18 +738,17 @@ namespace NaturalFacade.LayoutConfig.Raw
         /// <summary>Reads an element object.</summary>
         public Dictionary<string, object> ReadElementVFloat(Natural.Json.IJsonObject elementJson)
         {
-            Natural.Json.IJsonObject vFloatJson = elementJson.GetDictionaryObject("VFloat");
-            long spacing = vFloatJson.GetDictionaryLong("Spacing") ?? 0;
-            long margin = vFloatJson.GetDictionaryLong("Margin") ?? 0;
-            long marginHorizontal = vFloatJson.GetDictionaryLong("MarginHorizontal") ?? margin;
-            long marginVertical = vFloatJson.GetDictionaryLong("MarginVertical") ?? margin;
-            long marginLeft = vFloatJson.GetDictionaryLong("MarginLeft") ?? marginHorizontal;
-            long marginRight = vFloatJson.GetDictionaryLong("MarginRight") ?? marginHorizontal;
-            long marginTop = vFloatJson.GetDictionaryLong("MarginTop") ?? marginVertical;
-            long marginBottom = vFloatJson.GetDictionaryLong("MarginBottom") ?? marginVertical;
-            Natural.Json.IJsonObject topElement = vFloatJson.GetDictionaryObject("Top");
-            Natural.Json.IJsonObject middleElement = vFloatJson.GetDictionaryObject("Middle");
-            Natural.Json.IJsonObject bottomElement = vFloatJson.GetDictionaryObject("Bottom");
+            long spacing = elementJson.GetDictionaryLong("Spacing") ?? 0;
+            long margin = elementJson.GetDictionaryLong("Margin") ?? 0;
+            long marginHorizontal = elementJson.GetDictionaryLong("MarginHorizontal") ?? margin;
+            long marginVertical = elementJson.GetDictionaryLong("MarginVertical") ?? margin;
+            long marginLeft = elementJson.GetDictionaryLong("MarginLeft") ?? marginHorizontal;
+            long marginRight = elementJson.GetDictionaryLong("MarginRight") ?? marginHorizontal;
+            long marginTop = elementJson.GetDictionaryLong("MarginTop") ?? marginVertical;
+            long marginBottom = elementJson.GetDictionaryLong("MarginBottom") ?? marginVertical;
+            Natural.Json.IJsonObject topElement = elementJson.GetDictionaryObject("Top");
+            Natural.Json.IJsonObject middleElement = elementJson.GetDictionaryObject("Middle");
+            Natural.Json.IJsonObject bottomElement = elementJson.GetDictionaryObject("Bottom");
             Dictionary<string, object> overlayObject = new Dictionary<string, object>
             {
                 { "elTyp", "VFloat" }
@@ -779,13 +775,12 @@ namespace NaturalFacade.LayoutConfig.Raw
         /// <summary>Reads an element object.</summary>
         public Dictionary<string, object> ReadElementColouredQuad(Natural.Json.IJsonObject elementJson)
         {
-            Natural.Json.IJsonObject colouredQuadJson = elementJson.GetDictionaryObject("ColouredQuad");
-            long? width = colouredQuadJson.GetDictionaryLong("Width");
-            long? height = colouredQuadJson.GetDictionaryLong("Height");
+            long? width = elementJson.GetDictionaryLong("Width");
+            long? height = elementJson.GetDictionaryLong("Height");
             Dictionary<string, object> data = new Dictionary<string, object>
             {
                 { "elTyp", "ColouredQuad" },
-                { "hex", colouredQuadJson.GetDictionaryString("Hex") }
+                { "hex", elementJson.GetDictionaryString("Hex") }
             };
             if (width.HasValue)
                 data.Add("width", width.Value);
@@ -798,13 +793,12 @@ namespace NaturalFacade.LayoutConfig.Raw
         public Dictionary<string, object> ReadElementImage(Natural.Json.IJsonObject elementJson)
         {
             // Get data
-            Natural.Json.IJsonObject imageJson = elementJson.GetDictionaryObject("Image");
-            string fit = imageJson.GetDictionaryString("Fit");
-            string hFit = imageJson.GetDictionaryString("HFit");
-            string vFit = imageJson.GetDictionaryString("VFit");
+            string fit = elementJson.GetDictionaryString("Fit");
+            string hFit = elementJson.GetDictionaryString("HFit");
+            string vFit = elementJson.GetDictionaryString("VFit");
 
             // Check image res exists
-            string imageName = imageJson.GetDictionaryString("Res");
+            string imageName = elementJson.GetDictionaryString("Res");
             if (m_imageResourcesByName.ContainsKey(imageName) == false)
             {
                 throw new Exception($"Image resource '{imageName}' is not defined.");
@@ -845,11 +839,8 @@ namespace NaturalFacade.LayoutConfig.Raw
         /// <summary>Reads an element object.</summary>
         public Dictionary<string, object> ReadElementText(Natural.Json.IJsonObject elementJson)
         {
-            // Get data
-            Natural.Json.IJsonObject textJson = elementJson.GetDictionaryObject("Text");
-
             // Check font reference exists
-            string fontName = textJson.GetDictionaryString("Font");
+            string fontName = elementJson.GetDictionaryString("Font");
             if (m_fontRefsByName.ContainsKey(fontName) == false)
             {
                 throw new Exception($"Font reference '{fontName}' is not defined.");
@@ -885,7 +876,7 @@ namespace NaturalFacade.LayoutConfig.Raw
             };
 
             // Add text or text parameter
-            Natural.Json.IJsonObject textOp = textJson.GetDictionaryObject("TextOp");
+            Natural.Json.IJsonObject textOp = elementJson.GetDictionaryObject("TextOp");
             if (textOp.ObjectType == Natural.Json.JsonObjectType.Dictionary)
             {
                 data.Add("text", ConvertStringOperation(textOp));
@@ -895,7 +886,7 @@ namespace NaturalFacade.LayoutConfig.Raw
                 data.Add("text", new Dictionary<string, object>
                 {
                     { "op", "Text" },
-                    { "text", textJson.GetDictionaryString("Text") }
+                    { "text", elementJson.GetDictionaryString("Text") }
                 });
             }
 
