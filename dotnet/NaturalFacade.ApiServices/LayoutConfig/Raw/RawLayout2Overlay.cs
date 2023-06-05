@@ -245,8 +245,11 @@ namespace NaturalFacade.LayoutConfig.Raw
 
             // Get the controls
             {
-                Natural.Json.IJsonObject controlsElement = layoutJson.GetDictionaryObject("Controls");
-                m_controlsArray = controlsElement.AsObjectArray.Select(x => ConvertControls(x)).ToArray();
+                Natural.Json.IJsonObject[] controlsJsonArray = layoutJson.GetDictionaryObject("Controls").AsObjectArray;
+                if (controlsJsonArray?.Any() ?? false)
+                {
+                    m_controlsArray = controlsJsonArray.Select(x => ConvertControls(x)).ToArray();
+                }
             }
         }
 
