@@ -12,9 +12,7 @@ namespace NaturalFacade.LayoutConfig.Raw
         public static Config2LayoutOverlayOutput Convert(object layoutConfig)
         {
             RawLayout2Overlay instance = new RawLayout2Overlay();
-            string jsonString = Natural.Json.JsonHelper.SerialiseObject(layoutConfig);
-            Natural.Json.IJsonObject jsonObject = Natural.Json.JsonHelper.JsonFromString(jsonString);
-            instance.ReadJson(jsonObject);
+            instance.ReadJson(Natural.Json.JsonHelper.JsonFromObject(layoutConfig));
             return instance.CreateOutput();
         }
 

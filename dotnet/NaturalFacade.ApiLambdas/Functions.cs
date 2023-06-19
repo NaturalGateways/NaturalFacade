@@ -20,9 +20,9 @@ public class Functions
                 object responseObj = await Services.ApiService.HandleAnonRequestAsync(dynamoService, request.payload);
                 return ApiDto.ApiResponseDto.CreateSuccess(responseObj);
             }
-            catch (FacadeApiException rae)
+            catch (FacadeApiException fae)
             {
-                return ApiDto.ApiResponseDto.CreateError(rae.UserMessage, rae);
+                return ApiDto.ApiResponseDto.CreateError(fae.UserMessage, fae);
             }
             catch (Exception ex)
             {
@@ -44,9 +44,9 @@ public class Functions
                 object responseObj = await Services.ApiService.HandleAuthRequestAsync(dynamoService, request);
                 return ApiDto.ApiResponseDto.CreateSuccess(responseObj);
             }
-            catch (FacadeApiException rae)
+            catch (FacadeApiException fae)
             {
-                return ApiDto.ApiResponseDto.CreateError(rae.UserMessage, rae);
+                return ApiDto.ApiResponseDto.CreateError(fae.UserMessage, fae);
             }
             catch (Exception ex)
             {

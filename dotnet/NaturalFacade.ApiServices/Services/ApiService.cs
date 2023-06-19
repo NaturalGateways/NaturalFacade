@@ -27,7 +27,7 @@ namespace NaturalFacade.Services
                 case ApiDto.AnonRequestType.GetLayoutOverlayPropValues:
                     return await HandleAnonGetLayoutOverlayPropValuesAsync(dynamoService, requestDto);
                 case ApiDto.AnonRequestType.ConvertLayoutToOverlay:
-                    return await HandleAnonConvertLayoutToOverlayAsync(requestDto);
+                    return HandleAnonConvertLayoutToOverlay(requestDto);
                 default:
                     throw new FacadeApiException($"Unrecognised request type: {requestDto.RequestType}");
             }
@@ -85,8 +85,12 @@ namespace NaturalFacade.Services
         }
 
         /// <summary>Handle the request.</summary>
-        private static async Task<object> HandleAnonConvertLayoutToOverlayAsync(ApiDto.AnonRequestPayloadDto requestDto)
+        private static object HandleAnonConvertLayoutToOverlay(ApiDto.AnonRequestPayloadDto requestDto)
         {
+            if (requestDto.LayoutConfig == null)
+            {
+                throw new FacadeApiException("LayoutConfig missing from layout convert.");
+            }
             LayoutConfig.Config2LayoutResult result = LayoutConfig.Config2Layout.Convert(requestDto.LayoutConfig, null);
             Dictionary<string, object> resultData = new Dictionary<string, object>
             {
