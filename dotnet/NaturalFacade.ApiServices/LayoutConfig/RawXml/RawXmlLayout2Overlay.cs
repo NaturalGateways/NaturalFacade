@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Natural.Xml;
+
 namespace NaturalFacade.LayoutConfig.RawXml
 {
-    public class RawXmlLayout2Overlay : Xml.IXmlReader, Xml.IXmlHandler
+    public class RawXmlLayout2Overlay : IXmlReader, ITagHandler
     {
         #region Static facade
 
@@ -16,7 +18,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
             RawXmlLayout2Overlay instance = new RawXmlLayout2Overlay();
             string layoutConfigXmlString = layoutConfig as string;
             if (string.IsNullOrEmpty(layoutConfigXmlString) == false)
-                Xml.XmlReader.ReadFromString(layoutConfigXmlString, instance);
+                XmlReader.ReadFromString(layoutConfigXmlString, instance);
             return instance.CreateOutput();
         }
 
@@ -43,10 +45,10 @@ namespace NaturalFacade.LayoutConfig.RawXml
 
         #endregion
 
-        #region Xml.IXmlReader implementation
+        #region IXmlReader implementation
 
         /// <summary>Called when the root tag is hit to get the initial handler.</summary>
-        public Xml.IXmlHandler HandleRootTag(string tagName, Xml.ITagAttributes attributes)
+        public ITagHandler HandleRootTag(string tagName, ITagAttributes attributes)
         {
             if (tagName == "layout")
                 return this;
@@ -55,10 +57,10 @@ namespace NaturalFacade.LayoutConfig.RawXml
 
         #endregion
 
-        #region Xml.IXmlHandler implementation
+        #region ITagHandler implementation
 
         /// <summary>Called when a child tag is hit. Return a handler for a child tag, or null to skip further children.</summary>
-        public Xml.IXmlHandler HandleStartChildTag(string tagName, Xml.ITagAttributes attributes)
+        public ITagHandler HandleStartChildTag(string tagName, ITagAttributes attributes)
         {
             switch (tagName)
             {
@@ -88,7 +90,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
         #region Tag handlers
 
         /// <summary>Reads a tag attributes into an object</summary>
-        private void ReadResourceTag(Xml.ITagAttributes attributes)
+        private void ReadResourceTag(ITagAttributes attributes)
         {
             string name = attributes.GetString("name");
             switch (attributes.GetString("type"))

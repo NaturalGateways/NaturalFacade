@@ -11,9 +11,6 @@ namespace NaturalFacade.LayoutConfig
         /// <summary>The layout type.</summary>
         public string LayoutType { get; set; }
 
-        /// <summary>The layout name.</summary>
-        public string Name { get; set; }
-
         /// <summary>The width of the canvas.</summary>
         public int? Width { get; set; }
 

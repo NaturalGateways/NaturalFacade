@@ -1,9 +1,10 @@
-﻿using NaturalFacade.Xml;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using Natural.Xml;
 
 namespace NaturalFacade.LayoutConfig.RawXml
 {
@@ -37,10 +38,10 @@ namespace NaturalFacade.LayoutConfig.RawXml
 
         #endregion
 
-        #region IBranchElementHandler - Xml.IXmlHandler implementation
+        #region IBranchElementHandler - ITagHandler implementation
 
         /// <summary>Called when a child tag is hit. Return a handler for a child tag, or null to skip further children.</summary>
-        public IXmlHandler HandleStartChildTag(string tagName, ITagAttributes attributes)
+        public ITagHandler HandleStartChildTag(string tagName, ITagAttributes attributes)
         {
             {
                 IBranchElementHandler branchElementHandler = RawXmlElementFactory.CheckBranchTag(m_tracking, tagName, attributes);

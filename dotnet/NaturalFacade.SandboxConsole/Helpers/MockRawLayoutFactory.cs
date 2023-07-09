@@ -34,7 +34,6 @@ namespace NaturalFacade.SandboxConsole.Helpers
             LayoutConfig.LayoutConfig layoutConfig = new LayoutConfig.LayoutConfig
             {
                 LayoutType = "RawXml",
-                Name = "Twitch",
                 Layout = xmlString
             };
             return layoutConfig;

@@ -1,16 +1,19 @@
-﻿using NaturalFacade.LayoutConfig.Raw;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using Natural.Xml;
+
+using NaturalFacade.LayoutConfig.Raw;
 
 namespace NaturalFacade.LayoutConfig.RawXml
 {
     internal static class RawXmlElementFactory
     {
         /// <summary>Checks if the tag is an element that needs a handler.</summary>
-        public static IBranchElementHandler CheckBranchTag(RawXmlReferenceTracking tracking, string tagName, Xml.ITagAttributes attributes)
+        public static IBranchElementHandler CheckBranchTag(RawXmlReferenceTracking tracking, string tagName, ITagAttributes attributes)
         {
             switch (tagName)
             {
@@ -21,7 +24,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
         }
 
         /// <summary>Checks if the tag is an element that needs a handler.</summary>
-        public static Dictionary<string, object> CheckLeafTag(RawXmlReferenceTracking tracking, string tagName, Xml.ITagAttributes attributes)
+        public static Dictionary<string, object> CheckLeafTag(RawXmlReferenceTracking tracking, string tagName, ITagAttributes attributes)
         {
             switch (tagName)
             {
@@ -32,7 +35,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
         }
 
         /// <summary>Checks if the tag is an element that needs a handler.</summary>
-        public static Dictionary<string, object> ReadImageTag(RawXmlReferenceTracking tracking, Xml.ITagAttributes attributes)
+        public static Dictionary<string, object> ReadImageTag(RawXmlReferenceTracking tracking, ITagAttributes attributes)
         {
             // Get fit
             RawLayoutConfigElementImageFit fit = attributes.GetNullableEnum<RawLayoutConfigElementImageFit>("fit") ?? RawLayoutConfigElementImageFit.None;
