@@ -16,7 +16,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
         public static Config2LayoutOverlayOutput Convert(object layoutConfig)
         {
             RawXmlLayout2Overlay instance = new RawXmlLayout2Overlay();
-            string layoutConfigXmlString = layoutConfig as string;
+            string layoutConfigXmlString = layoutConfig.ToString();
             if (string.IsNullOrEmpty(layoutConfigXmlString) == false)
                 XmlReader.ReadFromString(layoutConfigXmlString, instance);
             return instance.CreateOutput();
