@@ -16,6 +16,9 @@ namespace NaturalFacade.LayoutConfig
                 case Raw.RawLayoutConfig.TYPENAME:
                     convertOutput = Raw.RawLayout2Overlay.Convert(layoutConfig.Layout);
                     break;
+                case RawXml.RawXmlLayoutConfig.TYPENAME:
+                    convertOutput = RawXml.RawXmlLayout2Overlay.Convert(layoutConfig.Layout);
+                    break;
                 default:
                     throw new Exception($"Cannot convert layout of type '{layoutConfig.LayoutType}'.");
             }

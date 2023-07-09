@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,6 +19,25 @@ namespace NaturalFacade.SandboxConsole.Helpers
                 }
             }
             return Newtonsoft.Json.JsonConvert.DeserializeObject<LayoutConfig.LayoutConfig>(jsonString);
+        }
+
+        public static LayoutConfig.LayoutConfig CreateAllLayoutFromXmlPostBody()
+        {
+            string xmlString = null;
+            using (Stream stream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("NaturalFacade.SandboxConsole.ExamplePayload.xml"))
+            {
+                using (TextReader reader = new StreamReader(stream))
+                {
+                    xmlString = reader.ReadToEnd();
+                }
+            }
+            LayoutConfig.LayoutConfig layoutConfig = new LayoutConfig.LayoutConfig
+            {
+                LayoutType = "RawXml",
+                Name = "Twitch",
+                Layout = xmlString
+            };
+            return layoutConfig;
         }
     }
 }
