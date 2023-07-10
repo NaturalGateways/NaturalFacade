@@ -69,6 +69,12 @@ namespace NaturalFacade.LayoutConfig
                     }
                 }
             }
+            else
+            {
+                result.Overlay.properties = Array.Empty<object>();
+                result.Properties = Array.Empty<ApiDto.PropertyDto>();
+                result.PropertyValues = Array.Empty<object>();
+            }
 
             // Set timing defaults
             if (layoutConfig.RedrawMillis.HasValue)
