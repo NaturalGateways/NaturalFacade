@@ -30,6 +30,8 @@ namespace NaturalFacade.LayoutConfig.RawXml
             {
                 case "image":
                     return ReadImageTag(tracking, attributes);
+                case "text":
+                    return ReadTextTag(tracking, attributes);
             }
             return null;
         }
@@ -52,6 +54,28 @@ namespace NaturalFacade.LayoutConfig.RawXml
                 { "hfit", hFit.ToString() },
                 { "vfit", vFit.ToString() },
                 { "res", imageIndex }
+            };
+
+            // Return
+            return data;
+        }
+
+        /// <summary>Checks if the tag is an element that needs a handler.</summary>
+        public static Dictionary<string, object> ReadTextTag(RawXmlReferenceTracking tracking, ITagAttributes attributes)
+        {
+            // Get attributes
+            string fontName = attributes.GetString("font");
+            string text = attributes.GetNullableString("text");
+
+            // Get font index
+            int fontIndex = tracking.GetFontDefinitionUsedIndex(fontName);
+
+            // Create data
+            Dictionary<string, object> data = new Dictionary<string, object>
+            {
+                { "elTyp", "Text" },
+                { "font", fontIndex },
+                { "text", text }
             };
 
             // Return

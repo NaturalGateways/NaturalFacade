@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,9 +38,27 @@ namespace NaturalFacade.LayoutConfig.RawXml
             Config2LayoutOverlayOutput output = new Config2LayoutOverlayOutput
             {
                 ImageResources = m_tracking.ImageResourcesUsedList.Select(x => x.Url).ToArray(),
+                FontResources = m_tracking.FontResourcesUsedList.Select(x => x.Url).ToArray(),
+                Fonts = m_tracking.FontDefinitionsUsedList.Select(x => ConvertFontDefinition(x)).Where(x => x != null).ToArray(),
                 RootElement = m_rootElementHandler?.Data
             };
             return output;
+        }
+
+        /// <summary>converts a font to the API DTO.</summary>
+        private ApiDto.OverlayDtoFont ConvertFontDefinition(RawXmlReferenceTracking.FontDefinition fontDefinition)
+        {
+            if (fontDefinition.ResIndex.HasValue && fontDefinition.FontResIndex.HasValue)
+            {
+                return new ApiDto.OverlayDtoFont
+                {
+                    res = fontDefinition.FontResIndex.Value,
+                    size = fontDefinition.Size,
+                    colour = fontDefinition.Colour,
+                    align = fontDefinition.Align
+                };
+            }
+            return null;
         }
 
         #endregion
@@ -66,6 +84,9 @@ namespace NaturalFacade.LayoutConfig.RawXml
             {
                 case "resource":
                     ReadResourceTag(attributes);
+                    break;
+                case "font":
+                    ReadFontTag(attributes);
                     break;
             }
             if (m_rootElementHandler == null)
@@ -95,6 +116,12 @@ namespace NaturalFacade.LayoutConfig.RawXml
             string name = attributes.GetString("name");
             switch (attributes.GetString("type"))
             {
+                case "Font":
+                    {
+                        string url = attributes.GetString("url");
+                        m_tracking.AddFontResource(name, url);
+                        break;
+                    }
                 case "Image":
                     {
                         string url = attributes.GetString("url");
@@ -102,6 +129,17 @@ namespace NaturalFacade.LayoutConfig.RawXml
                         break;
                     }
             }
+        }
+
+        /// <summary>Reads a tag attributes into an object</summary>
+        private void ReadFontTag(ITagAttributes attributes)
+        {
+            string name = attributes.GetString("name");
+            string fontRes = attributes.GetString("font_res");
+            string size = attributes.GetString("size");
+            string colour = attributes.GetString("colour");
+            string align = attributes.GetString("align");
+            m_tracking.AddFontDefinition(name, fontRes, size, colour, align);
         }
 
         #endregion

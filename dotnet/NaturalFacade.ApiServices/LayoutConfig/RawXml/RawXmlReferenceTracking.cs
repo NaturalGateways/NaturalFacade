@@ -3,11 +3,115 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace NaturalFacade.LayoutConfig.RawXml
 {
     public class RawXmlReferenceTracking
     {
+        #region Font definition tracking
+
+        /// <summary>An font referenced in the file.</summary>
+        public class FontDefinition
+        {
+            public string FontResName { get; private set; }
+            public int? FontResIndex { get; set; }
+
+            public string Size { get; private set; }
+            public string Colour { get; private set; }
+            public string Align { get; private set; }
+
+            public int? ResIndex { get; set; }
+
+            public FontDefinition(string fontResName, string size, string colour, string align)
+            {
+                this.FontResName = fontResName;
+                this.Size = size;
+                this.Colour = colour;
+                this.Align = align;
+            }
+        }
+
+        /// <summary>The resources indexed.</summary>
+        private Dictionary<string, FontDefinition> m_fontDefinitionsByName = new Dictionary<string, FontDefinition>();
+        /// <summary>The resources indexed.</summary>
+        public List<FontDefinition> FontDefinitionsUsedList { get; private set; } = new List<FontDefinition>();
+
+        /// <summary>Adds a font definition.</summary>
+        public void AddFontDefinition(string name, string fontResName, string size, string colour, string align)
+        {
+            m_fontDefinitionsByName.Add(name, new FontDefinition(fontResName, size, colour, align));
+        }
+
+        /// <summary>Getter for the index of a resource under the context it will be used.</summary>
+        public int GetFontDefinitionUsedIndex(string name)
+        {
+            // Get font def
+            if (m_fontDefinitionsByName.ContainsKey(name) == false)
+                throw new Exception($"Cannot find font definition with name '{name}'.");
+            FontDefinition fontDef = m_fontDefinitionsByName[name];
+
+            // Get font resource index
+            if (fontDef.FontResIndex.HasValue == false)
+            {
+                fontDef.FontResIndex = GetFontResourceUsedIndex(fontDef.FontResName);
+            }
+
+            // Get font definition index
+            if (fontDef.ResIndex.HasValue == false)
+            {
+                fontDef.ResIndex = this.FontDefinitionsUsedList.Count;
+                this.FontDefinitionsUsedList.Add(fontDef);
+            }
+            return fontDef.ResIndex.Value;
+        }
+
+        #endregion
+
+        #region Font resource tracking
+
+        /// <summary>An font referenced in the file.</summary>
+        public class FontResource
+        {
+            public string Url { get; private set; }
+
+            public int? ResIndex { get; set; }
+
+            public FontResource(string url)
+            {
+                this.Url = url;
+            }
+        }
+
+        /// <summary>The resources indexed.</summary>
+        private Dictionary<string, FontResource> m_fontResourcesByName = new Dictionary<string, FontResource>();
+        /// <summary>The resources indexed.</summary>
+        public List<FontResource> FontResourcesUsedList { get; private set; } = new List<FontResource>();
+
+        /// <summary>Adds a font resource.</summary>
+        public void AddFontResource(string name, string url)
+        {
+            m_fontResourcesByName.Add(name, new FontResource(url));
+        }
+
+        /// <summary>Getter for the index of a resource under the context it will be used.</summary>
+        public int GetFontResourceUsedIndex(string name)
+        {
+            if (m_fontResourcesByName.ContainsKey(name) == false)
+            {
+                throw new Exception($"Cannot find font resource with name '{name}'.");
+            }
+            FontResource res = m_fontResourcesByName[name];
+            if (res.ResIndex.HasValue == false)
+            {
+                res.ResIndex = this.FontResourcesUsedList.Count;
+                this.FontResourcesUsedList.Add(res);
+            }
+            return res.ResIndex.Value;
+        }
+
+        #endregion
+
         #region Image resource tracking
 
         /// <summary>An image referenced in the file.</summary>
