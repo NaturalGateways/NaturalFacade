@@ -37,12 +37,24 @@ namespace NaturalFacade.LayoutConfig.RawXml
         {
             Config2LayoutOverlayOutput output = new Config2LayoutOverlayOutput
             {
+                PropertyDefs = m_tracking.PropertyUsedList.Select(x => ConvertPropertyDef(x)).ToArray(),
                 ImageResources = m_tracking.ImageResourcesUsedList.Select(x => x.Url).ToArray(),
                 FontResources = m_tracking.FontResourcesUsedList.Select(x => x.Url).ToArray(),
                 Fonts = m_tracking.FontDefinitionsUsedList.Select(x => ConvertFontDefinition(x)).Where(x => x != null).ToArray(),
                 RootElement = m_rootElementHandler?.Data
             };
             return output;
+        }
+
+        /// <summary>converts a font to the API DTO.</summary>
+        private Config2LayoutOverlayOutputPropertyDef ConvertPropertyDef(RawXmlReferenceTracking.Property property)
+        {
+            return new Config2LayoutOverlayOutputPropertyDef
+            {
+                ValueType = property.Type,
+                Name = property.Name,
+                DefaultValue = property.DefaultValue
+            };
         }
 
         /// <summary>converts a font to the API DTO.</summary>
@@ -82,6 +94,9 @@ namespace NaturalFacade.LayoutConfig.RawXml
         {
             switch (tagName)
             {
+                case "property":
+                    ReadPropertyTag(attributes);
+                    break;
                 case "resource":
                     ReadResourceTag(attributes);
                     break;
@@ -109,6 +124,15 @@ namespace NaturalFacade.LayoutConfig.RawXml
         #endregion
 
         #region Tag handlers
+
+        /// <summary>Reads a tag attributes into an object</summary>
+        private void ReadPropertyTag(ITagAttributes attributes)
+        {
+            string name = attributes.GetString("name");
+            ApiDto.PropertyTypeDto type = attributes.GetEnum<ApiDto.PropertyTypeDto>("type");
+            string defaultValue = attributes.GetString("default_value");
+            m_tracking.AddProperty(name, type, defaultValue);
+        }
 
         /// <summary>Reads a tag attributes into an object</summary>
         private void ReadResourceTag(ITagAttributes attributes)

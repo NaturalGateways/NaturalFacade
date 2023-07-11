@@ -9,6 +9,55 @@ namespace NaturalFacade.LayoutConfig.RawXml
 {
     public class RawXmlReferenceTracking
     {
+        #region Property tracking
+
+        /// <summary>An font referenced in the file.</summary>
+        public class Property
+        {
+            public ApiDto.PropertyTypeDto Type { get; private  set; }
+            public string Name { get; private set; }
+            public string DefaultValue { get; private set; }
+
+            public int? PropIndex { get; set; }
+
+            public Property(ApiDto.PropertyTypeDto type, string name, string defaultValue)
+            {
+                this.Type = type;
+                this.Name = name;
+                this.DefaultValue = defaultValue;
+            }
+        }
+
+        /// <summary>The resources indexed.</summary>
+        private Dictionary<string, Property> m_propertiesByName = new Dictionary<string, Property>();
+        /// <summary>The resources indexed.</summary>
+        public List<Property> PropertyUsedList { get; private set; } = new List<Property>();
+
+        /// <summary>Adds a font definition.</summary>
+        public void AddProperty(string name, ApiDto.PropertyTypeDto type, string defaultValue)
+        {
+            m_propertiesByName.Add(name, new Property(type, name, defaultValue));
+        }
+
+        /// <summary>Getter for the index of a resource under the context it will be used.</summary>
+        public int GetPropertyUsedIndex(string name)
+        {
+            // Get font def
+            if (m_propertiesByName.ContainsKey(name) == false)
+                throw new Exception($"Cannot find property with name '{name}'.");
+            Property property = m_propertiesByName[name];
+
+            // Get property index
+            if (property.PropIndex.HasValue == false)
+            {
+                property.PropIndex = this.PropertyUsedList.Count;
+                this.PropertyUsedList.Add(property);
+            }
+            return property.PropIndex.Value;
+        }
+
+        #endregion
+
         #region Font definition tracking
 
         /// <summary>An font referenced in the file.</summary>
