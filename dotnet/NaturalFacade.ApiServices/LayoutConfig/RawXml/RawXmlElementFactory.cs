@@ -17,6 +17,8 @@ namespace NaturalFacade.LayoutConfig.RawXml
         {
             switch (tagName)
             {
+                case "rows":
+                    return new RowsElementHandler(tracking, attributes);
                 case "stack":
                     return new StackElementHandler(tracking);
             }
