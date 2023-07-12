@@ -29,8 +29,11 @@ namespace NaturalFacade.LayoutConfig.RawXml
         /// <summary>Resource tracking.</summary>
         private RawXmlReferenceTracking m_tracking = new RawXmlReferenceTracking();
 
-        /// <summary>Check for a root handler.</summary>
+        /// <summary>The root layout element.</summary>
         private IBranchElementHandler m_rootElementHandler = null;
+
+        /// <summary>The list of control handlers.</summary>
+        private List<ControlsControlHandler> m_controlsHandlerList = new List<ControlsControlHandler>();
 
         /// <summary>Creates an output object.</summary>
         public Config2LayoutOverlayOutput CreateOutput()
@@ -41,7 +44,8 @@ namespace NaturalFacade.LayoutConfig.RawXml
                 ImageResources = m_tracking.ImageResourcesUsedList.Select(x => x.Url).ToArray(),
                 FontResources = m_tracking.FontResourcesUsedList.Select(x => x.Url).ToArray(),
                 Fonts = m_tracking.FontDefinitionsUsedList.Select(x => ConvertFontDefinition(x)).Where(x => x != null).ToArray(),
-                RootElement = m_rootElementHandler?.Data
+                RootElement = m_rootElementHandler?.Data,
+                ControlsArray = m_controlsHandlerList.Select(x => ConvertControls(x)).Where(x => x != null).ToArray()
             };
             return output;
         }
@@ -73,6 +77,42 @@ namespace NaturalFacade.LayoutConfig.RawXml
             return null;
         }
 
+        /// <summary>converts a font to the API DTO.</summary>
+        private Config2LayoutOverlayOutputControlsDef ConvertControls(ControlsControlHandler controlsHandler)
+        {
+            Config2LayoutOverlayOutputControlsFieldDef[] fieldArray = controlsHandler.FieldHandlerList.Select(x => ConvertControlsField(x)).Where(x => x != null).ToArray();
+            if (fieldArray.Any())
+            {
+                return new Config2LayoutOverlayOutputControlsDef
+                {
+                    Name = controlsHandler.Name,
+                    SaveAll = false,
+                    Fields = fieldArray
+                };
+            }
+            return null;
+        }
+
+        /// <summary>converts a font to the API DTO.</summary>
+        private Config2LayoutOverlayOutputControlsFieldDef ConvertControlsField(ControlsFieldHandler fieldHandler)
+        {
+            Config2LayoutOverlayOutputControlsFieldDef fieldDef = fieldHandler.FieldModel;
+            // Get prop index
+            int? propIndex = m_tracking.GetPropertyIndexIfUsed(fieldHandler.PropName);
+            if (propIndex.HasValue == false)
+                return null;
+            fieldDef.PropIndex = propIndex.Value;
+            // Check there is at least one field
+            if (fieldDef.TextField == null &&
+                fieldDef.Integer == null &&
+                fieldDef.SelectOptions == null)
+            {
+                return null;
+            }
+            // Return field
+            return fieldDef;
+        }
+
         #endregion
 
         #region IXmlReader implementation
@@ -94,14 +134,20 @@ namespace NaturalFacade.LayoutConfig.RawXml
         {
             switch (tagName)
             {
+                case "controls":
+                    {
+                        ControlsControlHandler handler = new ControlsControlHandler(attributes);
+                        m_controlsHandlerList.Add(handler);
+                        return handler;
+                    }
+                case "font":
+                    ReadFontTag(attributes);
+                    break;
                 case "property":
                     ReadPropertyTag(attributes);
                     break;
                 case "resource":
                     ReadResourceTag(attributes);
-                    break;
-                case "font":
-                    ReadFontTag(attributes);
                     break;
             }
             if (m_rootElementHandler == null)
