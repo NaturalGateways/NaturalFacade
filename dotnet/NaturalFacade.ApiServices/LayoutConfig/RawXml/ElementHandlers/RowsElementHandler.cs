@@ -1,5 +1,4 @@
-﻿using Natural.Xml;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NaturalFacade.LayoutConfig.RawXml
 {
-    internal class RowsElementHandler : IBranchElementHandler
+    internal class RowsElementHandler : BaseElementHandler
     {
         #region Base
 
@@ -18,7 +17,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
         private List<object> m_childList = new List<object>();
 
         /// <summary>Constructor.</summary>
-        public RowsElementHandler(RawXmlReferenceTracking tracking, ITagAttributes attributes)
+        public RowsElementHandler(RawXmlReferenceTracking tracking, Natural.Xml.ITagAttributes attributes)
         {
             long spacing = attributes.GetNullableLong("spacing") ?? 0;
 
@@ -34,41 +33,20 @@ namespace NaturalFacade.LayoutConfig.RawXml
 
         #endregion
 
-        #region IBranchElementHandler implementation
-
-        /// <summary>The data of the branch.</summary>
-        public Dictionary<string, object> Data { get; private set; }
-
-        #endregion
-
-        #region IBranchElementHandler - ITagHandler implementation
+        #region BaseElementHandler implementation
 
         /// <summary>Called when a child tag is hit. Return a handler for a child tag, or null to skip further children.</summary>
-        public ITagHandler HandleStartChildTag(string tagName, ITagAttributes attributes)
+        public override Natural.Xml.ITagHandler HandleStartChildTag(string tagName, Natural.Xml.ITagAttributes attributes)
         {
             {
-                IBranchElementHandler branchElementHandler = RawXmlElementFactory.CheckBranchTag(m_tracking, tagName, attributes);
+                BaseElementHandler branchElementHandler = BaseElementHandler.CreateForTag(m_tracking, tagName, attributes);
                 if (branchElementHandler != null)
                 {
                     m_childList.Add(branchElementHandler.Data);
                     return branchElementHandler;
                 }
             }
-            {
-                Dictionary<string, object> leafData = RawXmlElementFactory.CheckLeafTag(m_tracking, tagName, attributes);
-                if (leafData != null)
-                {
-                    m_childList.Add(leafData);
-                    return null;
-                }
-            }
-            return null;
-        }
-
-        /// <summary>Called when this handler is done with.</summary>
-        public void HandleEndTag()
-        {
-            //
+            return base.HandleStartChildTag(tagName, attributes);
         }
 
         #endregion

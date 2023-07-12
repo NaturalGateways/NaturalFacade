@@ -1,5 +1,4 @@
-﻿using Natural.Xml;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NaturalFacade.LayoutConfig.RawXml
 {
-    internal class TextElementHandler : IBranchElementHandler
+    internal class TextElementHandler : BaseElementHandler
     {
         #region Base
 
@@ -18,7 +17,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
         private List<object> m_childList = new List<object>();
 
         /// <summary>Constructor.</summary>
-        public TextElementHandler(RawXmlReferenceTracking tracking, ITagAttributes attributes)
+        public TextElementHandler(RawXmlReferenceTracking tracking, Natural.Xml.ITagAttributes attributes)
         {
             m_tracking = tracking;
 
@@ -43,17 +42,10 @@ namespace NaturalFacade.LayoutConfig.RawXml
 
         #endregion
 
-        #region IBranchElementHandler implementation
-
-        /// <summary>The data of the branch.</summary>
-        public Dictionary<string, object> Data { get; private set; }
-
-        #endregion
-
-        #region IBranchElementHandler - ITagHandler implementation
+        #region BaseElementHandler implementation
 
         /// <summary>Called when a child tag is hit. Return a handler for a child tag, or null to skip further children.</summary>
-        public ITagHandler HandleStartChildTag(string tagName, ITagAttributes attributes)
+        public override Natural.Xml.ITagHandler HandleStartChildTag(string tagName, Natural.Xml.ITagAttributes attributes)
         {
             switch (tagName)
             {
@@ -61,13 +53,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
                     HandleTextPropTag(attributes);
                     break;
             }
-            return null;
-        }
-
-        /// <summary>Called when this handler is done with.</summary>
-        public void HandleEndTag()
-        {
-            //
+            return base.HandleStartChildTag(tagName, attributes);
         }
 
         #endregion
@@ -75,7 +61,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
         #region Tag handling
 
         /// <summary>Handles a text propery under a text tag.</summary>
-        private void HandleTextPropTag(ITagAttributes attributes)
+        private void HandleTextPropTag(Natural.Xml.ITagAttributes attributes)
         {
             switch (attributes.GetString("op"))
             {

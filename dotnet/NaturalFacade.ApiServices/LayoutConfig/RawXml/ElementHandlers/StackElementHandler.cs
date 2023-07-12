@@ -8,7 +8,7 @@ using Natural.Xml;
 
 namespace NaturalFacade.LayoutConfig.RawXml
 {
-    internal class StackElementHandler : IBranchElementHandler
+    internal class StackElementHandler : BaseElementHandler
     {
         #region Base
 
@@ -66,20 +66,13 @@ namespace NaturalFacade.LayoutConfig.RawXml
 
         #endregion
 
-        #region IBranchElementHandler implementation
-
-        /// <summary>The data of the branch.</summary>
-        public Dictionary<string, object> Data { get; private set; }
-
-        #endregion
-
-        #region IBranchElementHandler - ITagHandler implementation
+        #region BaseElementHandler implementation
 
         /// <summary>Called when a child tag is hit. Return a handler for a child tag, or null to skip further children.</summary>
-        public ITagHandler HandleStartChildTag(string tagName, ITagAttributes attributes)
+        public override ITagHandler HandleStartChildTag(string tagName, ITagAttributes attributes)
         {
             {
-                IBranchElementHandler branchElementHandler = RawXmlElementFactory.CheckBranchTag(m_tracking, tagName, attributes);
+                BaseElementHandler branchElementHandler = BaseElementHandler.CreateForTag(m_tracking, tagName, attributes);
                 if (branchElementHandler != null)
                 {
                     ApplyStackChildAttributes(attributes, branchElementHandler.Data);
@@ -87,22 +80,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
                     return branchElementHandler;
                 }
             }
-            {
-                Dictionary<string, object> leafData = RawXmlElementFactory.CheckLeafTag(m_tracking, tagName, attributes);
-                if (leafData != null)
-                {
-                    ApplyStackChildAttributes(attributes, leafData);
-                    m_childList.Add(leafData);
-                    return null;
-                }
-            }
-            return null;
-        }
-
-        /// <summary>Called when this handler is done with.</summary>
-        public void HandleEndTag()
-        {
-            //
+            return base.HandleStartChildTag(tagName, attributes);
         }
 
         #endregion

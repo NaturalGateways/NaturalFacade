@@ -30,7 +30,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
         private RawXmlReferenceTracking m_tracking = new RawXmlReferenceTracking();
 
         /// <summary>The root layout element.</summary>
-        private IBranchElementHandler m_rootElementHandler = null;
+        private BaseElementHandler m_rootElementHandler = null;
 
         /// <summary>The list of control handlers.</summary>
         private List<ControlsControlHandler> m_controlsHandlerList = new List<ControlsControlHandler>();
@@ -155,7 +155,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
             }
             if (m_rootElementHandler == null)
             {
-                m_rootElementHandler = RawXmlElementFactory.CheckBranchTag(m_tracking, tagName, attributes);
+                m_rootElementHandler = BaseElementHandler.CreateForTag(m_tracking, tagName, attributes);
                 if (m_rootElementHandler != null)
                 {
                     return m_rootElementHandler;

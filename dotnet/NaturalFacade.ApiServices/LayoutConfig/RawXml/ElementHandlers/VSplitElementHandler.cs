@@ -1,5 +1,4 @@
-﻿using Natural.Xml;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NaturalFacade.LayoutConfig.RawXml
 {
-    internal class VSplitElementHandler : IBranchElementHandler
+    internal class VSplitElementHandler : BaseElementHandler
     {
         #region Base
 
@@ -15,7 +14,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
         private RawXmlReferenceTracking m_tracking = null;
 
         /// <summary>Constructor.</summary>
-        public VSplitElementHandler(RawXmlReferenceTracking tracking, ITagAttributes attributes)
+        public VSplitElementHandler(RawXmlReferenceTracking tracking, Natural.Xml.ITagAttributes attributes)
         {
             long spacing = attributes.GetNullableLong("spacing") ?? 0;
 
@@ -30,41 +29,20 @@ namespace NaturalFacade.LayoutConfig.RawXml
 
         #endregion
 
-        #region IBranchElementHandler implementation
-
-        /// <summary>The data of the branch.</summary>
-        public Dictionary<string, object> Data { get; private set; }
-
-        #endregion
-
-        #region IBranchElementHandler - ITagHandler implementation
+        #region BaseElementHandler implementation
 
         /// <summary>Called when a child tag is hit. Return a handler for a child tag, or null to skip further children.</summary>
-        public ITagHandler HandleStartChildTag(string tagName, ITagAttributes attributes)
+        public override Natural.Xml.ITagHandler HandleStartChildTag(string tagName, Natural.Xml.ITagAttributes attributes)
         {
             {
-                IBranchElementHandler branchElementHandler = RawXmlElementFactory.CheckBranchTag(m_tracking, tagName, attributes);
+                BaseElementHandler branchElementHandler = BaseElementHandler.CreateForTag(m_tracking, tagName, attributes);
                 if (branchElementHandler != null)
                 {
                     StoreChild(attributes, branchElementHandler.Data);
                     return branchElementHandler;
                 }
             }
-            {
-                Dictionary<string, object> leafData = RawXmlElementFactory.CheckLeafTag(m_tracking, tagName, attributes);
-                if (leafData != null)
-                {
-                    StoreChild(attributes, leafData);
-                    return null;
-                }
-            }
-            return null;
-        }
-
-        /// <summary>Called when this handler is done with.</summary>
-        public void HandleEndTag()
-        {
-            //
+            return base.HandleStartChildTag(tagName, attributes);
         }
 
         #endregion
@@ -72,7 +50,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
         #region Tag
 
         /// <summary>Stores a child in a location found from attributes.</summary>
-        private void StoreChild(ITagAttributes attributes, object childData)
+        private void StoreChild(Natural.Xml.ITagAttributes attributes, object childData)
         {
             string align = attributes.GetString("vSplit.Align");
             string alignKey = null;
