@@ -40,7 +40,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
         }
 
         /// <summary>Getter for the index of a resource under the context it will be used.</summary>
-        public int? GetPropertyIndexIfUsed(string name)
+        public Property GetPropertyIfUsed(string name)
         {
             // Get font def
             if (m_propertiesByName.ContainsKey(name) == false)
@@ -49,7 +49,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
 
             // Get property index
             if (property.PropIndex.HasValue)
-                return property.PropIndex.Value;
+                return property;
             return null;
         }
 

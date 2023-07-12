@@ -98,10 +98,13 @@ namespace NaturalFacade.LayoutConfig.RawXml
         {
             Config2LayoutOverlayOutputControlsFieldDef fieldDef = fieldHandler.FieldModel;
             // Get prop index
-            int? propIndex = m_tracking.GetPropertyIndexIfUsed(fieldHandler.PropName);
-            if (propIndex.HasValue == false)
+            RawXmlReferenceTracking.Property property = m_tracking.GetPropertyIfUsed(fieldHandler.PropName);
+            if (property == null)
                 return null;
-            fieldDef.PropIndex = propIndex.Value;
+            fieldDef.PropIndex = property.PropIndex.Value;
+            // Use prob name for label if there is no field label
+            if (string.IsNullOrEmpty(fieldDef.Label))
+                fieldDef.Label = property.Name;
             // Check there is at least one field
             if (fieldDef.TextField == null &&
                 fieldDef.Integer == null &&
