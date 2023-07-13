@@ -12,6 +12,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
 
         /// <summary>Constructor.</summary>
         public ImageElementHandler(RawXmlReferenceTracking tracking, Natural.Xml.ITagAttributes attributes)
+            : base(tracking)
         {
             // Get fit
             Raw.RawLayoutConfigElementImageFit fit = attributes.GetNullableEnum<Raw.RawLayoutConfigElementImageFit>("fit") ?? Raw.RawLayoutConfigElementImageFit.None;

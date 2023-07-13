@@ -16,11 +16,11 @@ namespace NaturalFacade.LayoutConfig.RawXml
         {
             public ApiDto.PropertyTypeDto Type { get; private  set; }
             public string Name { get; private set; }
-            public string DefaultValue { get; private set; }
+            public object DefaultValue { get; private set; }
 
             public int? PropIndex { get; set; }
 
-            public Property(ApiDto.PropertyTypeDto type, string name, string defaultValue)
+            public Property(ApiDto.PropertyTypeDto type, string name, object defaultValue)
             {
                 this.Type = type;
                 this.Name = name;
@@ -34,7 +34,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
         public List<Property> PropertyUsedList { get; private set; } = new List<Property>();
 
         /// <summary>Adds a font definition.</summary>
-        public void AddProperty(string name, ApiDto.PropertyTypeDto type, string defaultValue)
+        public void AddProperty(string name, ApiDto.PropertyTypeDto type, object defaultValue)
         {
             m_propertiesByName.Add(name, new Property(type, name, defaultValue));
         }

@@ -18,6 +18,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
 
         /// <summary>Constructor.</summary>
         public TextElementHandler(RawXmlReferenceTracking tracking, Natural.Xml.ITagAttributes attributes)
+            : base(tracking)
         {
             m_tracking = tracking;
 

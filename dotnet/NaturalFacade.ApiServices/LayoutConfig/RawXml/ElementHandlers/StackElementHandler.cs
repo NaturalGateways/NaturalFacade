@@ -20,6 +20,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
 
         /// <summary>Constructor.</summary>
         public StackElementHandler(RawXmlReferenceTracking tracking)
+            : base(tracking)
         {
             m_tracking = tracking;
             this.Data = new Dictionary<string, object>

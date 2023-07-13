@@ -108,6 +108,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
             // Check there is at least one field
             if (fieldDef.TextField == null &&
                 fieldDef.Integer == null &&
+                fieldDef.Switch == null &&
                 fieldDef.SelectOptions == null)
             {
                 return null;
@@ -179,7 +180,23 @@ namespace NaturalFacade.LayoutConfig.RawXml
         {
             string name = attributes.GetString("name");
             ApiDto.PropertyTypeDto type = attributes.GetEnum<ApiDto.PropertyTypeDto>("type");
-            string defaultValue = attributes.GetString("default_value");
+            object defaultValue = attributes.GetString("default_value");
+            switch (type)
+            {
+                case ApiDto.PropertyTypeDto.String:
+                    defaultValue = attributes.GetString("default_value");
+                    break;
+                case ApiDto.PropertyTypeDto.Boolean:
+                    defaultValue = string.Equals(attributes.GetString("default_value"), "true", StringComparison.InvariantCultureIgnoreCase);
+                    break;
+                case ApiDto.PropertyTypeDto.Timer:
+                    {
+                        long? secsDefaultValue = attributes.GetNullableLong("default_value");
+                        if (secsDefaultValue.HasValue)
+                            defaultValue = new Dictionary<string, object> { { "Secs", secsDefaultValue.Value } };
+                        break;
+                    }
+            }
             m_tracking.AddProperty(name, type, defaultValue);
         }
 

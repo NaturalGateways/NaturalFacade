@@ -16,6 +16,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
 
         /// <summary>Constructor.</summary>
         public HSplitElementHandler(RawXmlReferenceTracking tracking, ITagAttributes attributes)
+            : base(tracking)
         {
             long spacing = attributes.GetNullableLong("spacing") ?? 0;
 

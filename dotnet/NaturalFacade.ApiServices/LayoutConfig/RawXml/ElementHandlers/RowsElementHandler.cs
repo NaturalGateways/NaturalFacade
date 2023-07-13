@@ -18,6 +18,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
 
         /// <summary>Constructor.</summary>
         public RowsElementHandler(RawXmlReferenceTracking tracking, Natural.Xml.ITagAttributes attributes)
+            : base(tracking)
         {
             long spacing = attributes.GetNullableLong("spacing") ?? 0;
 

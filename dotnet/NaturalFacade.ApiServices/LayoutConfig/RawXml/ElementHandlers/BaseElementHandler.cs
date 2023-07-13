@@ -35,8 +35,17 @@ namespace NaturalFacade.LayoutConfig.RawXml
 
         #region Base
 
+        /// <summary>Resource tracking.</summary>
+        protected RawXmlReferenceTracking Tracking { get; private set; }
+
         /// <summary>The data created by the subclass.</summary>
-        public Dictionary<string, object> Data { get; protected set; }
+        public Dictionary<string, object> Data { get; protected set; } = null;
+
+        /// <summary>Constructor.</summary>
+        public BaseElementHandler(RawXmlReferenceTracking tracking)
+        {
+            this.Tracking = tracking;
+        }
 
         #endregion
 
@@ -48,7 +57,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
             switch (tagName)
             {
                 case "is_visible":
-                    return HandleIsVisibleTag(attributes);
+                    return new BooleanHandler(this.Tracking, this.Data, "isVisible");
             }
             return null;
         }
@@ -57,16 +66,6 @@ namespace NaturalFacade.LayoutConfig.RawXml
         public virtual void HandleEndTag()
         {
             //
-        }
-
-        #endregion
-
-        #region Tag handler
-
-        /// <summary>Handles a child tag.</summary>
-        private Natural.Xml.ITagHandler HandleIsVisibleTag(Natural.Xml.ITagAttributes attributes)
-        {
-            return null;
         }
 
         #endregion

@@ -40,6 +40,9 @@ namespace NaturalFacade.LayoutConfig.RawXml
                 case "integer":
                     HandleIntegerFieldTag(attributes);
                     break;
+                case "switch":
+                    HandleSwitchFieldTag(attributes);
+                    break;
                 case "options":
                     return HandleOptionsFieldTag();
                 case "text_field":
@@ -73,6 +76,16 @@ namespace NaturalFacade.LayoutConfig.RawXml
                 Step = attributes.GetLong("step"),
                 MinValue = attributes.GetNullableLong("min_value"),
                 MaxValue = attributes.GetNullableLong("max_value")
+            };
+        }
+
+        /// <summary>Handles a child tag.</summary>
+        private void HandleSwitchFieldTag(Natural.Xml.ITagAttributes attributes)
+        {
+            this.FieldModel.Switch = new Config2LayoutOverlayOutputControlsFieldSwitchDef
+            {
+                FalseLabel = attributes.GetNullableString("false_label"),
+                TrueLabel = attributes.GetNullableString("true_label")
             };
         }
 
