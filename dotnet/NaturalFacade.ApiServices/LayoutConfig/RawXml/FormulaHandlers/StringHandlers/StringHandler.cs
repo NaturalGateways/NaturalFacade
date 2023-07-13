@@ -3,70 +3,50 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace NaturalFacade.LayoutConfig.RawXml
 {
-    internal class StringHandler : Natural.Xml.ITagHandler
+    internal static class StringHandler
     {
-        #region Base
-
-        /// <summary>The tracking.</summary>
-        private RawXmlReferenceTracking m_tracking = null;
-
-        /// <summary>The data to add to.</summary>
-        private Dictionary<string, object> m_parentData = null;
-        /// <summary>The data to add to.</summary>
-        private object m_childData = null;
-
-        /// <summary>The JSON name.</summary>
-        private string m_jsonName = null;
-
-        /// <summary>Constructor.</summary>
-        public StringHandler(RawXmlReferenceTracking tracking, Dictionary<string, object> data, string jsonName)
-        {
-            m_tracking = tracking;
-            m_parentData = data;
-            m_jsonName = jsonName;
-        }
-
-        #endregion
-
-        #region Natural.Xml.ITagHandler implementation
-
-        /// <summary>Called when a child tag is hit. Return a handler for a child tag, or null to skip further children.</summary>
-        public virtual Natural.Xml.ITagHandler HandleStartChildTag(string tagName, Natural.Xml.ITagAttributes attributes)
-        {
-            switch (tagName)
-            {
-                case "prop":
-                    HandlePropTag(attributes);
-                    break;
-            }
-            return null;
-        }
-
-        /// <summary>Called when this handler is done with.</summary>
-        public virtual void HandleEndTag()
-        {
-            if (m_childData != null)
-            {
-                m_parentData[m_jsonName] = m_childData;
-            }
-        }
-
-        #endregion
-
         #region Tag handler
 
         /// <summary>Handle the prop tag.</summary>
-        private void HandlePropTag(Natural.Xml.ITagAttributes attributes)
+        public static Natural.Xml.ITagHandler HandleTag(Natural.Xml.ITagAttributes attributes, RawXmlReferenceTracking tracking, Dictionary<string, object> data, string jsonName)
+        {
+            string propType = attributes.GetString("type");
+            switch (propType)
+            {
+                case "Prop":
+                    HandlePropTag(attributes, tracking, data, jsonName);
+                    return null;
+                case "Text":
+                    HandleTextTag(attributes, data, jsonName);
+                    return null;
+                default:
+                    throw new Exception($"Unrecognised prop type '{propType}'.");
+            }
+        }
+
+        /// <summary>Handle the prop tag.</summary>
+        private static void HandlePropTag(Natural.Xml.ITagAttributes attributes, RawXmlReferenceTracking tracking, Dictionary<string, object> data, string jsonName)
         {
             string propName = attributes.GetString("prop_name");
-            int propIndex = m_tracking.GetPropertyUsedIndex(propName);
-            m_childData = new Dictionary<string, object>
+            int propIndex = tracking.GetPropertyUsedIndex(propName);
+            data[jsonName] = new Dictionary<string, object>
             {
                 { "op", "Prop" },
                 { "index", propIndex }
+            };
+        }
+
+        /// <summary>Handle the text tag.</summary>
+        private static void HandleTextTag(Natural.Xml.ITagAttributes attributes, Dictionary<string, object> data, string jsonName)
+        {
+            data[jsonName] = new Dictionary<string, object>
+            {
+                { "op", "Text" },
+                { "text", attributes.GetNullableString("text") ?? string.Empty }
             };
         }
 

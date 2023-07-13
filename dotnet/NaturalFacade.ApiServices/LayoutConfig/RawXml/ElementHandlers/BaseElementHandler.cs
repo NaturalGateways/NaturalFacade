@@ -57,7 +57,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
             switch (tagName)
             {
                 case "is_visible":
-                    return new BooleanHandler(this.Tracking, this.Data, "isVisible");
+                    return BooleanHandler.HandleTag(attributes, this.Tracking, this.Data, "isVisible");
             }
             return null;
         }
