@@ -168,6 +168,10 @@ export class RenderLayoutService {
     {
       return this.propValues[condition.index];
     }
+    if (condition.op === "Equals")
+    {
+      return this.getString(this.layoutData!, condition.lhs) === this.getString(this.layoutData!, condition.rhs);
+    }
     if (condition.op === "And")
     {
       for (var itemIndex in condition.items) {
