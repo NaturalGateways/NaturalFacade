@@ -15,6 +15,8 @@ namespace NaturalFacade.LayoutConfig.RawXml
         {
             switch (tagName)
             {
+                case "coloured_quad":
+                    return new ColouredQuadElementHandler(tracking, attributes);
                 case "hSplit":
                     return new HSplitElementHandler(tracking, attributes);
                 case "image":
