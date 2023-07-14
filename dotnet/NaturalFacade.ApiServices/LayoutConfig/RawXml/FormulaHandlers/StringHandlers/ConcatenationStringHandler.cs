@@ -29,7 +29,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
             m_data = new Dictionary<string, object>
             {
                 { "op", "Cat" },
-                { "Children", m_componentList }
+                { "items", m_componentList }
             };
         }
 

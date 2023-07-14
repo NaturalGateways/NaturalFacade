@@ -43,6 +43,9 @@ namespace NaturalFacade.LayoutConfig.RawXml
                 case "switch":
                     HandleSwitchFieldTag(attributes);
                     break;
+                case "timer":
+                    HandleTimerFieldTag(attributes);
+                    break;
                 case "options":
                     return HandleOptionsFieldTag();
                 case "text_field":
@@ -86,6 +89,16 @@ namespace NaturalFacade.LayoutConfig.RawXml
             {
                 FalseLabel = attributes.GetNullableString("false_label"),
                 TrueLabel = attributes.GetNullableString("true_label")
+            };
+        }
+
+        /// <summary>Handles a child tag.</summary>
+        private void HandleTimerFieldTag(Natural.Xml.ITagAttributes attributes)
+        {
+            string allowClearString = attributes.GetNullableString("allow_clear") ?? "true";
+            this.FieldModel.Timer = new Config2LayoutOverlayOutputControlsFieldTimerDef
+            {
+                AllowClear = string.Equals(allowClearString, "true", StringComparison.InvariantCultureIgnoreCase)
             };
         }
 

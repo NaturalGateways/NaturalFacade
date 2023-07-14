@@ -98,7 +98,8 @@ namespace NaturalFacade.LayoutConfig.RawXml
             if (fieldDef.TextField == null &&
                 fieldDef.Integer == null &&
                 fieldDef.Switch == null &&
-                fieldDef.SelectOptions == null)
+                fieldDef.SelectOptions == null &&
+                fieldDef.Timer == null)
             {
                 return null;
             }
