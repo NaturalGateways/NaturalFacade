@@ -40,7 +40,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
         {
             Config2LayoutOverlayOutput output = new Config2LayoutOverlayOutput
             {
-                PropertyDefs = m_tracking.PropertyUsedList.Select(x => ConvertPropertyDef(x)).ToArray(),
+                PropertyDefs = m_tracking.PropertyUsedList.Select(x => x.PropRef).ToArray(),
                 ImageResources = m_tracking.ImageResourcesUsedList.Select(x => x.Url).ToArray(),
                 FontResources = m_tracking.FontResourcesUsedList.Select(x => x.Url).ToArray(),
                 Fonts = m_tracking.FontDefinitionsUsedList.Select(x => ConvertFontDefinition(x)).Where(x => x != null).ToArray(),
@@ -48,17 +48,6 @@ namespace NaturalFacade.LayoutConfig.RawXml
                 ControlsArray = m_controlsHandlerList.Select(x => ConvertControls(x)).Where(x => x != null).ToArray()
             };
             return output;
-        }
-
-        /// <summary>converts a font to the API DTO.</summary>
-        private Config2LayoutOverlayOutputPropertyDef ConvertPropertyDef(RawXmlReferenceTracking.Property property)
-        {
-            return new Config2LayoutOverlayOutputPropertyDef
-            {
-                ValueType = property.Type,
-                Name = property.Name,
-                DefaultValue = property.DefaultValue
-            };
         }
 
         /// <summary>converts a font to the API DTO.</summary>
@@ -104,7 +93,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
             fieldDef.PropIndex = property.PropIndex.Value;
             // Use prob name for label if there is no field label
             if (string.IsNullOrEmpty(fieldDef.Label))
-                fieldDef.Label = property.Name;
+                fieldDef.Label = property.PropRef.Name;
             // Check there is at least one field
             if (fieldDef.TextField == null &&
                 fieldDef.Integer == null &&
@@ -178,26 +167,31 @@ namespace NaturalFacade.LayoutConfig.RawXml
         /// <summary>Reads a tag attributes into an object</summary>
         private void ReadPropertyTag(ITagAttributes attributes)
         {
-            string name = attributes.GetString("name");
-            ApiDto.PropertyTypeDto type = attributes.GetEnum<ApiDto.PropertyTypeDto>("type");
-            object defaultValue = attributes.GetString("default_value");
-            switch (type)
+            Config2LayoutOverlayOutputPropertyDef propDef = new Config2LayoutOverlayOutputPropertyDef
+            {
+                Name = attributes.GetString("name"),
+                ValueType = attributes.GetEnum<ApiDto.PropertyTypeDto>("type")
+            };
+            switch (propDef.ValueType)
             {
                 case ApiDto.PropertyTypeDto.String:
-                    defaultValue = attributes.GetString("default_value");
+                    propDef.DefaultValue = attributes.GetString("default_value");
                     break;
                 case ApiDto.PropertyTypeDto.Boolean:
-                    defaultValue = string.Equals(attributes.GetString("default_value"), "true", StringComparison.InvariantCultureIgnoreCase);
+                    propDef.DefaultValue = string.Equals(attributes.GetString("default_value"), "true", StringComparison.InvariantCultureIgnoreCase);
                     break;
                 case ApiDto.PropertyTypeDto.Timer:
                     {
                         long? secsDefaultValue = attributes.GetNullableLong("default_value");
                         if (secsDefaultValue.HasValue)
-                            defaultValue = new Dictionary<string, object> { { "Secs", secsDefaultValue.Value } };
+                            propDef.DefaultValue = new Dictionary<string, object> { { "Secs", secsDefaultValue.Value } };
+                        propDef.TimerMinValue = attributes.GetNullableLong("min_value");
+                        propDef.TimerMaxValue = attributes.GetNullableLong("max_value");
+                        propDef.TimerDirection = attributes.GetNullableLong("direction");
                         break;
                     }
             }
-            m_tracking.AddProperty(name, type, defaultValue);
+            m_tracking.AddProperty(propDef);
         }
 
         /// <summary>Reads a tag attributes into an object</summary>

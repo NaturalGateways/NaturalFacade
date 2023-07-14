@@ -14,17 +14,13 @@ namespace NaturalFacade.LayoutConfig.RawXml
         /// <summary>An font referenced in the file.</summary>
         public class Property
         {
-            public ApiDto.PropertyTypeDto Type { get; private  set; }
-            public string Name { get; private set; }
-            public object DefaultValue { get; private set; }
+            public Config2LayoutOverlayOutputPropertyDef PropRef { get; private set; }
 
             public int? PropIndex { get; set; }
 
-            public Property(ApiDto.PropertyTypeDto type, string name, object defaultValue)
+            public Property(Config2LayoutOverlayOutputPropertyDef propRef)
             {
-                this.Type = type;
-                this.Name = name;
-                this.DefaultValue = defaultValue;
+                this.PropRef = propRef;
             }
         }
 
@@ -34,9 +30,9 @@ namespace NaturalFacade.LayoutConfig.RawXml
         public List<Property> PropertyUsedList { get; private set; } = new List<Property>();
 
         /// <summary>Adds a font definition.</summary>
-        public void AddProperty(string name, ApiDto.PropertyTypeDto type, object defaultValue)
+        public void AddProperty(Config2LayoutOverlayOutputPropertyDef propRef)
         {
-            m_propertiesByName.Add(name, new Property(type, name, defaultValue));
+            m_propertiesByName.Add(propRef.Name, new Property(propRef));
         }
 
         /// <summary>Getter for the index of a resource under the context it will be used.</summary>
