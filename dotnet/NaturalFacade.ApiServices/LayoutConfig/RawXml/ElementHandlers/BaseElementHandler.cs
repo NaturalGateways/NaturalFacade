@@ -49,6 +49,16 @@ namespace NaturalFacade.LayoutConfig.RawXml
 
         #endregion
 
+        #region Add data handlers
+
+        /// <summary>Used as an action for reading in properties.</summary>
+        private void AddIsVisibleData(object data)
+        {
+            this.Data.Add("isVisible", data);
+        }
+
+        #endregion
+
         #region Natural.Xml.ITagHandler implementation
 
         /// <summary>Called when a child tag is hit. Return a handler for a child tag, or null to skip further children.</summary>
@@ -57,7 +67,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
             switch (tagName)
             {
                 case "is_visible":
-                    return BooleanHandler.HandleTag(attributes, this.Tracking, this.Data, "isVisible");
+                    return BooleanHandler.HandleTag(attributes, this.Tracking, AddIsVisibleData);
             }
             return null;
         }

@@ -43,6 +43,16 @@ namespace NaturalFacade.LayoutConfig.RawXml
 
         #endregion
 
+        #region Add child actions
+
+        /// <summary>Adds child data to component list.</summary>
+        private void AddTextProp(object childData)
+        {
+            this.Data["text"] = childData;
+        }
+
+        #endregion
+
         #region BaseElementHandler implementation
 
         /// <summary>Called when a child tag is hit. Return a handler for a child tag, or null to skip further children.</summary>
@@ -51,8 +61,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
             switch (tagName)
             {
                 case "text_prop":
-                    HandleTextPropTag(attributes);
-                    break;
+                    return StringHandler.HandleTag(attributes, m_tracking, AddTextProp);
             }
             return base.HandleStartChildTag(tagName, attributes);
         }

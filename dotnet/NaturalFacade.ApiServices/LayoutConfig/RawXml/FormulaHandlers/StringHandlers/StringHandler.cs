@@ -12,16 +12,18 @@ namespace NaturalFacade.LayoutConfig.RawXml
         #region Tag handler
 
         /// <summary>Handle the prop tag.</summary>
-        public static Natural.Xml.ITagHandler HandleTag(Natural.Xml.ITagAttributes attributes, RawXmlReferenceTracking tracking, Dictionary<string, object> data, string jsonName)
+        public static Natural.Xml.ITagHandler HandleTag(Natural.Xml.ITagAttributes attributes, RawXmlReferenceTracking tracking, Action<object> addDataAction)
         {
             string propType = attributes.GetString("type");
             switch (propType)
             {
+                case "Cat":
+                    return new ConcatenationStringHandler(tracking, addDataAction);
                 case "Prop":
-                    HandlePropTag(attributes, tracking, data, jsonName);
+                    HandlePropTag(attributes, tracking, addDataAction);
                     return null;
                 case "Text":
-                    HandleTextTag(attributes, data, jsonName);
+                    HandleTextTag(attributes, addDataAction);
                     return null;
                 default:
                     throw new Exception($"Unrecognised prop type '{propType}'.");
@@ -29,25 +31,25 @@ namespace NaturalFacade.LayoutConfig.RawXml
         }
 
         /// <summary>Handle the prop tag.</summary>
-        private static void HandlePropTag(Natural.Xml.ITagAttributes attributes, RawXmlReferenceTracking tracking, Dictionary<string, object> data, string jsonName)
+        private static void HandlePropTag(Natural.Xml.ITagAttributes attributes, RawXmlReferenceTracking tracking, Action<object> addDataAction)
         {
             string propName = attributes.GetString("prop_name");
             int propIndex = tracking.GetPropertyUsedIndex(propName);
-            data[jsonName] = new Dictionary<string, object>
+            addDataAction.Invoke(new Dictionary<string, object>
             {
                 { "op", "Prop" },
                 { "index", propIndex }
-            };
+            });
         }
 
         /// <summary>Handle the text tag.</summary>
-        private static void HandleTextTag(Natural.Xml.ITagAttributes attributes, Dictionary<string, object> data, string jsonName)
+        private static void HandleTextTag(Natural.Xml.ITagAttributes attributes, Action<object> addDataAction)
         {
-            data[jsonName] = new Dictionary<string, object>
+            addDataAction.Invoke(new Dictionary<string, object>
             {
                 { "op", "Text" },
                 { "text", attributes.GetNullableString("text") ?? string.Empty }
-            };
+            });
         }
 
         #endregion

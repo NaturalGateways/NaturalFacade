@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NaturalFacade.LayoutConfig.RawXml
 {
-    internal class StringEqualsBooleanHandler : Natural.Xml.ITagHandler
+    internal class ConcatenationStringHandler : Natural.Xml.ITagHandler
     {
         #region Base
 
@@ -17,16 +17,19 @@ namespace NaturalFacade.LayoutConfig.RawXml
 
         /// <summary>The parent data.</summary>
         private Dictionary<string, object> m_data = null;
+        /// <summary>The parent data.</summary>
+        private List<object> m_componentList = new List<object>();
 
         /// <summary>Constructor.</summary>
-        public StringEqualsBooleanHandler(RawXmlReferenceTracking tracking, Action<object> addDataAction)
+        public ConcatenationStringHandler(RawXmlReferenceTracking tracking, Action<object> addDataAction)
         {
             m_tracking = tracking;
             m_addDataAction = addDataAction;
 
             m_data = new Dictionary<string, object>
             {
-                { "op", "Equals" }
+                { "op", "Equals" },
+                { "Children", m_componentList }
             };
         }
 
@@ -34,16 +37,10 @@ namespace NaturalFacade.LayoutConfig.RawXml
 
         #region Add child actions
 
-        /// <summary>Adds child data to the LHS.</summary>
-        private void AddToLhs(object childData)
+        /// <summary>Adds child data to component list.</summary>
+        private void AddComponent(object childData)
         {
-            m_data.Add("lhs", childData);
-        }
-
-        /// <summary>Adds child data to the RHS.</summary>
-        private void AddToRhs(object childData)
-        {
-            m_data.Add("rhs", childData);
+            m_componentList.Add(childData);
         }
 
         #endregion
@@ -55,10 +52,8 @@ namespace NaturalFacade.LayoutConfig.RawXml
         {
             switch (tagName)
             {
-                case "lhs":
-                    return StringHandler.HandleTag(attributes, m_tracking, AddToLhs);
-                case "rhs":
-                    return StringHandler.HandleTag(attributes, m_tracking, AddToRhs);
+                case "component":
+                    return StringHandler.HandleTag(attributes, m_tracking, AddComponent);
             }
             return null;
         }
@@ -66,10 +61,8 @@ namespace NaturalFacade.LayoutConfig.RawXml
         /// <summary>Called when this handler is done with.</summary>
         public void HandleEndTag()
         {
-            if (m_data.ContainsKey("lhs") == false)
-                throw new Exception("Cannot have an equals boolean attribute without a 'lhs'.");
-            if (m_data.ContainsKey("rhs") == false)
-                throw new Exception("Cannot have an equals boolean attribute without a 'rhs'.");
+            if (m_componentList.Any() == false)
+                throw new Exception("Concatentation property has no values.");
             m_addDataAction.Invoke(m_data);
         }
 
