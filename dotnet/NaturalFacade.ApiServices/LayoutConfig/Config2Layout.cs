@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,7 +35,9 @@ namespace NaturalFacade.LayoutConfig
                     },
                     imageResources = convertOutput.ImageResources,
                     fontResources = convertOutput.FontResources,
+                    audioResources = convertOutput.AudioResources,
                     fonts = convertOutput.Fonts,
+                    audios = convertOutput.Audios,
                     rootElement = convertOutput.RootElement
                 }
             };
@@ -168,6 +170,10 @@ namespace NaturalFacade.LayoutConfig
         private static object ConvertControlsFieldToFieldDefDto(Config2LayoutOverlayOutputControlsFieldDef fieldDef, Config2LayoutOverlayOutputPropertyDef propertyDef)
         {
             Dictionary<string, object> output = new Dictionary<string, object>();
+            if (fieldDef.AudioWalkman != null)
+            {
+                output.Add("AudioWalkman", fieldDef.AudioWalkman);
+            }
             if (fieldDef.TextField != null)
             {
                 output.Add("TextField", fieldDef.TextField);

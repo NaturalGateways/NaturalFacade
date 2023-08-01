@@ -10,6 +10,9 @@ namespace NaturalFacade.LayoutConfig.RawXml
     {
         #region Base
 
+        /// <summary>Resource tracking.</summary>
+        private RawXmlReferenceTracking m_tracking = new RawXmlReferenceTracking();
+
         /// <summary>The property name.</summary>
         public string Name { get; private set; }
 
@@ -17,8 +20,9 @@ namespace NaturalFacade.LayoutConfig.RawXml
         public List<ControlsFieldHandler> FieldHandlerList = new List<ControlsFieldHandler>();
 
         /// <summary>Constructor.</summary>
-        public ControlsControlHandler(Natural.Xml.ITagAttributes attributes)
+        public ControlsControlHandler(RawXmlReferenceTracking tracking, Natural.Xml.ITagAttributes attributes)
         {
+            m_tracking = tracking;
             this.Name = attributes.GetString("name");
         }
 
@@ -31,7 +35,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
         {
             if (tagName == "field")
             {
-                ControlsFieldHandler fieldHandler = new ControlsFieldHandler(attributes);
+                ControlsFieldHandler fieldHandler = new ControlsFieldHandler(m_tracking, attributes);
                 this.FieldHandlerList.Add(fieldHandler);
                 return fieldHandler;
             }

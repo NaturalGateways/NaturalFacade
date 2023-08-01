@@ -38,12 +38,21 @@ namespace NaturalFacade.LayoutConfig.RawXml
         /// <summary>Creates an output object.</summary>
         public Config2LayoutOverlayOutput CreateOutput()
         {
+            // TEMP HACK: Until prop indexes are refactored, we force audio fields to have a string reference
+            foreach (ControlsFieldHandler controlField in m_controlsHandlerList.SelectMany(x => x.FieldHandlerList).Where(x => x.FieldModel.AudioWalkman != null))
+            {
+                m_tracking.GetPropertyUsedIndex(controlField.PropName);
+            }
+
+            // Write output
             Config2LayoutOverlayOutput output = new Config2LayoutOverlayOutput
             {
                 PropertyDefs = m_tracking.PropertyUsedList.Select(x => x.PropRef).ToArray(),
                 ImageResources = m_tracking.ImageResourcesUsedList.Select(x => x.Url).ToArray(),
                 FontResources = m_tracking.FontResourcesUsedList.Select(x => x.Url).ToArray(),
+                AudioResources = m_tracking.AudioResourcesUsedList.Select(x => x.Url).ToArray(),
                 Fonts = m_tracking.FontDefinitionsUsedList.Select(x => ConvertFontDefinition(x)).Where(x => x != null).ToArray(),
+                Audios = m_tracking.AudioDefinitionsUsedList.Select(x => ConvertAudioDefinition(x)).Where(x => x != null).ToArray(),
                 RootElement = m_rootElementHandler?.Data,
                 ControlsArray = m_controlsHandlerList.Select(x => ConvertControls(x)).Where(x => x != null).ToArray()
             };
@@ -64,6 +73,15 @@ namespace NaturalFacade.LayoutConfig.RawXml
                 };
             }
             return null;
+        }
+
+        /// <summary>converts an audio to the API DTO.</summary>
+        private ApiDto.OverlayDtoAudio ConvertAudioDefinition(RawXmlReferenceTracking.AudioDefinition audioDefinition)
+        {
+            return new ApiDto.OverlayDtoAudio
+            {
+                res = audioDefinition.ResIndex
+            };
         }
 
         /// <summary>converts a font to the API DTO.</summary>
@@ -95,7 +113,8 @@ namespace NaturalFacade.LayoutConfig.RawXml
             if (string.IsNullOrEmpty(fieldDef.Label))
                 fieldDef.Label = property.PropRef.Name;
             // Check there is at least one field
-            if (fieldDef.TextField == null &&
+            if (fieldDef.AudioWalkman == null &&
+                fieldDef.TextField == null &&
                 fieldDef.Integer == null &&
                 fieldDef.Switch == null &&
                 fieldDef.SelectOptions == null &&
@@ -130,12 +149,15 @@ namespace NaturalFacade.LayoutConfig.RawXml
             {
                 case "controls":
                     {
-                        ControlsControlHandler handler = new ControlsControlHandler(attributes);
+                        ControlsControlHandler handler = new ControlsControlHandler(m_tracking, attributes);
                         m_controlsHandlerList.Add(handler);
                         return handler;
                     }
                 case "font":
                     ReadFontTag(attributes);
+                    break;
+                case "audio":
+                    ReadAudioTag(attributes);
                     break;
                 case "property":
                     ReadPropertyTag(attributes);
@@ -201,6 +223,12 @@ namespace NaturalFacade.LayoutConfig.RawXml
             string name = attributes.GetString("name");
             switch (attributes.GetString("type"))
             {
+                case "Audio":
+                    {
+                        string url = attributes.GetString("url");
+                        m_tracking.AddAudioResource(name, url);
+                        break;
+                    }
                 case "Font":
                     {
                         string url = attributes.GetString("url");
@@ -225,6 +253,15 @@ namespace NaturalFacade.LayoutConfig.RawXml
             string colour = attributes.GetString("colour");
             string align = attributes.GetString("align");
             m_tracking.AddFontDefinition(name, fontRes, size, colour, align);
+        }
+
+        /// <summary>Reads a tag attributes into an object</summary>
+        private void ReadAudioTag(ITagAttributes attributes)
+        {
+            string name = attributes.GetString("name");
+            string resName = attributes.GetString("res");
+            int resIndex = m_tracking.GetAudioResourceUsedIndex(resName);
+            m_tracking.AddAudioDefinition(name, resIndex);
         }
 
         #endregion

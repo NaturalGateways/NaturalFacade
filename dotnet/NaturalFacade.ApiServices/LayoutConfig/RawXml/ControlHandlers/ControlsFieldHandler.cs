@@ -11,6 +11,9 @@ namespace NaturalFacade.LayoutConfig.RawXml
     {
         #region Base
 
+        /// <summary>Resource tracking.</summary>
+        private RawXmlReferenceTracking m_tracking = new RawXmlReferenceTracking();
+
         /// <summary>The property name.</summary>
         public string PropName { get; private set; }
 
@@ -18,8 +21,9 @@ namespace NaturalFacade.LayoutConfig.RawXml
         public Config2LayoutOverlayOutputControlsFieldDef FieldModel { get; private set; }
 
         /// <summary>Constructor.</summary>
-        public ControlsFieldHandler(Natural.Xml.ITagAttributes attributes)
+        public ControlsFieldHandler(RawXmlReferenceTracking tracking, Natural.Xml.ITagAttributes attributes)
         {
+            m_tracking = tracking;
             this.PropName = attributes.GetString("prop_name");
             this.FieldModel = new Config2LayoutOverlayOutputControlsFieldDef
             {
@@ -37,6 +41,9 @@ namespace NaturalFacade.LayoutConfig.RawXml
         {
             switch (tagName)
             {
+                case "audio_walkman":
+                    HandleAudioWalkmanFieldTag(attributes);
+                    break;
                 case "integer":
                     HandleIntegerFieldTag(attributes);
                     break;
@@ -69,6 +76,17 @@ namespace NaturalFacade.LayoutConfig.RawXml
         private void HandleTextFieldTag()
         {
             this.FieldModel.TextField = new object();
+        }
+
+        /// <summary>Handles a child tag.</summary>
+        private void HandleAudioWalkmanFieldTag(Natural.Xml.ITagAttributes attributes)
+        {
+            string audioName = attributes.GetString("audio_name");
+            int audioIndex = m_tracking.GetAudioDefinitionUsedIndex(audioName);
+            this.FieldModel.AudioWalkman = new Config2LayoutOverlayOutputControlsFieldAudioWalkmanDef
+            {
+                AudioIndex = audioIndex
+            };
         }
 
         /// <summary>Handles a child tag.</summary>

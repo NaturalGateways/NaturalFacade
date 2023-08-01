@@ -9,10 +9,12 @@
 
   <ItemGroup>
     <None Remove="ExamplePayload.json" />
+    <None Remove="ExamplePayload.xml" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="ExamplePayload.json" />
+    <EmbeddedResource Include="ExamplePayload.xml" />
   </ItemGroup>
 
   <ItemGroup>

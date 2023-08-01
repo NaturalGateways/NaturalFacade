@@ -127,6 +127,95 @@ namespace NaturalFacade.LayoutConfig.RawXml
 
         #endregion
 
+        #region Audio definition tracking
+
+        /// <summary>An audio player referenced in the file.</summary>
+        public class AudioDefinition
+        {
+            public int ResIndex { get; set; }
+
+            public int? SavedIndex { get; set; }
+
+            public AudioDefinition(int resIndex)
+            {
+                this.ResIndex = resIndex;
+            }
+        }
+
+        /// <summary>The resources indexed.</summary>
+        private Dictionary<string, AudioDefinition> m_audioDefinitionsByName = new Dictionary<string, AudioDefinition>();
+        /// <summary>The resources indexed.</summary>
+        public List<AudioDefinition> AudioDefinitionsUsedList { get; private set; } = new List<AudioDefinition>();
+
+        /// <summary>Adds a font definition.</summary>
+        public void AddAudioDefinition(string name, int resIndex)
+        {
+            m_audioDefinitionsByName.Add(name, new AudioDefinition(resIndex));
+        }
+
+        /// <summary>Getter for the index of a resource under the context it will be used.</summary>
+        public int GetAudioDefinitionUsedIndex(string name)
+        {
+            // Get font def
+            if (m_audioDefinitionsByName.ContainsKey(name) == false)
+                throw new Exception($"Cannot find audio definition with name '{name}'.");
+            AudioDefinition audioDef = m_audioDefinitionsByName[name];
+
+            // Get font definition index
+            if (audioDef.SavedIndex.HasValue == false)
+            {
+                audioDef.SavedIndex = this.AudioDefinitionsUsedList.Count;
+                this.AudioDefinitionsUsedList.Add(audioDef);
+            }
+            return audioDef.SavedIndex.Value;
+        }
+
+        #endregion
+
+        #region Audio resource tracking
+
+        /// <summary>An audio referenced in the file.</summary>
+        public class AudioResource
+        {
+            public string Url { get; private set; }
+
+            public int? ResIndex { get; set; }
+
+            public AudioResource(string url)
+            {
+                this.Url = url;
+            }
+        }
+
+        /// <summary>The resources indexed.</summary>
+        private Dictionary<string, AudioResource> m_audioResourcesByName = new Dictionary<string, AudioResource>();
+        /// <summary>The resources indexed.</summary>
+        public List<AudioResource> AudioResourcesUsedList { get; private set; } = new List<AudioResource>();
+
+        /// <summary>Adds an audio resource.</summary>
+        public void AddAudioResource(string name, string url)
+        {
+            m_audioResourcesByName.Add(name, new AudioResource(url));
+        }
+
+        /// <summary>Getter for the index of a resource under the context it will be used.</summary>
+        public int GetAudioResourceUsedIndex(string name)
+        {
+            if (m_audioResourcesByName.ContainsKey(name) == false)
+            {
+                throw new Exception($"Cannot find audio resource with name '{name}'.");
+            }
+            AudioResource res = m_audioResourcesByName[name];
+            if (res.ResIndex.HasValue == false)
+            {
+                res.ResIndex = this.FontResourcesUsedList.Count;
+                this.AudioResourcesUsedList.Add(res);
+            }
+            return res.ResIndex.Value;
+        }
+
+        #endregion
+
         #region Font resource tracking
 
         /// <summary>An font referenced in the file.</summary>

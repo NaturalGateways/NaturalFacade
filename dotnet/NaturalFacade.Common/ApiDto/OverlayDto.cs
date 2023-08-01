@@ -18,7 +18,11 @@ namespace NaturalFacade.ApiDto
 
         public string[] fontResources { get; set; }
 
+        public string[] audioResources { get; set; }
+
         public OverlayDtoFont[] fonts { get; set; }
+
+        public OverlayDtoAudio[] audios { get; set; }
 
         public object rootElement { get; set; }
     }
@@ -32,5 +36,10 @@ namespace NaturalFacade.ApiDto
         public string colour { get; set; }
 
         public string align { get; set; }
+    }
+
+    public class OverlayDtoAudio
+    {
+        public long res { get; set; }
     }
 }

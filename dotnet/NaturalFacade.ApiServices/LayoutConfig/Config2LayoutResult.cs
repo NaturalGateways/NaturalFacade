@@ -15,7 +15,11 @@ namespace NaturalFacade.LayoutConfig
 
         public string[] FontResources { get; set; }
 
+        public string[] AudioResources { get; set; }
+
         public ApiDto.OverlayDtoFont[] Fonts { get; set; }
+
+        public ApiDto.OverlayDtoAudio[] Audios { get; set; }
 
         public object RootElement { get; set; }
 
@@ -55,6 +59,8 @@ namespace NaturalFacade.LayoutConfig
 
         public int PropIndex { get; set; }
 
+        public Config2LayoutOverlayOutputControlsFieldAudioWalkmanDef AudioWalkman { get; set; }
+
         public object TextField { get; set; }
 
         public object SelectOptions { get; set; }
@@ -64,6 +70,12 @@ namespace NaturalFacade.LayoutConfig
         public Config2LayoutOverlayOutputControlsFieldSwitchDef Switch { get; set; }
 
         public Config2LayoutOverlayOutputControlsFieldTimerDef Timer { get; set; }
+    }
+
+    /// <summary>The definition for an audio walkman control field.</summary>
+    public class Config2LayoutOverlayOutputControlsFieldAudioWalkmanDef
+    {
+        public long AudioIndex { get; set; }
     }
 
     /// <summary>The definition for an integer control field.</summary>
