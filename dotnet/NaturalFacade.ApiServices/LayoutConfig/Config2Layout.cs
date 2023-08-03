@@ -231,8 +231,13 @@ namespace NaturalFacade.LayoutConfig
         {
             switch (valueType)
             {
-                case ApiDto.PropertyTypeDto.String:
-                    return valueJson.AsString;
+                case ApiDto.PropertyTypeDto.Audio:
+                    {
+                        return new Dictionary<string, object>
+                        {
+                            { "State", valueJson.GetDictionaryString("State") ?? "Stopped" }
+                        };
+                    }
                 case ApiDto.PropertyTypeDto.Boolean:
                     {
                         bool? boolValue = valueJson.AsBoolean;
@@ -240,6 +245,8 @@ namespace NaturalFacade.LayoutConfig
                             throw new Exception($"Value is not a boolean.");
                         return boolValue.Value;
                     }
+                case ApiDto.PropertyTypeDto.String:
+                    return valueJson.AsString;
                 case ApiDto.PropertyTypeDto.Timer:
                     {
                         switch (valueJson.ObjectType)

@@ -81,12 +81,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
         /// <summary>Handles a child tag.</summary>
         private void HandleAudioWalkmanFieldTag(Natural.Xml.ITagAttributes attributes)
         {
-            string audioName = attributes.GetString("audio_name");
-            int audioIndex = m_tracking.GetAudioDefinitionUsedIndex(audioName);
-            this.FieldModel.AudioWalkman = new Config2LayoutOverlayOutputControlsFieldAudioWalkmanDef
-            {
-                AudioIndex = audioIndex
-            };
+            this.FieldModel.AudioWalkman = new Config2LayoutOverlayOutputControlsFieldAudioWalkmanDef();
         }
 
         /// <summary>Handles a child tag.</summary>

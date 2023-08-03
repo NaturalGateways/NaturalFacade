@@ -80,7 +80,8 @@ namespace NaturalFacade.LayoutConfig.RawXml
         {
             return new ApiDto.OverlayDtoAudio
             {
-                res = audioDefinition.ResIndex
+                res = audioDefinition.ResIndex,
+                prop = audioDefinition.PropIndex
             };
         }
 
@@ -197,11 +198,14 @@ namespace NaturalFacade.LayoutConfig.RawXml
             };
             switch (propDef.ValueType)
             {
-                case ApiDto.PropertyTypeDto.String:
-                    propDef.DefaultValue = attributes.GetString("default_value");
+                case ApiDto.PropertyTypeDto.Audio:
+                    propDef.DefaultValue = new Dictionary<string, object> { { "State", "Stopped" } };
                     break;
                 case ApiDto.PropertyTypeDto.Boolean:
                     propDef.DefaultValue = string.Equals(attributes.GetString("default_value"), "true", StringComparison.InvariantCultureIgnoreCase);
+                    break;
+                case ApiDto.PropertyTypeDto.String:
+                    propDef.DefaultValue = attributes.GetString("default_value");
                     break;
                 case ApiDto.PropertyTypeDto.Timer:
                     {
@@ -260,8 +264,10 @@ namespace NaturalFacade.LayoutConfig.RawXml
         {
             string name = attributes.GetString("name");
             string resName = attributes.GetString("res");
+            string propName = attributes.GetString("prop");
             int resIndex = m_tracking.GetAudioResourceUsedIndex(resName);
-            m_tracking.AddAudioDefinition(name, resIndex);
+            int propIndex = m_tracking.GetPropertyUsedIndex(propName);
+            m_tracking.AddAudioDefinition(name, resIndex, propIndex);
         }
 
         #endregion

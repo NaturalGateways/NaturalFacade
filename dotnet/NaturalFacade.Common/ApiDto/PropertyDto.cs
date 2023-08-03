@@ -6,8 +6,9 @@ namespace NaturalFacade.ApiDto
 {
     public enum PropertyTypeDto
     {
-        String,
+        Audio,
         Boolean,
+        String,
         Timer
     }
 

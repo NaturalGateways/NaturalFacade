@@ -133,12 +133,15 @@ namespace NaturalFacade.LayoutConfig.RawXml
         public class AudioDefinition
         {
             public int ResIndex { get; set; }
+            public int PropIndex { get; set; }
 
-            public int? SavedIndex { get; set; }
+            public int SavedIndex { get; set; }
 
-            public AudioDefinition(int resIndex)
+            public AudioDefinition(int savedIndex, int resIndex, int propIndex)
             {
+                this.SavedIndex = savedIndex;
                 this.ResIndex = resIndex;
+                this.PropIndex = propIndex;
             }
         }
 
@@ -148,26 +151,12 @@ namespace NaturalFacade.LayoutConfig.RawXml
         public List<AudioDefinition> AudioDefinitionsUsedList { get; private set; } = new List<AudioDefinition>();
 
         /// <summary>Adds a font definition.</summary>
-        public void AddAudioDefinition(string name, int resIndex)
+        public void AddAudioDefinition(string name, int resIndex, int propIndex)
         {
-            m_audioDefinitionsByName.Add(name, new AudioDefinition(resIndex));
-        }
-
-        /// <summary>Getter for the index of a resource under the context it will be used.</summary>
-        public int GetAudioDefinitionUsedIndex(string name)
-        {
-            // Get font def
-            if (m_audioDefinitionsByName.ContainsKey(name) == false)
-                throw new Exception($"Cannot find audio definition with name '{name}'.");
-            AudioDefinition audioDef = m_audioDefinitionsByName[name];
-
-            // Get font definition index
-            if (audioDef.SavedIndex.HasValue == false)
-            {
-                audioDef.SavedIndex = this.AudioDefinitionsUsedList.Count;
-                this.AudioDefinitionsUsedList.Add(audioDef);
-            }
-            return audioDef.SavedIndex.Value;
+            int savedIndex = this.AudioDefinitionsUsedList.Count;
+            AudioDefinition audioDef = new AudioDefinition(savedIndex, resIndex, propIndex);
+            m_audioDefinitionsByName.Add(name, audioDef);
+            this.AudioDefinitionsUsedList.Add(audioDef);
         }
 
         #endregion

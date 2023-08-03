@@ -41,5 +41,6 @@ namespace NaturalFacade.ApiDto
     public class OverlayDtoAudio
     {
         public long res { get; set; }
+        public long prop { get; set; }
     }
 }

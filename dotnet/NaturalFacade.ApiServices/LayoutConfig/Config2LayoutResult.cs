@@ -75,7 +75,7 @@ namespace NaturalFacade.LayoutConfig
     /// <summary>The definition for an audio walkman control field.</summary>
     public class Config2LayoutOverlayOutputControlsFieldAudioWalkmanDef
     {
-        public long AudioIndex { get; set; }
+        //
     }
 
     /// <summary>The definition for an integer control field.</summary>
