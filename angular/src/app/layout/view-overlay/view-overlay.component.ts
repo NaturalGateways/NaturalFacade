@@ -55,6 +55,7 @@ export class ViewOverlayComponent {
             this.layoutRender!.loadingMessage = "Success";
             this.layoutRender!.setPropValues(propValues);
             this.layoutRender!.setLayout(loadedLayout);
+            this.layoutRender!.updateOverlay();
             this.layoutRender!.render(true);
 
             if (layoutOverlay.redrawMillis !== null && layoutOverlay.apiFetchMillis !== null)
@@ -106,6 +107,7 @@ export class ViewOverlayComponent {
     this.apiService.getLayoutPropValues(this.layoutId!, (propValues) =>
     {
       this.layoutRender!.setPropValues(propValues);
+      this.layoutRender!.updateOverlay();
       this.layoutRender!.render(true);
     }, () => { });
   }

@@ -21,7 +21,11 @@ export class OverlayApiDto {
 
   fontResources: any = [];
 
+  audioResources: any = [];
+
   fonts: any = [];
+
+  audios: any = [];
 
   rootElement: any;
 }

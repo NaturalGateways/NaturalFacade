@@ -11,7 +11,11 @@ export class LayoutData {
 
   fontResources: Array<LayoutFontResource> = new Array<LayoutFontResource>();
 
+  audioResources: Array<LayoutAudioResource> = new Array<LayoutAudioResource>();
+
   fontConfigs: Array<LayoutFontConfig> = new Array<LayoutFontConfig>();
+
+  audioConfigs: Array<LayoutAudioConfig> = new Array<LayoutAudioConfig>();
 
   rootElement: any;
 }
@@ -36,6 +40,12 @@ export class LayoutFontResource {
   constructor(public fontName: string, public url: string) { }
 }
 
+export class LayoutAudioResource {
+  audioElement: HTMLAudioElement | undefined;
+
+  constructor(public url: string) { }
+}
+
 export class LayoutFontConfig {
   isCustom: boolean = false;
 
@@ -44,5 +54,15 @@ export class LayoutFontConfig {
   constructor(public fontRes: LayoutFontResource, public fontJson: any)
   {
     this.fontName = this.fontJson.size + ' ' + this.fontRes.fontName;
+  }
+}
+
+export class LayoutAudioConfig {
+  stopped: boolean = true;
+  playing: boolean = false;
+
+  constructor(public audioRes: LayoutAudioResource, public propIndex: number)
+  {
+    //
   }
 }

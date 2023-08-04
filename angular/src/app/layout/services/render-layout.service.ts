@@ -1,7 +1,7 @@
 import { ComponentFactoryResolver } from '@angular/core';
 import { Console } from 'console';
 
-import { LayoutData, LayoutFontConfig, LayoutProperty } from '../layout-data';
+import { LayoutData, LayoutFontConfig, LayoutAudioConfig, LayoutProperty } from '../layout-data';
 
 enum RenderLayoutSizeType { Pixel, Min, Max }
 
@@ -48,6 +48,45 @@ export class RenderLayoutService {
   setPropValues(propValues: any)
   {
     this.propValues = propValues;
+  }
+
+  updateOverlay()
+  {
+    // Update audios
+    for (var audioIndex in this.layoutData!.audioConfigs) {
+      var audioJson: LayoutAudioConfig = this.layoutData!.audioConfigs[audioIndex];
+      var propValue: any = this.propValues[audioJson.propIndex];
+      switch (propValue.State)
+      {
+        case "Stopped":
+          if (audioJson.playing)
+          {
+            audioJson.audioRes.audioElement!.pause();
+            audioJson.playing = false;
+          }
+          if (audioJson.stopped === false)
+          {
+            audioJson.audioRes.audioElement!.currentTime = 0;
+            audioJson.stopped = true;
+          }
+          break;
+        case "Paused":
+          if (audioJson.playing)
+          {
+            audioJson.audioRes.audioElement!.pause();
+            audioJson.playing = false;
+          }
+          break;
+        case "Playing":
+          if (audioJson.playing === false)
+          {
+            audioJson.audioRes.audioElement!.play();
+            audioJson.playing = true;
+            audioJson.stopped = false;
+          }
+          break;
+      }
+    }
   }
 
   createElementWithBounds(layoutData: LayoutData, element: any): LayoutElementWithBounds

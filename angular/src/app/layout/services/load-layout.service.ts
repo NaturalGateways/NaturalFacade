@@ -1,7 +1,7 @@
 import type { } from "css-font-loading-module";
 
 import { OverlayApiDto } from '../model/layout-api-dto';
-import { LayoutData, LayoutProperty, LayoutImageResource, LayoutFontResource, LayoutFontConfig } from '../layout-data';
+import { LayoutData, LayoutProperty, LayoutImageResource, LayoutFontResource, LayoutAudioResource, LayoutFontConfig, LayoutAudioConfig } from '../layout-data';
 
 export class LoadLayoutService {
 
@@ -22,6 +22,10 @@ export class LoadLayoutService {
     if (layoutData.fontResources !== undefined && layoutData.fontResources !== null)
     {
       resourcesToLoad += layoutData.fontResources.length;
+    }
+    if (layoutData.audioResources !== undefined && layoutData.audioResources !== null)
+    {
+      resourcesToLoad += layoutData.audioResources.length;
     }
 
     // Load images in parallel
@@ -53,6 +57,18 @@ export class LoadLayoutService {
             successCallback(layoutData);
           }
         });
+      }
+    }
+    if (layoutData.audioResources !== undefined && layoutData.audioResources !== null)
+    {
+      for (const audioIndex in layoutData.audioResources) {
+        var audioRes: LayoutAudioResource = layoutData.audioResources[audioIndex];
+        audioRes.audioElement = new Audio(audioRes.url);
+        --resourcesToLoad;
+        if (resourcesToLoad === 0 && isErrored === false)
+        {
+          successCallback(layoutData);
+        }
       }
     }
   }
@@ -88,11 +104,25 @@ export class LoadLayoutService {
         layoutData.fontResources.push(new LayoutFontResource(fontName, fontUrl));
       }
     }
+    if (apiDto.audioResources !== undefined)
+    {
+      for (var audioResIndex in apiDto.audioResources) {
+        var audioUrl = apiDto.audioResources[audioResIndex];
+        layoutData.audioResources.push(new LayoutAudioResource(audioUrl));
+      }
+    }
     if (apiDto.fonts !== undefined)
     {
       for (var fontJsonIndex in apiDto.fonts) {
         var fontJson: any = apiDto.fonts[fontJsonIndex];
         layoutData.fontConfigs.push(new LayoutFontConfig(layoutData.fontResources[fontJson.res], fontJson));
+      }
+    }
+    if (apiDto.audios !== undefined)
+    {
+      for (var audioJsonIndex in apiDto.audios) {
+        var audioJson: any = apiDto.audios[audioJsonIndex];
+        layoutData.audioConfigs.push(new LayoutAudioConfig(layoutData.audioResources[audioJson.res], audioJson.prop));
       }
     }
     layoutData.rootElement = apiDto.rootElement;
