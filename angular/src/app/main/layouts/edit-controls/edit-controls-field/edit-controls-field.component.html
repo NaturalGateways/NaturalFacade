@@ -38,4 +38,12 @@
             <div class="timerClearButton"><button pButton pRipple type="button" icon="pi pi-replay" class="p-button" [disabled]="timerRunning !== savedTimerRunning || isSaving" (click)="clearTimer()"></button></div>
         </div>
     </div>
+    
+    <div class="inputRow" *ngIf="audioWalkmanVisible">
+        <div class="flex flex-row">
+            <button pButton pRipple type="button" icon="pi pi-stop" class="audioWalkmanButton" [disabled]="isSaving" [ngClass]="isAudioWalkmanStopped()?'p-button':'p-button-secondary'" (click)="onAudioWalkmanStop()"></button>
+            <button pButton pRipple type="button" icon="pi pi-pause" class="audioWalkmanButton" [disabled]="isSaving" [ngClass]="isAudioWalkmanPaused()?'p-button':'p-button-secondary'" (click)="onAudioWalkmanPause()"></button>
+            <button pButton pRipple type="button" icon="pi pi-play" class="audioWalkmanButton" [disabled]="isSaving" [ngClass]="isAudioWalkmanPlaying()?'p-button':'p-button-secondary'" (click)="onAudioWalkmanPlay()"></button>
+        </div>
+    </div>
 </div>

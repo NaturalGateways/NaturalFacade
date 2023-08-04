@@ -27,6 +27,7 @@ export class EditControlsFieldComponent {
   savedTimerRunning : boolean = false;
   savedTimerSecs : number | undefined;
   savedTimerStartDateTime : Date | undefined;
+  savedAudioState : string | undefined;
 
   switchVisible : boolean = false;
   switchFalseLabel : string = "False";
@@ -47,6 +48,11 @@ export class EditControlsFieldComponent {
   timerVisible : boolean = false;
   timerRunning : boolean = false;
   timerText : string | undefined;
+
+  audioWalkmanVisible : boolean = false;
+  isAudioWalkmanStopped() { return this.savedAudioState === 'Stopped'; }
+  isAudioWalkmanPaused() { return this.savedAudioState === 'Paused'; }
+  isAudioWalkmanPlaying() { return this.savedAudioState === 'Playing'; }
 
   constructor(private apiService: ApiService)
   {
@@ -110,6 +116,12 @@ export class EditControlsFieldComponent {
       this.timerVisible = true;
     }
 
+    // Setup audio walkman
+    if (this.field!.fieldDef.AudioWalkman !== undefined)
+    {
+      this.audioWalkmanVisible = true;
+    }
+
     // Set value
     this.setSavedValue(this.field!.value);
   }
@@ -118,6 +130,9 @@ export class EditControlsFieldComponent {
   {
     switch (this.field!.valueType)
     {
+      case "Audio":
+        this.savedAudioState = String(value.State);
+        break;
       case "Boolean":
         this.savedBoolValue = Boolean(value);
         this.switchValue = this.savedBoolValue;
@@ -204,6 +219,31 @@ export class EditControlsFieldComponent {
   clearTimer()
   {
     this.upload(this.field!.defaultValue);
+  }
+
+  onAudioWalkmanStop()
+  {
+    this.upload({'State':'Stopped'});
+  }
+
+  onAudioWalkmanPause()
+  {
+    switch (this.savedAudioState)
+    {
+      case 'Stopped':
+        break;
+      case 'Paused':
+        this.upload({'State':'Playing'});
+        break;
+      case 'Playing':
+        this.upload({'State':'Paused'});
+        break;
+    }
+  }
+
+  onAudioWalkmanPlay()
+  {
+    this.upload({'State':'Playing'});
   }
 
   upload(value: any)

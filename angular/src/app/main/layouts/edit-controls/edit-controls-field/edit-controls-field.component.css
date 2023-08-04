@@ -17,13 +17,18 @@
 .timerSwitchButton { 
     flex: 0 0 auto; 
 } 
- 
-.timerLabel { 
-    flex: 0 0 auto; 
-    margin-left: 1em; 
-} 
- 
-.rightSaveButton, .timerClearButton { 
-    flex: 0 0 auto; 
-    margin-left: 1em; 
-} 
+
+.timerLabel {
+    flex: 0 0 auto;
+    margin-left: 1em;
+}
+
+.audioWalkmanButton {
+    flex: 0 0 auto;
+    margin-right: 1em;
+}
+
+.rightSaveButton, .timerClearButton {
+    flex: 0 0 auto;
+    margin-left: 1em;
+}
