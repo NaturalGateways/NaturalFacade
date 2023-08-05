@@ -102,22 +102,22 @@ namespace NaturalFacade.LayoutConfig.RawXml
             object minData = null;
             if (m_minIncData != null)
             {
-                minData = new Dictionary<string, object> { { "op", "LessOrEqual" }, { "lhs", m_minIncData }, { "rhs", m_valueData } };
+                minData = new Dictionary<string, object> { { "op", "IntLessOrEqual" }, { "lhs", m_minIncData }, { "rhs", m_valueData } };
             }
             else if (m_minExcData != null)
             {
-                minData = new Dictionary<string, object> { { "op", "LessThan" }, { "lhs", m_minExcData }, { "rhs", m_valueData } };
+                minData = new Dictionary<string, object> { { "op", "IntLessThan" }, { "lhs", m_minExcData }, { "rhs", m_valueData } };
             }
 
             // Check max data
             object maxData = null;
             if (m_maxIncData != null)
             {
-                maxData = new Dictionary<string, object> { { "op", "LessOrEqual" }, { "lhs", m_valueData }, { "rhs", m_maxIncData } };
+                maxData = new Dictionary<string, object> { { "op", "IntLessOrEqual" }, { "lhs", m_valueData }, { "rhs", m_maxIncData } };
             }
             else if (m_maxExcData != null)
             {
-                maxData = new Dictionary<string, object> { { "op", "LessThan" }, { "lhs", m_valueData }, { "rhs", m_maxExcData } };
+                maxData = new Dictionary<string, object> { { "op", "IntLessThan" }, { "lhs", m_valueData }, { "rhs", m_maxExcData } };
             }
 
             // Create or assign final operation
@@ -126,8 +126,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
                 m_addDataAction.Invoke(new Dictionary<string, object>
                 {
                     { "op", "And" },
-                    { "lhs", minData },
-                    { "rhs", maxData }
+                    { "items", new object[] { minData, maxData } }
                 });
             }
             else if (minData != null)
