@@ -249,11 +249,11 @@ export class RenderLayoutService {
     {
       return !this.checkCondition(condition.item, false);
     }
-    if (condition.op === "IntLessThan" || condition.op === "LessThan")
+    if (condition.op === "IntLessThan" || condition.op === "IntLessThan")
     {
       return this.getInteger(condition.lhs) < this.getInteger(condition.rhs);
     }
-    if (condition.op === "IntLessThanEquals" || condition.op === "LessOrEqual")
+    if (condition.op === "IntLessThanEquals" || condition.op === "IntLessOrEqual")
     {
       return this.getInteger(condition.lhs) <= this.getInteger(condition.rhs);
     }
