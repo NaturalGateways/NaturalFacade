@@ -16,6 +16,8 @@ namespace NaturalFacade.LayoutConfig.RawXml
             string propType = attributes.GetString("type");
             switch (propType)
             {
+                case "IntegerBetween":
+                    return new IntegerBetweenBooleanHandler(tracking, addDataAction);
                 case "Prop":
                     HandlePropTag(attributes, tracking, addDataAction);
                     return null;
