@@ -148,6 +148,24 @@ export class RenderLayoutService {
       else
         return this.getString(layoutData, object.else);
     }
+    if (object.op === "IntegerToString")
+    {
+      var intResult: number = this.getInteger(object.integer);
+      switch (object.format)
+      {
+        case "MinsAndSecs":
+          {
+            let str = '';
+            str += (Math.floor(intResult / 600) % 6);
+            str += (Math.floor(intResult / 60) % 10);
+            str += ':';
+            str += (Math.floor(intResult / 10) % 6);
+            str += (intResult % 10);
+            return str;
+          }
+      }
+      return new String(intResult);
+    }
     return object;
   }
 
@@ -231,11 +249,11 @@ export class RenderLayoutService {
     {
       return !this.checkCondition(condition.item, false);
     }
-    if (condition.op === "IntLessThan")
+    if (condition.op === "IntLessThan" || condition.op === "LessThan")
     {
       return this.getInteger(condition.lhs) < this.getInteger(condition.rhs);
     }
-    if (condition.op === "IntLessThanEquals")
+    if (condition.op === "IntLessThanEquals" || condition.op === "LessOrEqual")
     {
       return this.getInteger(condition.lhs) <= this.getInteger(condition.rhs);
     }
@@ -264,7 +282,7 @@ export class RenderLayoutService {
     {
       return this.getInteger(integerObj.lhs) + this.getInteger(integerObj.rhs);
     }
-    if (integerObj.op === "Subtract")
+    if (integerObj.op === "Subtract" || integerObj.op === "Sub")
     {
       return this.getInteger(integerObj.lhs) - this.getInteger(integerObj.rhs);
     }
@@ -279,6 +297,16 @@ export class RenderLayoutService {
     if (integerObj.op === "Modulo")
     {
       return this.getInteger(integerObj.lhs) % this.getInteger(integerObj.rhs);
+    }
+    if (integerObj.op === "AudioPositionSecs")
+    {
+      var audioConfig : LayoutAudioConfig = this.layoutData!.audioConfigs[integerObj.audio];
+      return Math.floor(audioConfig.audioRes.audioElement?.currentTime!);
+    }
+    if (integerObj.op === "AudioDurationSecs")
+    {
+      var audioConfig : LayoutAudioConfig = this.layoutData!.audioConfigs[integerObj.audio];
+      return Math.floor(audioConfig.audioRes.audioElement?.duration!);
     }
     return 0;
   }
