@@ -29,7 +29,7 @@ namespace NaturalFacade.Services
                 case ApiDto.AnonRequestType.ConvertLayoutToOverlay:
                     return HandleAnonConvertLayoutToOverlay(requestDto);
                 case ApiDto.AnonRequestType.PerformAction:
-                    return HandleAnonPerformAction(dynamoService, requestDto);
+                    return await HandleAnonPerformActionAsync(dynamoService, requestDto);
                 default:
                     throw new FacadeApiException($"Unrecognised request type: {requestDto.RequestType}");
             }
@@ -107,7 +107,7 @@ namespace NaturalFacade.Services
         }
 
         /// <summary>Handle the request.</summary>
-        private static async Task<object> HandleAnonPerformAction(DynamoService dynamoService, ApiDto.AnonRequestPayloadDto requestDto)
+        private static async Task<object> HandleAnonPerformActionAsync(DynamoService dynamoService, ApiDto.AnonRequestPayloadDto requestDto)
         {
             // Validate
             if (string.IsNullOrEmpty(requestDto.LayoutId))

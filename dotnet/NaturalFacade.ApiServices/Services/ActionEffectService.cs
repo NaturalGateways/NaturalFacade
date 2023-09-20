@@ -36,7 +36,7 @@ namespace NaturalFacade.Services
         {
             switch (effect.Type)
             {
-                case "SetProp":
+                case "PropSet":
                     await ExecuteSetPropEffectAsync(dynamoService, layoutId, effect);
                     break;
                 default:
