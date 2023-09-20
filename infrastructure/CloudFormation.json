@@ -92,7 +92,7 @@
           ],
           "PassthroughBehavior": "NEVER",
           "RequestTemplates": {
-            "application/json": "#set($queryString = $input.params().querystring){\"payload\":{\"RequestType\":\"$util.escapeJavaScript($queryString.get('RequestType'))\",\"UserId\":\"$util.escapeJavaScript($queryString.get('UserId'))\",\"LayoutId\":\"$util.escapeJavaScript($queryString.get('LayoutId'))\"}}"
+            "application/json": "#set($queryString = $input.params().querystring){\"payload\":{\"RequestType\":\"$util.escapeJavaScript($queryString.get('RequestType'))\",\"UserId\":\"$util.escapeJavaScript($queryString.get('UserId'))\",\"LayoutId\":\"$util.escapeJavaScript($queryString.get('LayoutId'))\",\"ActionName\":\"$util.escapeJavaScript($queryString.get('ActionName'))\"}}"
           },
           "Type": "AWS",
           "Uri": {

@@ -28,6 +28,8 @@ namespace NaturalFacade.Services
                     return await HandleAnonGetLayoutOverlayPropValuesAsync(dynamoService, requestDto);
                 case ApiDto.AnonRequestType.ConvertLayoutToOverlay:
                     return HandleAnonConvertLayoutToOverlay(requestDto);
+                case ApiDto.AnonRequestType.PerformAction:
+                    return HandleAnonPerformAction(dynamoService, requestDto);
                 default:
                     throw new FacadeApiException($"Unrecognised request type: {requestDto.RequestType}");
             }
@@ -102,6 +104,33 @@ namespace NaturalFacade.Services
                 resultData.Add("controls", result.Controls);
             }
             return resultData;
+        }
+
+        /// <summary>Handle the request.</summary>
+        private static async Task<object> HandleAnonPerformAction(DynamoService dynamoService, ApiDto.AnonRequestPayloadDto requestDto)
+        {
+            // Validate
+            if (string.IsNullOrEmpty(requestDto.LayoutId))
+            {
+                throw new FacadeApiException("Layout ID missing from perform action request.");
+            }
+            if (string.IsNullOrEmpty(requestDto.ActionName))
+            {
+                throw new FacadeApiException("Action name missing from perform action request.");
+            }
+            LayoutConfig.Config2LayoutResultAction action = await dynamoService.GetActionAsync(requestDto.LayoutId, requestDto.ActionName);
+            if (action == null)
+            {
+                throw new FacadeApiException("Cannot find action.");
+            }
+            if (action.ApiAccess != "Anon")
+            {
+                throw new FacadeApiException("Action is not anonymous.");
+            }
+
+            // Create and perform API action
+            await ActionEffectService.ExecuteActionAsync(dynamoService, requestDto.LayoutId, action);
+            return null;
         }
 
         #endregion

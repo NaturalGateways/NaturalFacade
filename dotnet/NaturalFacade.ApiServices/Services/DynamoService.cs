@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -199,6 +199,18 @@ namespace NaturalFacade.Services
         {
             await PutItemAsync(layoutId, "OverlayProperties", properties);
             await PutItemAsync(layoutId, "OverlayPropValues", propValues);
+        }
+
+        /// <summary>Puts a layout's properties.</summary>
+        public async Task PutLayoutPropertyValuesAsync(string layoutId, object[] propValues)
+        {
+            await PutItemAsync(layoutId, "OverlayPropValues", propValues);
+        }
+
+        /// <summary>Gets a layout overlay.</summary>
+        public async Task<LayoutConfig.Config2LayoutResultAction> GetActionAsync(string layoutId, string actionName)
+        {
+            return await GetItemDataAsync<LayoutConfig.Config2LayoutResultAction>(layoutId, $"Action-{actionName}");
         }
 
         #endregion
