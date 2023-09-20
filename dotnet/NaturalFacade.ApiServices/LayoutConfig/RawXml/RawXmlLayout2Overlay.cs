@@ -35,6 +35,9 @@ namespace NaturalFacade.LayoutConfig.RawXml
         /// <summary>The list of control handlers.</summary>
         private List<ControlsControlHandler> m_controlsHandlerList = new List<ControlsControlHandler>();
 
+        /// <summary>The list of action handlers.</summary>
+        private List<ActionHandler> m_actionHandlerList = new List<ActionHandler>();
+
         /// <summary>Creates an output object.</summary>
         public Config2LayoutOverlayOutput CreateOutput()
         {
@@ -56,6 +59,10 @@ namespace NaturalFacade.LayoutConfig.RawXml
                 RootElement = m_rootElementHandler?.Data,
                 ControlsArray = m_controlsHandlerList.Select(x => ConvertControls(x)).Where(x => x != null).ToArray()
             };
+            if (m_actionHandlerList.Any())
+            {
+                output.Actions = m_actionHandlerList.ToDictionary(x => x.ActionName, y => y.CreateAction());
+            }
             return output;
         }
 
@@ -148,6 +155,8 @@ namespace NaturalFacade.LayoutConfig.RawXml
         {
             switch (tagName)
             {
+                case "action":
+                    return ReadActionTag(attributes);
                 case "controls":
                     {
                         ControlsControlHandler handler = new ControlsControlHandler(m_tracking, attributes);
@@ -268,6 +277,14 @@ namespace NaturalFacade.LayoutConfig.RawXml
             int resIndex = m_tracking.GetAudioResourceUsedIndex(resName);
             int propIndex = m_tracking.GetPropertyUsedIndex(propName);
             m_tracking.AddAudioDefinition(name, resIndex, propIndex);
+        }
+
+        /// <summary>Reads a tag attributes into an object</summary>
+        private ITagHandler ReadActionTag(ITagAttributes attributes)
+        {
+            ActionHandler actionHandler = new ActionHandler(m_tracking, attributes);
+            m_actionHandlerList.Add(actionHandler);
+            return actionHandler;
         }
 
         #endregion

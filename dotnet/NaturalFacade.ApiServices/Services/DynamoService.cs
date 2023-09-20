@@ -185,6 +185,13 @@ namespace NaturalFacade.Services
                     await PutItemAsync(layoutId, $"OverlayControls{controlsIndex:D2}", convertResult.Controls[controlsIndex]);
                 }
             }
+            if (convertResult.Actions?.Any() ?? false)
+            {
+                foreach (KeyValuePair<string, LayoutConfig.Config2LayoutResultAction> action in convertResult.Actions)
+                {
+                    await PutItemAsync(layoutId, $"Action-{action.Key}", action.Value);
+                }
+            }
         }
 
         /// <summary>Puts a layout's properties.</summary>

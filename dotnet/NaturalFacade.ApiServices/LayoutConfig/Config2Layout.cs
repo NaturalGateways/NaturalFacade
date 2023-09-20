@@ -39,7 +39,8 @@ namespace NaturalFacade.LayoutConfig
                     fonts = convertOutput.Fonts,
                     audios = convertOutput.Audios,
                     rootElement = convertOutput.RootElement
-                }
+                },
+                Actions = convertOutput.Actions
             };
 
             // Check if we write the properties for property editing

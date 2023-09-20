@@ -12,7 +12,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
         #region Base
 
         /// <summary>Resource tracking.</summary>
-        private RawXmlReferenceTracking m_tracking = new RawXmlReferenceTracking();
+        private RawXmlReferenceTracking m_tracking = null;
 
         /// <summary>The property name.</summary>
         public string PropName { get; private set; }

@@ -23,6 +23,8 @@ namespace NaturalFacade.LayoutConfig
 
         public object RootElement { get; set; }
 
+        public Dictionary<string, Config2LayoutResultAction> Actions { get; set; }
+
         public Config2LayoutOverlayOutputControlsDef[] ControlsArray { get; set; }
     }
 
@@ -110,7 +112,32 @@ namespace NaturalFacade.LayoutConfig
 
         public object[] PropertyValues { get; set; }
 
+        public Dictionary<string, Config2LayoutResultAction> Actions { get; set; }
+
         public Config2LayoutResultControls[] Controls { get; set; }
+    }
+
+    public enum Config2LayoutResultActionApiAccess
+    {
+        None, // Action is only triggerable internally
+        Auth, // Action is only triggerable through the API from the auth endpoint
+        Anon  // Action is triggerable through the anon API endpiont
+    }
+
+    public class Config2LayoutResultAction
+    {
+        public string ApiAccess { get; set; }
+
+        public Config2LayoutResultActionEffect[] Effects { get; set; }
+    }
+
+    public class Config2LayoutResultActionEffect
+    {
+        public string Type { get; set; }
+
+        public int? PropIndex { get; set; }
+
+        public object Value { get; set; }
     }
 
     public class Config2LayoutResultControls
