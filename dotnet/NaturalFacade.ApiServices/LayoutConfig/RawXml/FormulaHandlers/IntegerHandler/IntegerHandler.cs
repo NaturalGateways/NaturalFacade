@@ -18,6 +18,9 @@ namespace NaturalFacade.LayoutConfig.RawXml
                 case "AudioPositionSecs":
                     HandleAudioTag(attributes, tracking, propType, addDataAction);
                     return null;
+                case "Prop":
+                    HandlePropTag(attributes, tracking, addDataAction);
+                    return null;
                 case "Value":
                     HandleValueTag(attributes, addDataAction);
                     return null;
@@ -35,6 +38,18 @@ namespace NaturalFacade.LayoutConfig.RawXml
             {
                 { "op", opType },
                 { "audio", audioIndex }
+            });
+        }
+
+        /// <summary>Handle the prop tag.</summary>
+        private static void HandlePropTag(Natural.Xml.ITagAttributes attributes, RawXmlReferenceTracking tracking, Action<object> addDataAction)
+        {
+            string propName = attributes.GetString("prop_name");
+            int propIndex = tracking.GetPropertyUsedIndex(propName);
+            addDataAction.Invoke(new Dictionary<string, object>
+            {
+                { "op", "Prop" },
+                { "index", propIndex }
             });
         }
 
