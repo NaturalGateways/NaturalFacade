@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +25,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
             // Get attributes
             string fontName = attributes.GetString("font");
             string text = attributes.GetNullableString("text");
+            Raw.RawLayoutConfigElementTextFormat format = attributes.GetNullableEnum<Raw.RawLayoutConfigElementTextFormat>("format") ?? Raw.RawLayoutConfigElementTextFormat.None;
 
             // Get font index
             int fontIndex = tracking.GetFontDefinitionUsedIndex(fontName);
@@ -35,6 +36,10 @@ namespace NaturalFacade.LayoutConfig.RawXml
                 { "elTyp", "Text" },
                 { "font", fontIndex }
             };
+            if (format != Raw.RawLayoutConfigElementTextFormat.None)
+            {
+                this.Data.Add("format", format.ToString());
+            }
             if (string.IsNullOrEmpty(text) == false)
             {
                 this.Data.Add("text", text);
@@ -64,29 +69,6 @@ namespace NaturalFacade.LayoutConfig.RawXml
                     return StringHandler.HandleTag(attributes, m_tracking, AddTextProp);
             }
             return base.HandleStartChildTag(tagName, attributes);
-        }
-
-        #endregion
-
-        #region Tag handling
-
-        /// <summary>Handles a text propery under a text tag.</summary>
-        private void HandleTextPropTag(Natural.Xml.ITagAttributes attributes)
-        {
-            switch (attributes.GetString("op"))
-            {
-                case "Prop":
-                    {
-                        string propName = attributes.GetString("name");
-                        int propIndex = m_tracking.GetPropertyUsedIndex(propName);
-                        this.Data["text"] = new Dictionary<string, object>
-                        {
-                            { "op", "Prop" },
-                            { "index", propIndex }
-                        };
-                        break;
-                    }
-            }
         }
 
         #endregion

@@ -33,4 +33,11 @@ namespace NaturalFacade.LayoutConfig.Raw
         Tiled,
         Scaled
     }
+
+    public enum RawLayoutConfigElementTextFormat
+    {
+        None,
+        Integer,
+        MinsAndSecs
+    }
 }
