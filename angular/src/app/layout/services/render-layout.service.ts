@@ -121,6 +121,19 @@ export class RenderLayoutService {
   }
 
   getString(layoutData: LayoutData, object: any) : any {
+    var noFormatText = this.getStringNoFormat(layoutData, object.text);
+    if (object.format !== undefined)
+    {
+      switch (object.format)
+      {
+        case "Integer":
+          return Number(noFormatText).toLocaleString('en-GB');
+      }
+    }
+    return noFormatText;
+  }
+
+  getStringNoFormat(layoutData: LayoutData, object: any) : any {
     if (typeof object === "string")
     {
       return object;
@@ -137,16 +150,16 @@ export class RenderLayoutService {
     {
       var result = "";
       for (var itemIndex in object.items) {
-        result += this.getString(layoutData, object.items[itemIndex]);
+        result += this.getStringNoFormat(layoutData, object.items[itemIndex]);
       }
       return result;
     }
     if (object.op === "If")
     {
       if (this.checkCondition(object.if, false))
-        return this.getString(layoutData, object.then);
+        return this.getStringNoFormat(layoutData, object.then);
       else
-        return this.getString(layoutData, object.else);
+        return this.getStringNoFormat(layoutData, object.else);
     }
     if (object.op === "IntegerToString")
     {
@@ -227,7 +240,7 @@ export class RenderLayoutService {
     }
     if (condition.op === "Equals")
     {
-      return this.getString(this.layoutData!, condition.lhs) === this.getString(this.layoutData!, condition.rhs);
+      return this.getStringNoFormat(this.layoutData!, condition.lhs) === this.getStringNoFormat(this.layoutData!, condition.rhs);
     }
     if (condition.op === "And")
     {
@@ -1018,15 +1031,15 @@ export class RenderLayoutService {
     {
       case "Centre":
         this.context!.textAlign = 'center';
-        this.context!.fillText(this.getString(this.layoutData!, elementWithBounds.element.text), (elementWithBounds.left + elementWithBounds.right) / 2, elementWithBounds.bottom);
+        this.context!.fillText(this.getString(this.layoutData!, elementWithBounds.element), (elementWithBounds.left + elementWithBounds.right) / 2, elementWithBounds.bottom);
         break;
       case "Right":
         this.context!.textAlign = 'right';
-        this.context!.fillText(this.getString(this.layoutData!, elementWithBounds.element.text), elementWithBounds.right, elementWithBounds.bottom);
+        this.context!.fillText(this.getString(this.layoutData!, elementWithBounds.element), elementWithBounds.right, elementWithBounds.bottom);
         break;
       default:
         this.context!.textAlign = 'left';
-        this.context!.fillText(this.getString(this.layoutData!, elementWithBounds.element.text), elementWithBounds.left, elementWithBounds.bottom);
+        this.context!.fillText(this.getString(this.layoutData!, elementWithBounds.element), elementWithBounds.left, elementWithBounds.bottom);
         break;
     }
   }
