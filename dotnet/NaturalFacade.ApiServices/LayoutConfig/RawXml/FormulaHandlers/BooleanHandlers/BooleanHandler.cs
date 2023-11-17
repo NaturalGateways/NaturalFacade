@@ -23,6 +23,8 @@ namespace NaturalFacade.LayoutConfig.RawXml
                     return null;
                 case "StringEquals":
                     return new StringEqualsBooleanHandler(tracking, addDataAction);
+                case "Not":
+                    return new UnaryOperationBooleanHandler(tracking, "Not", "not", addDataAction);
                 default:
                     throw new Exception($"Unrecognised prop type '{propType}'.");
             }
