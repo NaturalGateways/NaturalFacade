@@ -8,6 +8,8 @@ import { LayoutData } from '../../../layout/layout-data';
 
 import { RenderLayoutService } from '../../../layout/services/render-layout.service';
 
+import { EditLayoutModel } from './edit-layout-model';
+
 @Component({
   selector: 'app-edit-layout',
   templateUrl: './edit-layout.component.html',
@@ -19,17 +21,22 @@ export class EditLayoutComponent {
 
   layoutRender: RenderLayoutService | null = null;
   
-  savedLayoutJson: string | null = null;
+  savedLayout: EditLayoutModel | null = null;
   
-  previewLayoutJson: string | null = null;
+  previewLayout: EditLayoutModel | null = null;
   
-  editedLayoutJson: string | null = null;
+  editedLayout: EditLayoutModel | null = null;
   
   isBusy: boolean = true;
 
+  isUpdateNeeded() { return this.previewLayout!.isEqual(this.editedLayout!) === false; }
+  isSaveNeeded() { return this.isUpdateNeeded() === false && this.savedLayout!.isEqual(this.previewLayout!) === false; }
+
   constructor(private router: Router, private route: ActivatedRoute, private apiService: ApiService)
   {
-    //
+    this.savedLayout = new EditLayoutModel(null, null, null);
+    this.previewLayout = new EditLayoutModel(null, null, null);
+    this.editedLayout = new EditLayoutModel(null, null, null);
   }
 
   ngOnInit(): void {
@@ -39,8 +46,9 @@ export class EditLayoutComponent {
       this.layoutId = params['layoutId'];
       this.apiService.getLayout(this.layoutId!, (loadedConfig) =>
       {
-        this.savedLayoutJson = JSON.stringify(loadedConfig);
-        this.editedLayoutJson = this.savedLayoutJson;
+        this.savedLayout = new EditLayoutModel(loadedConfig, null, null);
+        this.previewLayout = new EditLayoutModel(loadedConfig, null, null);
+        this.editedLayout = new EditLayoutModel(loadedConfig, null, null);
         this.isBusy = false;
       }, () =>
       {
@@ -59,7 +67,7 @@ export class EditLayoutComponent {
     // Do fetch
     this.layoutRender!.loadingMessage = "Fetching...";
     this.layoutRender!.render(false);
-    this.apiService.convertLayout(JSON.parse(this.editedLayoutJson!), (overlayObj) =>
+    this.apiService.convertLayout(this.editedLayout!.createJsonObject(), (overlayObj) =>
     {
       // Do fetch
       this.layoutRender!.loadingMessage = "Loading Resources...";
@@ -73,7 +81,7 @@ export class EditLayoutComponent {
         this.layoutRender!.setPropValues(overlayObj.propValues);
         this.layoutRender!.setLayout(loadedLayout);
         this.layoutRender!.render(true);
-        this.previewLayoutJson = this.editedLayoutJson;
+        this.previewLayout = new EditLayoutModel(null, this.editedLayout, null);
         this.isBusy = false;
       }, () =>
       {
@@ -95,7 +103,7 @@ export class EditLayoutComponent {
     this.isBusy = true;
 
     // Do fetch
-    this.apiService.putLayout(this.layoutId!, this.previewLayoutJson!, () =>
+    this.apiService.putLayout(this.layoutId!, this.previewLayout!.createJsonString(), () =>
     {
       this.router.navigate(['/layouts']);
       this.isBusy = false;

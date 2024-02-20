@@ -11,17 +11,17 @@
             <div class="flexSpacer"></div>
             <div class="panel updatePanel flex flex-row">
                 <div class="flex-1"></div>
-                <button pButton pRipple type="button" label="Update" icon="pi pi-angle-double-up" class="marginedButton" [disabled]="previewLayoutJson == editedLayoutJson || isBusy" (click)="onPreviewLayout()"></button>
+                <button pButton pRipple type="button" label="Update" icon="pi pi-angle-double-up" class="marginedButton" [disabled]="isUpdateNeeded() === false || isBusy" (click)="onPreviewLayout()"></button>
                 <div class="flex-1"></div>
             </div>
             <div class="flexSpacer"></div>
             <div class="panel inputPanel">
-                <textarea pInputTextarea [autoResize]="true" class="inputTextArea" [disabled]="isBusy" [(ngModel)]="editedLayoutJson"></textarea>
+                <textarea pInputTextarea [autoResize]="true" class="inputTextArea" [disabled]="isBusy" [(ngModel)]="editedLayout!.contentString"></textarea>
             </div>
             <div class="flexSpacer"></div>
             <div class="panel submitPanel flex flex-row">
                 <div class="flex-1"></div>
-                <button pButton pRipple type="button" label="Save" class="marginedButton" [disabled]="previewLayoutJson != editedLayoutJson || editedLayoutJson === null || isBusy || layoutId === null" (click)="onSaveLayout()"></button>
+                <button pButton pRipple type="button" label="Save" class="marginedButton" [disabled]="isSaveNeeded() ===false || isBusy || layoutId === null" (click)="onSaveLayout()"></button>
                 <div class="flexSpacer"></div>
                 <button pButton pRipple type="button" label="Cancel" class="p-button-secondary marginedButton" [disabled]="isBusy" routerLink="/layouts"></button>
                 <div class="flexSpacer"></div>
