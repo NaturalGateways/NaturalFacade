@@ -10,7 +10,7 @@ phases:
     commands:
       - echo Installing source NPM dependencies...
       - cd angular && npm install --force
-      - npm install -g @angular/cli
+      - npm install -g @angular/cli@15
   pre_build:
     commands:
       - "json=$(jq -n --arg ver \"$VERSION\" --arg cu \"$COGNITO_URL\" '{production: true, version: $ver, cognitoUrl: $cu, openLinkNewTab: true }')"
