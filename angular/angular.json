@@ -72,10 +72,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "NaturalFacade:build:production"
+              "buildTarget": "NaturalFacade:build:production"
             },
             "development": {
-              "browserTarget": "NaturalFacade:build:development"
+              "buildTarget": "NaturalFacade:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -83,7 +83,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "NaturalFacade:build"
+            "buildTarget": "NaturalFacade:build"
           }
         },
         "test": {
