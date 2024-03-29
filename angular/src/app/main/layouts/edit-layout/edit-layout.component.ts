@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
+import { SelectItem } from 'primeng/api';
+
 import { ApiService } from '../../../api/api.service';
 
 import { LoadLayoutService } from '../../../layout/services/load-layout.service';
@@ -27,6 +29,10 @@ export class EditLayoutComponent {
   
   editedLayout: EditLayoutModel | null = null;
   
+  typeOptions: SelectItem[];
+
+  typeSelected: any;
+  
   isBusy: boolean = true;
 
   isUpdateNeeded() { return this.previewLayout!.isEqual(this.editedLayout!) === false; }
@@ -37,6 +43,10 @@ export class EditLayoutComponent {
     this.savedLayout = new EditLayoutModel(null, null, null);
     this.previewLayout = new EditLayoutModel(null, null, null);
     this.editedLayout = new EditLayoutModel(null, null, null);
+    this.typeOptions = [
+      { value:"Xml", label: "XML" },
+      { value:"RawXml", label: "Raw XML" }
+    ];
   }
 
   ngOnInit(): void {

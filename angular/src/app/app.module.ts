@@ -9,6 +9,7 @@ import { CardModule } from 'primeng/card';
 import { ContextMenuModule } from 'primeng/contextmenu';
 import { DataViewModule } from 'primeng/dataview';
 import { DividerModule } from 'primeng/divider';
+import { DropdownModule } from 'primeng/dropdown';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputSwitchModule } from 'primeng/inputswitch';
@@ -69,6 +70,7 @@ import { AboutComponent } from './main/about/about.component';
     ContextMenuModule,
     DataViewModule,
     DividerModule,
+    DropdownModule,
     InputTextareaModule,
     InputNumberModule,
     InputSwitchModule,

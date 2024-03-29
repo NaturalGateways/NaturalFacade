@@ -10,8 +10,10 @@
             </div>
             <div class="flexSpacer"></div>
             <div class="panel updatePanel flex flex-row">
-                <div class="flex-1"></div>
-                <button pButton pRipple type="button" label="Update" icon="pi pi-angle-double-up" class="marginedButton" [disabled]="isUpdateNeeded() === false || isBusy" (click)="onPreviewLayout()"></button>
+                <div class="flex-1">
+                    <p-dropdown [options]="typeOptions" [(ngModel)]="editedLayout!.layoutType" class="marginedDropDownButton" [disabled]="isBusy"></p-dropdown>
+                </div>
+                <button pButton pRipple type="button" label="Update" icon="pi pi-angle-double-up" class="marginedMiddleButton" [disabled]="isUpdateNeeded() === false || isBusy" (click)="onPreviewLayout()"></button>
                 <div class="flex-1"></div>
             </div>
             <div class="flexSpacer"></div>

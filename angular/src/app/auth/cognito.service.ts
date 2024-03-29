@@ -71,7 +71,7 @@ export class CognitoService {
     {
       if (environment.production === false)
       {
-        console.log("Token exists.");
+        console.log("DEV: Token exists.");
       }
       successCallback(apiAuthModel.access.idToken);
       return;
