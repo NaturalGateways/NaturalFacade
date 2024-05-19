@@ -22,7 +22,7 @@ export class LayoutsComponent {
     this.apiService.getLayoutPage((layouts) =>
     {
       var layoutItems: LayoutItem[] = [];
-      layouts.forEach((element) => {
+      layouts.slice().reverse().forEach((element) => {
         var layoutItem = new LayoutItem();
         layoutItem.LayoutId = element.LayoutId;
         layoutItem.Name = element.Name;
