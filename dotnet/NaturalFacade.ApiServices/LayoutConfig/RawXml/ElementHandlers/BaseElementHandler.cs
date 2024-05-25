@@ -27,6 +27,8 @@ namespace NaturalFacade.LayoutConfig.RawXml
                     return new StackElementHandler(tracking);
                 case "text":
                     return new TextElementHandler(tracking, attributes);
+                case "transform":
+                    return new TransformElementHandler(tracking, attributes);
                 case "vSplit":
                     return new VSplitElementHandler(tracking, attributes);
             }
