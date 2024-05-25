@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -62,6 +62,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
         /// <summary>The pivot types.</summary>
         private enum PivotType
         {
+            TopLeft,
             Center
         }
 
@@ -72,7 +73,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
             double degreesCW = attributes.GetLong("deg_cw");
 
             // Get other attributes
-            PivotType pivotType = attributes.GetNullableEnum<PivotType>("pivot") ?? PivotType.Center;
+            PivotType pivotType = attributes.GetNullableEnum<PivotType>("pivot") ?? PivotType.TopLeft;
 
             // Set data
             m_transformStepList.Add(new Dictionary<string, object>
