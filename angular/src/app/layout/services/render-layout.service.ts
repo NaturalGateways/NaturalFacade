@@ -3,15 +3,6 @@ import { Console } from 'console';
 
 import { LayoutData, LayoutFontConfig, LayoutAudioConfig, LayoutProperty } from '../layout-data';
 
-enum RenderLayoutSizeType { Pixel, Min, Max }
-
-class RenderLayoutSize {
-  widthType: RenderLayoutSizeType = RenderLayoutSizeType.Pixel;
-  width: number = 0;
-  heightType: RenderLayoutSizeType = RenderLayoutSizeType.Pixel;
-  height: number = 0;
-}
-
 class LayoutElementWithBounds {
   element: any | undefined;
   minWidth: number = 0;
@@ -373,6 +364,7 @@ export class RenderLayoutService {
         this.measureRowsElementMinimumSize(element);
         break;
       case "Stack":
+      case "Transform":
         this.measureStackElementMinimumSize(element);
         break;
       case "Text":
@@ -556,6 +548,7 @@ export class RenderLayoutService {
         this.measureRowsElementBounds(element);
         break;
       case "Stack":
+      case "Transform":
         this.measureStackElementBounds(element);
         break;
       case "VFloat":
@@ -877,6 +870,9 @@ export class RenderLayoutService {
       case "Colour":
         this.renderElementColour(elementWithBounds);
         break;
+      case "Transform":
+        this.renderTransformElement(elementWithBounds);
+        break;
     }
   }
 
@@ -1052,5 +1048,34 @@ export class RenderLayoutService {
     var height : number = elementWithBounds.bottom - elementWithBounds.top;
     this.context!.fillStyle = elementWithBounds.element.colour;
     this.context!.fillRect(left, top, width, height);
+  }
+
+  renderTransformElement(elementWithBounds: LayoutElementWithBounds)
+  {
+    // Push transform and execute
+    this.context.save();
+    elementWithBounds.element.steps.forEach((step: any) => {
+      switch (step.type)
+      {
+        case "rot":
+          this.renderTransformRotateStep(elementWithBounds, step);
+          break;
+      }
+    });
+
+    // Render children
+    this.renderElementStack(elementWithBounds);
+
+    // Pop transform
+    this.context.restore();
+  }
+
+  renderTransformRotateStep(elementWithBounds: LayoutElementWithBounds, step: any)
+  {
+    var pivotX : number = elementWithBounds.left;
+    var pivotY : number = elementWithBounds.top;
+    this.context.translate(pivotX, pivotY);
+    this.context.rotate((step.deg_cw * Math.PI) / 180);
+    this.context.translate(-pivotX, -pivotY);
   }
 }
