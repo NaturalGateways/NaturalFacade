@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NaturalFacade.App.PopupControls.AuthPopup">
+    <Grid RowDefinitions="Auto,*">
+        <Grid Grid.Row="0" BackgroundColor="#036">
+            <Button Text="Cancel" HorizontalOptions="Start" VerticalOptions="Center" Margin="16,4" Clicked="CancelButton_Clicked"/>
+        </Grid>
+        <Grid Grid.Row="1" BackgroundColor="White">
+            <WebView x:Name="WebView" Source="https://www.google.com/" Navigating="WebView_Navigating"/>
+        </Grid>
+    </Grid>
+</ContentView>

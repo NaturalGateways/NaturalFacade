@@ -1,0 +1,10 @@
+NaturalFacade.App/bin
+NaturalFacade.App/obj
+NaturalFacade.App/NaturalFacade.App.csproj.user
+NaturalFacade.App.Base/bin
+NaturalFacade.App.Base/obj
+NaturalFacade.App.Services.Framework/bin
+NaturalFacade.App.Services.Framework/obj
+NaturalFacade.App.Services.Implementations/bin
+NaturalFacade.App.Services.Implementations/obj
+.vs

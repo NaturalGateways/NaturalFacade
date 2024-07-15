@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35027.167
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NaturalFacade.App", "NaturalFacade.App\NaturalFacade.App.csproj", "{9EDFD57D-5E7D-469B-A245-CD89317EDA32}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{DAFEF12C-BD73-453F-889A-F78AF2E4401B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NaturalFacade.App.Services.Framework", "NaturalFacade.App.Services.Framework\NaturalFacade.App.Services.Framework.csproj", "{771CC879-0E08-46BC-9797-5060FE8A2FDA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NaturalFacade.App.Services.Implementations", "NaturalFacade.App.Services.Implementations\NaturalFacade.App.Services.Implementations.csproj", "{1DFC7754-BBB5-4D48-B5E7-48C5731C7027}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NaturalFacade.App.Base", "NaturalFacade.App.Base\NaturalFacade.App.Base.csproj", "{7BA18C55-0BA0-4F3F-9C04-60F2D50BE9B7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9EDFD57D-5E7D-469B-A245-CD89317EDA32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EDFD57D-5E7D-469B-A245-CD89317EDA32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EDFD57D-5E7D-469B-A245-CD89317EDA32}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{9EDFD57D-5E7D-469B-A245-CD89317EDA32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EDFD57D-5E7D-469B-A245-CD89317EDA32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EDFD57D-5E7D-469B-A245-CD89317EDA32}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{771CC879-0E08-46BC-9797-5060FE8A2FDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{771CC879-0E08-46BC-9797-5060FE8A2FDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{771CC879-0E08-46BC-9797-5060FE8A2FDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{771CC879-0E08-46BC-9797-5060FE8A2FDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DFC7754-BBB5-4D48-B5E7-48C5731C7027}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DFC7754-BBB5-4D48-B5E7-48C5731C7027}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DFC7754-BBB5-4D48-B5E7-48C5731C7027}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DFC7754-BBB5-4D48-B5E7-48C5731C7027}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BA18C55-0BA0-4F3F-9C04-60F2D50BE9B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BA18C55-0BA0-4F3F-9C04-60F2D50BE9B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BA18C55-0BA0-4F3F-9C04-60F2D50BE9B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BA18C55-0BA0-4F3F-9C04-60F2D50BE9B7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{771CC879-0E08-46BC-9797-5060FE8A2FDA} = {DAFEF12C-BD73-453F-889A-F78AF2E4401B}
+		{1DFC7754-BBB5-4D48-B5E7-48C5731C7027} = {DAFEF12C-BD73-453F-889A-F78AF2E4401B}
+		{7BA18C55-0BA0-4F3F-9C04-60F2D50BE9B7} = {DAFEF12C-BD73-453F-889A-F78AF2E4401B}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BD04D7A6-D30D-4F56-A169-1D6035D8171A}
+	EndGlobalSection
+EndGlobal
