@@ -1,0 +1,8 @@
+{
+  "Cognito": {
+    "ClientId": "TODO",
+    "Domain": "TODO",
+    "CallbackUrl": "TODO"
+  },
+  "ApiUrl": "TODO"
+}

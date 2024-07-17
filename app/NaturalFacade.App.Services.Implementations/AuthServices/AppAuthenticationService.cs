@@ -16,7 +16,25 @@ namespace NaturalFacade.App.ServiceImp
         /// <summary>Constructor.</summary>
         public AppAuthenticationService()
         {
-            this.CognitoUrl = new Uri("https://naturalfacade.auth.ap-southeast-2.amazoncognito.com/login?response_type=code&scope=openid&client_id=TODO&redirect_uri=https://dev.naturalfacade.com/login");
+            ReleaseConfig.ReleaseConfig releaseConfig = Services.ReleaseConfigFileService.ReleaseConfig;
+            this.CognitoUrl = new Uri($"https://naturalfacade.auth.ap-southeast-2.amazoncognito.com/login?response_type=code&scope=openid&client_id={releaseConfig.Cognito.ClientId}&redirect_uri={releaseConfig.Cognito.CallbackUrl}");
+        }
+
+        /// <summary>Authenticates the user with the given code, running in a background thread.</summary>
+        public void OnAuthenticateWithCognitoCodeInBackgorundThread(string code)
+        {
+            ReleaseConfig.ReleaseConfig releaseConfig = Services.ReleaseConfigFileService.ReleaseConfig;
+
+            AuthStateApiAccess appAccess = GetApiAccessFromCognito(releaseConfig, code);
+            AuthStateUserDetails userDetails = GetUserDetailsFromApi(releaseConfig, appAccess);
+
+            AuthenticationModel authModel = Services.AuthenticationService.AuthModel;
+            authModel.AuthState = new AuthState
+            {
+                UserDetails = userDetails,
+                ApiAccess = appAccess
+            };
+            authModel.OnDataChanged();
         }
 
         private class AuthResponseJson
@@ -28,11 +46,10 @@ namespace NaturalFacade.App.ServiceImp
             public string token_type { get; set; }
         }
 
-        /// <summary>Authenticates the user with the given code, running in a background thread.</summary>
-        public void OnAuthenticateWithCognitoCodeInBackgorundThread(string code)
+        /// <summary>Getter for the API access tokens from Cognito.</summary>
+        private AuthStateApiAccess GetApiAccessFromCognito(ReleaseConfig.ReleaseConfig releaseConfig, string code)
         {
-            string url = $"https://naturalfacade.auth.ap-southeast-2.amazoncognito.com/oauth2/token?grant_type=authorization_code&client_id=TODO&code={code}&redirect_uri=https://dev.naturalfacade.com/login";
-
+            string url = $"https://naturalfacade.auth.ap-southeast-2.amazoncognito.com/oauth2/token?grant_type=authorization_code&client_id={releaseConfig.Cognito.ClientId}&code={code}&redirect_uri={releaseConfig.Cognito.CallbackUrl}";
             using (HttpClient httpClient = new HttpClient())
             {
                 HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, url);
@@ -41,19 +58,26 @@ namespace NaturalFacade.App.ServiceImp
                 string responseString = response.Content.ReadAsStringAsync().Result;
 
                 AuthResponseJson responseObject = Newtonsoft.Json.JsonConvert.DeserializeObject<AuthResponseJson>(responseString);
-
-                AuthenticationModel authModel = Services.AuthenticationService.AuthModel;
-                authModel.AuthState = new AuthState
+                
+                return new AuthStateApiAccess
                 {
-                    ApiAccess = new AuthStateApiAccess
-                    {
-                        IdToken = responseObject.id_token,
-                        RefreshToken = responseObject.refresh_token,
-                        AccessToken = responseObject.access_token
-                    }
+                    IdToken = responseObject.id_token,
+                    RefreshToken = responseObject.refresh_token,
+                    AccessToken = responseObject.access_token
                 };
-                authModel.OnDataChanged();
             }
+        }
+
+        /// <summary>Getter for the API access tokens from Cognito.</summary>
+        private AuthStateUserDetails GetUserDetailsFromApi(ReleaseConfig.ReleaseConfig releaseConfig, AuthStateApiAccess apiAccess)
+        {
+            ApiModel.UserDetailsResponse apiResponse = Services.ApiService.GetUserDetails(apiAccess);
+            return new AuthStateUserDetails
+            {
+                UserId = apiResponse.UserId,
+                DisplayName = apiResponse.Name,
+                Email = apiResponse.Email
+            };
         }
 
         #endregion
@@ -69,7 +93,8 @@ namespace NaturalFacade.App.ServiceImp
         /// <summary>Checks if the given URL is a callback URL.</summary>
         public bool IsCallbackUrl(Uri callbackUrl)
         {
-            return callbackUrl.Host == "dev.naturalfacade.com" && callbackUrl.AbsolutePath == "/login";
+            string domain = Services.ReleaseConfigFileService.ReleaseConfig.Cognito.Domain;
+            return callbackUrl.Host == domain && callbackUrl.AbsolutePath == "/login";
         }
 
         /// <summary>Authenticates the user with the given code.</summary>

@@ -8,11 +8,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="..\Config\release.json" Link="ConfigFiles\release.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\NaturalFacade.App.Services.Framework\NaturalFacade.App.Services.Framework.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ConfigFiles\" />
   </ItemGroup>
 
 </Project>

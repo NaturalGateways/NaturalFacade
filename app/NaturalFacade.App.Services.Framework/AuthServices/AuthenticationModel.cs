@@ -14,8 +14,23 @@ namespace NaturalFacade.App
 
     public class AuthState
     {
+        /// <summary>Information about the logged in user.</summary>
+        public AuthStateUserDetails UserDetails { get; set; }
+
         /// <summary>The access variables to use with the API.</summary>
         public AuthStateApiAccess ApiAccess { get; set; }
+    }
+
+    public class AuthStateUserDetails
+    {
+        /// <summary>The ID of the user.</summary>
+        public string UserId { get; set; }
+
+        /// <summary>The name for the user to show.</summary>
+        public string DisplayName { get; set; }
+
+        /// <summary>The email.</summary>
+        public string Email { get; set; }
     }
 
     public class AuthStateApiAccess

@@ -7,7 +7,10 @@
         <Grid RowDefinitions="Auto,*">
             <Grid Grid.Row="0" BackgroundColor="#036">
                 <Button x:Name="LoginButton" Text="Login" HorizontalOptions="End" VerticalOptions="Center" Margin="16,4" Clicked="LoginButton_Clicked"/>
-                <Button x:Name="LogoutButton" Text="Logout" HorizontalOptions="End" VerticalOptions="Center" Margin="16,4" IsVisible="False" Clicked="LogoutButton_Clicked"/>
+                <HorizontalStackLayout x:Name="LogoutContainer" IsVisible="False" HorizontalOptions="End" Margin="16,4" Spacing="4">
+                    <Label x:Name="UserDisplayName" TextColor="White" VerticalOptions="Center"/>
+                    <Button x:Name="LogoutButton" Text="Logout" VerticalOptions="Center" Clicked="LogoutButton_Clicked"/>
+                </HorizontalStackLayout>
             </Grid>
             <Grid Grid.Row="1" BackgroundColor="White">
                 <contentviews:AnonIntroControl x:Name="AnonContent"/>

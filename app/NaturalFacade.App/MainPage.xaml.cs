@@ -48,8 +48,12 @@
         {
             AuthState authState = Services.AuthenticationService.AuthModel.AuthState;
             bool isLoggedIn = authState?.ApiAccess != null;
+            if (isLoggedIn)
+            {
+                this.UserDisplayName.Text = authState.UserDetails.DisplayName;
+            }
             this.LoginButton.IsVisible = isLoggedIn == false;
-            this.LogoutButton.IsVisible = isLoggedIn;
+            this.LogoutContainer.IsVisible = isLoggedIn;
             this.AnonContent.IsVisible = isLoggedIn == false;
         }
 
