@@ -17,9 +17,13 @@ namespace NaturalFacade.LayoutConfig
 
         public string[] AudioResources { get; set; }
 
+        public string[] VideoResources { get; set; }
+
         public ApiDto.OverlayDtoFont[] Fonts { get; set; }
 
         public ApiDto.OverlayDtoAudio[] Audios { get; set; }
+
+        public ApiDto.OverlayDtoVideo[] Videos { get; set; }
 
         public object RootElement { get; set; }
 

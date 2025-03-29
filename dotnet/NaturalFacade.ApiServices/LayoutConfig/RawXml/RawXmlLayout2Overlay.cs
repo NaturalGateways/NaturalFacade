@@ -54,8 +54,10 @@ namespace NaturalFacade.LayoutConfig.RawXml
                 ImageResources = m_tracking.ImageResourcesUsedList.Select(x => x.Url).ToArray(),
                 FontResources = m_tracking.FontResourcesUsedList.Select(x => x.Url).ToArray(),
                 AudioResources = m_tracking.AudioResourcesUsedList.Select(x => x.Url).ToArray(),
+                VideoResources = m_tracking.VideoResourcesUsedList.Select(x => x.Url).ToArray(),
                 Fonts = m_tracking.FontDefinitionsUsedList.Select(x => ConvertFontDefinition(x)).Where(x => x != null).ToArray(),
                 Audios = m_tracking.AudioDefinitionsUsedList.Select(x => ConvertAudioDefinition(x)).Where(x => x != null).ToArray(),
+                Videos = m_tracking.VideoDefinitionsUsedList.Select(x => ConvertVideoDefinition(x)).Where(x => x != null).ToArray(),
                 RootElement = m_rootElementHandler?.Data,
                 ControlsArray = m_controlsHandlerList.Select(x => ConvertControls(x)).Where(x => x != null).ToArray()
             };
@@ -86,6 +88,16 @@ namespace NaturalFacade.LayoutConfig.RawXml
         private ApiDto.OverlayDtoAudio ConvertAudioDefinition(RawXmlReferenceTracking.AudioDefinition audioDefinition)
         {
             return new ApiDto.OverlayDtoAudio
+            {
+                res = audioDefinition.ResIndex,
+                prop = audioDefinition.PropIndex
+            };
+        }
+
+        /// <summary>converts an video to the API DTO.</summary>
+        private ApiDto.OverlayDtoVideo ConvertVideoDefinition(RawXmlReferenceTracking.VideoDefinition audioDefinition)
+        {
+            return new ApiDto.OverlayDtoVideo
             {
                 res = audioDefinition.ResIndex,
                 prop = audioDefinition.PropIndex
@@ -210,6 +222,9 @@ namespace NaturalFacade.LayoutConfig.RawXml
                 case ApiDto.PropertyTypeDto.Audio:
                     propDef.DefaultValue = new Dictionary<string, object> { { "State", "Stopped" } };
                     break;
+                case ApiDto.PropertyTypeDto.Video:
+                    propDef.DefaultValue = new Dictionary<string, object> { { "State", "Stopped" } };
+                    break;
                 case ApiDto.PropertyTypeDto.Boolean:
                     propDef.DefaultValue = string.Equals(attributes.GetString("default_value"), "true", StringComparison.InvariantCultureIgnoreCase);
                     break;
@@ -252,6 +267,12 @@ namespace NaturalFacade.LayoutConfig.RawXml
                     {
                         string url = attributes.GetString("url");
                         m_tracking.AddImageResource(name, url);
+                        break;
+                    }
+                case "Video":
+                    {
+                        string url = attributes.GetString("url");
+                        m_tracking.AddVideoResource(name, url);
                         break;
                     }
             }

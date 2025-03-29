@@ -36,8 +36,10 @@ namespace NaturalFacade.LayoutConfig
                     imageResources = convertOutput.ImageResources,
                     fontResources = convertOutput.FontResources,
                     audioResources = convertOutput.AudioResources,
+                    videoResources = convertOutput.VideoResources,
                     fonts = convertOutput.Fonts,
                     audios = convertOutput.Audios,
+                    videos = convertOutput.Videos,
                     rootElement = convertOutput.RootElement
                 },
                 Actions = convertOutput.Actions
@@ -233,6 +235,7 @@ namespace NaturalFacade.LayoutConfig
             switch (valueType)
             {
                 case ApiDto.PropertyTypeDto.Audio:
+                case ApiDto.PropertyTypeDto.Video:
                     {
                         return new Dictionary<string, object>
                         {

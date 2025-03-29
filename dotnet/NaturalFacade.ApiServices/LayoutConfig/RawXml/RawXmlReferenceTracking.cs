@@ -146,8 +146,6 @@ namespace NaturalFacade.LayoutConfig.RawXml
         }
 
         /// <summary>The resources indexed.</summary>
-        private Dictionary<string, AudioDefinition> m_audioDefinitionsByName = new Dictionary<string, AudioDefinition>();
-        /// <summary>The resources indexed.</summary>
         public List<AudioDefinition> AudioDefinitionsUsedList { get; private set; } = new List<AudioDefinition>();
 
         /// <summary>Adds a font definition.</summary>
@@ -155,7 +153,6 @@ namespace NaturalFacade.LayoutConfig.RawXml
         {
             int savedIndex = this.AudioDefinitionsUsedList.Count;
             AudioDefinition audioDef = new AudioDefinition(savedIndex, resIndex, propIndex);
-            m_audioDefinitionsByName.Add(name, audioDef);
             this.AudioDefinitionsUsedList.Add(audioDef);
         }
 
@@ -197,8 +194,83 @@ namespace NaturalFacade.LayoutConfig.RawXml
             AudioResource res = m_audioResourcesByName[name];
             if (res.ResIndex.HasValue == false)
             {
-                res.ResIndex = this.FontResourcesUsedList.Count;
+                res.ResIndex = this.AudioResourcesUsedList.Count;
                 this.AudioResourcesUsedList.Add(res);
+            }
+            return res.ResIndex.Value;
+        }
+
+        #endregion
+
+        #region Video definition tracking
+
+        /// <summary>A video player referenced in the file.</summary>
+        public class VideoDefinition
+        {
+            public int ResIndex { get; set; }
+            public int PropIndex { get; set; }
+
+            public int SavedIndex { get; set; }
+
+            public VideoDefinition(int savedIndex, int resIndex, int propIndex)
+            {
+                this.SavedIndex = savedIndex;
+                this.ResIndex = resIndex;
+                this.PropIndex = propIndex;
+            }
+        }
+
+        /// <summary>The resources indexed.</summary>
+        public List<VideoDefinition> VideoDefinitionsUsedList { get; private set; } = new List<VideoDefinition>();
+
+        /// <summary>Adds a video definition.</summary>
+        public void AddVideoDefinition(int resIndex, int propIndex)
+        {
+            int savedIndex = this.VideoDefinitionsUsedList.Count;
+            VideoDefinition videoDef = new VideoDefinition(savedIndex, resIndex, propIndex);
+            this.VideoDefinitionsUsedList.Add(videoDef);
+        }
+
+        #endregion
+
+        #region Video resource tracking
+
+        /// <summary>An bideo referenced in the file.</summary>
+        public class VideoResource
+        {
+            public string Url { get; private set; }
+
+            public int? ResIndex { get; set; }
+
+            public VideoResource(string url)
+            {
+                this.Url = url;
+            }
+        }
+
+        /// <summary>The resources indexed.</summary>
+        private Dictionary<string, VideoResource> m_videoResourcesByName = new Dictionary<string, VideoResource>();
+        /// <summary>The resources indexed.</summary>
+        public List<VideoResource> VideoResourcesUsedList { get; private set; } = new List<VideoResource>();
+
+        /// <summary>Adds an video resource.</summary>
+        public void AddVideoResource(string name, string url)
+        {
+            m_videoResourcesByName.Add(name, new VideoResource(url));
+        }
+
+        /// <summary>Getter for the index of a resource under the context it will be used.</summary>
+        public int GetVideoResourceUsedIndex(string name)
+        {
+            if (m_videoResourcesByName.ContainsKey(name) == false)
+            {
+                throw new Exception($"Cannot find video resource with name '{name}'.");
+            }
+            VideoResource res = m_videoResourcesByName[name];
+            if (res.ResIndex.HasValue == false)
+            {
+                res.ResIndex = this.VideoResourcesUsedList.Count;
+                this.VideoResourcesUsedList.Add(res);
             }
             return res.ResIndex.Value;
         }
