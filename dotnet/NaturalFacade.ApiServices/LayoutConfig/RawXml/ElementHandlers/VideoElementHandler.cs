@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,6 +21,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
             // Create data
             this.Data = new Dictionary<string, object>
             {
+                { "elTyp", "Video" },
                 { "res", resIndex },
                 { "prop", propIndex }
             };
