@@ -6,3 +6,17 @@
     left: 0;
     top: 0;
 }
+
+#overlayCanvas
+{
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+.overlayVideo
+{
+    position: fixed;
+    left: 0;
+    top: 0;
+}

@@ -1,7 +1,7 @@
 import type { } from "css-font-loading-module";
 
 import { OverlayApiDto } from '../model/layout-api-dto';
-import { LayoutData, LayoutProperty, LayoutImageResource, LayoutFontResource, LayoutAudioResource, LayoutFontConfig, LayoutAudioConfig } from '../layout-data';
+import { LayoutData, LayoutProperty, LayoutImageResource, LayoutFontResource, LayoutAudioResource, LayoutVideoResource, LayoutFontConfig, LayoutAudioConfig } from '../layout-data';
 
 export class LoadLayoutService {
 
@@ -26,6 +26,18 @@ export class LoadLayoutService {
     if (layoutData.audioResources !== undefined && layoutData.audioResources !== null)
     {
       resourcesToLoad += layoutData.audioResources.length;
+    }
+    if (layoutData.videoResources !== undefined && layoutData.videoResources !== null)
+    {
+      resourcesToLoad += layoutData.videoResources.length;
+    }
+
+    // We go straight away if there are no resources
+    if (resourcesToLoad === 0)
+    {
+      resourcesToLoad = 1;
+      successCallback(layoutData);
+      return;
     }
 
     // Load images in parallel
@@ -71,6 +83,20 @@ export class LoadLayoutService {
         }
       }
     }
+    if (layoutData.videoResources !== undefined && layoutData.videoResources !== null)
+    {
+      for (const videoIndex in layoutData.videoResources) {
+        var videoRes: LayoutVideoResource = layoutData.videoResources[videoIndex];
+        videoRes.videoElement = document.createElement('video');
+        videoRes.videoElement.className = "overlayVideo";
+        videoRes.videoElement.src = videoRes.url;
+        --resourcesToLoad;
+        if (resourcesToLoad === 0 && isErrored === false)
+        {
+          successCallback(layoutData);
+        }
+      }
+    }
   }
 
   fromJson(apiDto: OverlayApiDto) : LayoutData
@@ -109,6 +135,13 @@ export class LoadLayoutService {
       for (var audioResIndex in apiDto.audioResources) {
         var audioUrl = apiDto.audioResources[audioResIndex];
         layoutData.audioResources.push(new LayoutAudioResource(audioUrl));
+      }
+    }
+    if (apiDto.videoResources !== undefined)
+    {
+      for (var videoResIndex in apiDto.videoResources) {
+        var videoUrl = apiDto.videoResources[videoResIndex];
+        layoutData.videoResources.push(new LayoutVideoResource(videoUrl));
       }
     }
     if (apiDto.fonts !== undefined)

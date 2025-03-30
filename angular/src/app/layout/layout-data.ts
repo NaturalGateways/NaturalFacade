@@ -13,6 +13,8 @@ export class LayoutData {
 
   audioResources: Array<LayoutAudioResource> = new Array<LayoutAudioResource>();
 
+  videoResources: Array<LayoutVideoResource> = new Array<LayoutVideoResource>();
+
   fontConfigs: Array<LayoutFontConfig> = new Array<LayoutFontConfig>();
 
   audioConfigs: Array<LayoutAudioConfig> = new Array<LayoutAudioConfig>();
@@ -42,6 +44,12 @@ export class LayoutFontResource {
 
 export class LayoutAudioResource {
   audioElement: HTMLAudioElement | undefined;
+
+  constructor(public url: string) { }
+}
+
+export class LayoutVideoResource {
+  videoElement: HTMLVideoElement | undefined;
 
   constructor(public url: string) { }
 }

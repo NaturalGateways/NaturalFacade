@@ -23,6 +23,8 @@ export class OverlayApiDto {
 
   audioResources: any = [];
 
+  videoResources: any = [];
+
   fonts: any = [];
 
   audios: any = [];

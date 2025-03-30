@@ -6,6 +6,8 @@ import { ApiService } from '../../api/api.service';
 import { RenderLayoutService } from '../services/render-layout.service';
 import { LoadLayoutService } from '../services/load-layout.service';
 
+import { LayoutVideoResource } from '../layout-data';
+
 @Component({
   selector: 'app-view-overlay',
   templateUrl: './view-overlay.component.html',
@@ -52,6 +54,20 @@ export class ViewOverlayComponent {
           var loadLayoutService : LoadLayoutService = new LoadLayoutService();
           loadLayoutService.loadAllFromJson(layoutOverlay, (loadedLayout) =>
           {
+            if (loadedLayout.videoResources !== null)
+            {
+              var backing = document.getElementById('backing')!;
+              for (var videoResourceIndex in loadedLayout.videoResources)
+              {
+                var videoResource: LayoutVideoResource = loadedLayout.videoResources[videoResourceIndex];
+                backing.appendChild(videoResource.videoElement!);
+                videoResource.videoElement!.style.display = "none";
+                videoResource.videoElement!.addEventListener('ended', function() {
+                  videoResource.videoElement!.style.display = "none";
+                  });
+              }
+            }
+
             this.layoutRender!.loadingMessage = "Success";
             this.layoutRender!.setPropValues(propValues);
             this.layoutRender!.setLayout(loadedLayout);
