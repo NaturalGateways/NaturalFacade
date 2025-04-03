@@ -20,8 +20,6 @@ namespace NaturalFacade.ApiDto
 
         public string[] audioResources { get; set; }
 
-        public string[] videoResources { get; set; }
-
         public OverlayDtoFont[] fonts { get; set; }
 
         public OverlayDtoAudio[] audios { get; set; }
@@ -50,7 +48,7 @@ namespace NaturalFacade.ApiDto
 
     public class OverlayDtoVideo
     {
-        public long res { get; set; }
+        public string url { get; set; }
         public long prop { get; set; }
     }
 }

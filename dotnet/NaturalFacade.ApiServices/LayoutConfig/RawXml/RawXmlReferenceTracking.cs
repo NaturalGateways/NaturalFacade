@@ -202,37 +202,6 @@ namespace NaturalFacade.LayoutConfig.RawXml
 
         #endregion
 
-        #region Video definition tracking
-
-        /// <summary>A video player referenced in the file.</summary>
-        public class VideoDefinition
-        {
-            public int ResIndex { get; set; }
-            public int PropIndex { get; set; }
-
-            public int SavedIndex { get; set; }
-
-            public VideoDefinition(int savedIndex, int resIndex, int propIndex)
-            {
-                this.SavedIndex = savedIndex;
-                this.ResIndex = resIndex;
-                this.PropIndex = propIndex;
-            }
-        }
-
-        /// <summary>The resources indexed.</summary>
-        public List<VideoDefinition> VideoDefinitionsUsedList { get; private set; } = new List<VideoDefinition>();
-
-        /// <summary>Adds a video definition.</summary>
-        public void AddVideoDefinition(int resIndex, int propIndex)
-        {
-            int savedIndex = this.VideoDefinitionsUsedList.Count;
-            VideoDefinition videoDef = new VideoDefinition(savedIndex, resIndex, propIndex);
-            this.VideoDefinitionsUsedList.Add(videoDef);
-        }
-
-        #endregion
-
         #region Video resource tracking
 
         /// <summary>An bideo referenced in the file.</summary>
@@ -240,39 +209,24 @@ namespace NaturalFacade.LayoutConfig.RawXml
         {
             public string Url { get; private set; }
 
-            public int? ResIndex { get; set; }
+            public long PropIndex { get; private set; }
 
-            public VideoResource(string url)
+            public VideoResource(string url, long propIndex)
             {
                 this.Url = url;
+                this.PropIndex = propIndex;
             }
         }
 
         /// <summary>The resources indexed.</summary>
-        private Dictionary<string, VideoResource> m_videoResourcesByName = new Dictionary<string, VideoResource>();
-        /// <summary>The resources indexed.</summary>
-        public List<VideoResource> VideoResourcesUsedList { get; private set; } = new List<VideoResource>();
+        public List<VideoResource> VideoResourceList { get; private set; } = new List<VideoResource>();
 
         /// <summary>Adds an video resource.</summary>
-        public void AddVideoResource(string name, string url)
+        public int CreateVideoResource(string url, long propIndex)
         {
-            m_videoResourcesByName.Add(name, new VideoResource(url));
-        }
-
-        /// <summary>Getter for the index of a resource under the context it will be used.</summary>
-        public int GetVideoResourceUsedIndex(string name)
-        {
-            if (m_videoResourcesByName.ContainsKey(name) == false)
-            {
-                throw new Exception($"Cannot find video resource with name '{name}'.");
-            }
-            VideoResource res = m_videoResourcesByName[name];
-            if (res.ResIndex.HasValue == false)
-            {
-                res.ResIndex = this.VideoResourcesUsedList.Count;
-                this.VideoResourcesUsedList.Add(res);
-            }
-            return res.ResIndex.Value;
+            int resIndex = this.VideoResourceList.Count;
+            this.VideoResourceList.Add(new VideoResource(url, propIndex));
+            return resIndex;
         }
 
         #endregion

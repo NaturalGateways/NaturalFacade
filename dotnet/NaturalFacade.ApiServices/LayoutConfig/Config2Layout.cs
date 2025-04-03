@@ -36,7 +36,6 @@ namespace NaturalFacade.LayoutConfig
                     imageResources = convertOutput.ImageResources,
                     fontResources = convertOutput.FontResources,
                     audioResources = convertOutput.AudioResources,
-                    videoResources = convertOutput.VideoResources,
                     fonts = convertOutput.Fonts,
                     audios = convertOutput.Audios,
                     videos = convertOutput.Videos,
@@ -177,6 +176,10 @@ namespace NaturalFacade.LayoutConfig
             {
                 output.Add("AudioWalkman", fieldDef.AudioWalkman);
             }
+            if (fieldDef.VideoWalkman != null)
+            {
+                output.Add("VideoWalkman", fieldDef.VideoWalkman);
+            }
             if (fieldDef.TextField != null)
             {
                 output.Add("TextField", fieldDef.TextField);
@@ -235,11 +238,18 @@ namespace NaturalFacade.LayoutConfig
             switch (valueType)
             {
                 case ApiDto.PropertyTypeDto.Audio:
-                case ApiDto.PropertyTypeDto.Video:
                     {
                         return new Dictionary<string, object>
                         {
                             { "State", valueJson.GetDictionaryString("State") ?? "Stopped" }
+                        };
+                    }
+                case ApiDto.PropertyTypeDto.Video:
+                    {
+                        return new Dictionary<string, object>
+                        {
+                            { "State", valueJson.GetDictionaryString("State") ?? "Stopped" },
+                            { "PlayCount", valueJson.GetDictionaryLong("PlayCount") ?? 0 }
                         };
                     }
                 case ApiDto.PropertyTypeDto.Boolean:

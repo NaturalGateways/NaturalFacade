@@ -44,6 +44,9 @@ namespace NaturalFacade.LayoutConfig.RawXml
                 case "audio_walkman":
                     HandleAudioWalkmanFieldTag(attributes);
                     break;
+                case "video_walkman":
+                    HandleVideoWalkmanFieldTag(attributes);
+                    break;
                 case "integer":
                     HandleIntegerFieldTag(attributes);
                     break;
@@ -82,6 +85,12 @@ namespace NaturalFacade.LayoutConfig.RawXml
         private void HandleAudioWalkmanFieldTag(Natural.Xml.ITagAttributes attributes)
         {
             this.FieldModel.AudioWalkman = new Config2LayoutOverlayOutputControlsFieldAudioWalkmanDef();
+        }
+
+        /// <summary>Handles a child tag.</summary>
+        private void HandleVideoWalkmanFieldTag(Natural.Xml.ITagAttributes attributes)
+        {
+            this.FieldModel.VideoWalkman = new Config2LayoutOverlayOutputControlsFieldVideoWalkmanDef();
         }
 
         /// <summary>Handles a child tag.</summary>

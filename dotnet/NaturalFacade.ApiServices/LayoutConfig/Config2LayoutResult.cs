@@ -17,8 +17,6 @@ namespace NaturalFacade.LayoutConfig
 
         public string[] AudioResources { get; set; }
 
-        public string[] VideoResources { get; set; }
-
         public ApiDto.OverlayDtoFont[] Fonts { get; set; }
 
         public ApiDto.OverlayDtoAudio[] Audios { get; set; }
@@ -67,6 +65,8 @@ namespace NaturalFacade.LayoutConfig
 
         public Config2LayoutOverlayOutputControlsFieldAudioWalkmanDef AudioWalkman { get; set; }
 
+        public Config2LayoutOverlayOutputControlsFieldVideoWalkmanDef VideoWalkman { get; set; }
+
         public object TextField { get; set; }
 
         public object SelectOptions { get; set; }
@@ -80,6 +80,12 @@ namespace NaturalFacade.LayoutConfig
 
     /// <summary>The definition for an audio walkman control field.</summary>
     public class Config2LayoutOverlayOutputControlsFieldAudioWalkmanDef
+    {
+        //
+    }
+
+    /// <summary>The definition for an video walkman control field.</summary>
+    public class Config2LayoutOverlayOutputControlsFieldVideoWalkmanDef
     {
         //
     }

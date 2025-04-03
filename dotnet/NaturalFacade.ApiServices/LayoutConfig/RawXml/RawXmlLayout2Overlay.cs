@@ -41,8 +41,8 @@ namespace NaturalFacade.LayoutConfig.RawXml
         /// <summary>Creates an output object.</summary>
         public Config2LayoutOverlayOutput CreateOutput()
         {
-            // TEMP HACK: Until prop indexes are refactored, we force audio fields to have a string reference
-            foreach (ControlsFieldHandler controlField in m_controlsHandlerList.SelectMany(x => x.FieldHandlerList).Where(x => x.FieldModel.AudioWalkman != null))
+            // TEMP HACK: Until prop indexes are refactored, we force audio and video fields to have a string reference
+            foreach (ControlsFieldHandler controlField in m_controlsHandlerList.SelectMany(x => x.FieldHandlerList).Where(x => x.FieldModel.AudioWalkman != null && x.FieldModel.VideoWalkman != null))
             {
                 m_tracking.GetPropertyUsedIndex(controlField.PropName);
             }
@@ -54,10 +54,9 @@ namespace NaturalFacade.LayoutConfig.RawXml
                 ImageResources = m_tracking.ImageResourcesUsedList.Select(x => x.Url).ToArray(),
                 FontResources = m_tracking.FontResourcesUsedList.Select(x => x.Url).ToArray(),
                 AudioResources = m_tracking.AudioResourcesUsedList.Select(x => x.Url).ToArray(),
-                VideoResources = m_tracking.VideoResourcesUsedList.Select(x => x.Url).ToArray(),
                 Fonts = m_tracking.FontDefinitionsUsedList.Select(x => ConvertFontDefinition(x)).Where(x => x != null).ToArray(),
                 Audios = m_tracking.AudioDefinitionsUsedList.Select(x => ConvertAudioDefinition(x)).Where(x => x != null).ToArray(),
-                Videos = m_tracking.VideoDefinitionsUsedList.Select(x => ConvertVideoDefinition(x)).Where(x => x != null).ToArray(),
+                Videos = m_tracking.VideoResourceList.Select(x => ConvertVideoResource(x)).Where(x => x != null).ToArray(),
                 RootElement = m_rootElementHandler?.Data,
                 ControlsArray = m_controlsHandlerList.Select(x => ConvertControls(x)).Where(x => x != null).ToArray()
             };
@@ -95,12 +94,12 @@ namespace NaturalFacade.LayoutConfig.RawXml
         }
 
         /// <summary>converts an video to the API DTO.</summary>
-        private ApiDto.OverlayDtoVideo ConvertVideoDefinition(RawXmlReferenceTracking.VideoDefinition audioDefinition)
+        private ApiDto.OverlayDtoVideo ConvertVideoResource(RawXmlReferenceTracking.VideoResource videoResource)
         {
             return new ApiDto.OverlayDtoVideo
             {
-                res = audioDefinition.ResIndex,
-                prop = audioDefinition.PropIndex
+                url = videoResource.Url,
+                prop = videoResource.PropIndex
             };
         }
 
@@ -223,7 +222,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
                     propDef.DefaultValue = new Dictionary<string, object> { { "State", "Stopped" } };
                     break;
                 case ApiDto.PropertyTypeDto.Video:
-                    propDef.DefaultValue = new Dictionary<string, object> { { "State", "Stopped" } };
+                    propDef.DefaultValue = new Dictionary<string, object> { { "State", "Stopped" }, { "PlayCount", 0 } };
                     break;
                 case ApiDto.PropertyTypeDto.Boolean:
                     propDef.DefaultValue = string.Equals(attributes.GetString("default_value"), "true", StringComparison.InvariantCultureIgnoreCase);
@@ -267,12 +266,6 @@ namespace NaturalFacade.LayoutConfig.RawXml
                     {
                         string url = attributes.GetString("url");
                         m_tracking.AddImageResource(name, url);
-                        break;
-                    }
-                case "Video":
-                    {
-                        string url = attributes.GetString("url");
-                        m_tracking.AddVideoResource(name, url);
                         break;
                     }
             }

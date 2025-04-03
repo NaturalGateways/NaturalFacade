@@ -15,15 +15,15 @@ namespace NaturalFacade.LayoutConfig.RawXml
             : base(tracking)
         {
             // Get image index
-            int resIndex = tracking.GetVideoResourceUsedIndex(attributes.GetString("res"));
+            string url = attributes.GetString("url");
             int propIndex = tracking.GetPropertyUsedIndex(attributes.GetString("prop"));
+            int resIndex = tracking.CreateVideoResource(url, propIndex);
 
             // Create data
             this.Data = new Dictionary<string, object>
             {
                 { "elTyp", "Video" },
-                { "res", resIndex },
-                { "prop", propIndex }
+                { "res", resIndex }
             };
         }
 
