@@ -27,9 +27,9 @@ export class LoadLayoutService {
     {
       resourcesToLoad += layoutData.audioResources.length;
     }
-    if (layoutData.videoResources !== undefined && layoutData.videoResources !== null)
+    if (layoutData.videos !== undefined && layoutData.videos !== null)
     {
-      resourcesToLoad += layoutData.videoResources.length;
+      resourcesToLoad += layoutData.videos.length;
     }
 
     // We go straight away if there are no resources
@@ -83,10 +83,10 @@ export class LoadLayoutService {
         }
       }
     }
-    if (layoutData.videoResources !== undefined && layoutData.videoResources !== null)
+    if (layoutData.videos !== undefined && layoutData.videos !== null)
     {
-      for (const videoIndex in layoutData.videoResources) {
-        var videoRes: LayoutVideoResource = layoutData.videoResources[videoIndex];
+      for (const videoIndex in layoutData.videos) {
+        var videoRes: LayoutVideoResource = layoutData.videos[videoIndex];
         videoRes.videoElement = document.createElement('video');
         videoRes.videoElement.className = "overlayVideo";
         videoRes.videoElement.src = videoRes.url;
@@ -137,13 +137,6 @@ export class LoadLayoutService {
         layoutData.audioResources.push(new LayoutAudioResource(audioUrl));
       }
     }
-    if (apiDto.videoResources !== undefined)
-    {
-      for (var videoResIndex in apiDto.videoResources) {
-        var videoUrl = apiDto.videoResources[videoResIndex];
-        layoutData.videoResources.push(new LayoutVideoResource(videoUrl));
-      }
-    }
     if (apiDto.fonts !== undefined)
     {
       for (var fontJsonIndex in apiDto.fonts) {
@@ -156,6 +149,13 @@ export class LoadLayoutService {
       for (var audioJsonIndex in apiDto.audios) {
         var audioJson: any = apiDto.audios[audioJsonIndex];
         layoutData.audioConfigs.push(new LayoutAudioConfig(layoutData.audioResources[audioJson.res], audioJson.prop));
+      }
+    }
+    if (apiDto.videos !== undefined)
+    {
+      for (var videoResIndex in apiDto.videos) {
+        var videoDto = apiDto.videos[videoResIndex];
+        layoutData.videos.push(new LayoutVideoResource(String(videoDto.url), Number(videoDto.prop)));
       }
     }
     layoutData.rootElement = apiDto.rootElement;

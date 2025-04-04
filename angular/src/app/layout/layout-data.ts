@@ -13,11 +13,11 @@ export class LayoutData {
 
   audioResources: Array<LayoutAudioResource> = new Array<LayoutAudioResource>();
 
-  videoResources: Array<LayoutVideoResource> = new Array<LayoutVideoResource>();
-
   fontConfigs: Array<LayoutFontConfig> = new Array<LayoutFontConfig>();
 
   audioConfigs: Array<LayoutAudioConfig> = new Array<LayoutAudioConfig>();
+
+  videos: Array<LayoutVideoResource> = new Array<LayoutVideoResource>();
 
   rootElement: any;
 }
@@ -50,8 +50,9 @@ export class LayoutAudioResource {
 
 export class LayoutVideoResource {
   videoElement: HTMLVideoElement | undefined;
+  currentPlayCount: number | undefined;
 
-  constructor(public url: string) { }
+  constructor(public url: string, public propIndex: number) { }
 }
 
 export class LayoutFontConfig {

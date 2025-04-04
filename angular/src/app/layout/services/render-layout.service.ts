@@ -1,7 +1,7 @@
 import { ComponentFactoryResolver } from '@angular/core';
 import { Console } from 'console';
 
-import { LayoutData, LayoutFontConfig, LayoutAudioConfig, LayoutProperty } from '../layout-data';
+import { LayoutData, LayoutFontConfig, LayoutAudioConfig, LayoutVideoResource, LayoutProperty } from '../layout-data';
 
 class LayoutElementWithBounds {
   element: any | undefined;
@@ -76,6 +76,24 @@ export class RenderLayoutService {
             audioJson.stopped = false;
           }
           break;
+      }
+    }
+    // Update videos
+    for (var videoIndex in this.layoutData!.videos) {
+      var videoResource: LayoutVideoResource = this.layoutData!.videos[videoIndex];
+      var propValue: any = this.propValues[videoResource.propIndex];
+      var isPlaying: boolean = videoResource!.videoElement!.paused === false && videoResource!.videoElement!.ended === false;
+      var shouldBePlaying: boolean = propValue.State === "Playing";
+      if (shouldBePlaying && propValue.PlayCount !== videoResource.currentPlayCount) {
+        videoResource.videoElement!.currentTime = 0;
+        videoResource.videoElement!.play();
+        videoResource.videoElement!.style.display = "inline";
+        videoResource.currentPlayCount = propValue.PlayCount;
+      }
+      if (shouldBePlaying === false && isPlaying) {
+        videoResource.videoElement!.style.display = "none";
+        videoResource.videoElement!.pause();
+        videoResource.videoElement!.currentTime = 0;
       }
     }
   }

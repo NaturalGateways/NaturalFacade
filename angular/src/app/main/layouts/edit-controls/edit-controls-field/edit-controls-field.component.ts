@@ -28,6 +28,8 @@ export class EditControlsFieldComponent {
   savedTimerSecs : number | undefined;
   savedTimerStartDateTime : Date | undefined;
   savedAudioState : string | undefined;
+  savedVideoState : string | undefined;
+  savedVideoCount : number | undefined;
 
   switchVisible : boolean = false;
   switchFalseLabel : string = "False";
@@ -53,6 +55,10 @@ export class EditControlsFieldComponent {
   isAudioWalkmanStopped() { return this.savedAudioState === 'Stopped'; }
   isAudioWalkmanPaused() { return this.savedAudioState === 'Paused'; }
   isAudioWalkmanPlaying() { return this.savedAudioState === 'Playing'; }
+
+  videoWalkmanVisible : boolean = false;
+  isVideoWalkmanStopped() { return this.savedVideoState === 'Stopped'; }
+  isVideoWalkmanPlaying() { return this.savedVideoState === 'Playing'; }
 
   constructor(private apiService: ApiService)
   {
@@ -122,6 +128,12 @@ export class EditControlsFieldComponent {
       this.audioWalkmanVisible = true;
     }
 
+    // Setup audio walkman
+    if (this.field!.fieldDef.VideoWalkman !== undefined)
+    {
+      this.videoWalkmanVisible = true;
+    }
+
     // Set value
     this.setSavedValue(this.field!.value);
   }
@@ -162,6 +174,10 @@ export class EditControlsFieldComponent {
             var date = new Date(2000, 1, 1, 0, 0, this.savedTimerSecs, 0);
             this.timerText = date.toLocaleTimeString();
           }
+          break;
+        case "Video":
+          this.savedVideoState = String(value.State);
+          this.savedVideoCount = Number(value.PlayCount);
           break;
     }
   }
@@ -244,6 +260,22 @@ export class EditControlsFieldComponent {
   onAudioWalkmanPlay()
   {
     this.upload({'State':'Playing'});
+  }
+
+  onVideoWalkmanStop()
+  {
+    if (this.savedVideoCount === undefined)
+      this.savedVideoCount = 0;
+    this.upload({'State':'Stopped','PlayCount':this.savedVideoCount});
+  }
+
+  onVideoWalkmanPlay()
+  {
+    if (this.savedVideoCount === undefined)
+      this.savedVideoCount = 0;
+    else
+      ++this.savedVideoCount;
+      this.upload({'State':'Playing','PlayCount':this.savedVideoCount});
   }
 
   upload(value: any)

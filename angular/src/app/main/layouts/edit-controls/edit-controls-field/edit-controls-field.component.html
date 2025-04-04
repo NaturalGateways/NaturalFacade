@@ -46,4 +46,11 @@
             <button pButton pRipple type="button" icon="pi pi-play" class="audioWalkmanButton" [disabled]="isSaving" [ngClass]="isAudioWalkmanPlaying()?'p-button':'p-button-secondary'" (click)="onAudioWalkmanPlay()"></button>
         </div>
     </div>
+    
+    <div class="inputRow" *ngIf="videoWalkmanVisible">
+        <div class="flex flex-row">
+            <button pButton pRipple type="button" icon="pi pi-stop" class="videoWalkmanButton" [disabled]="isSaving" [ngClass]="isVideoWalkmanStopped()?'p-button':'p-button-secondary'" (click)="onVideoWalkmanStop()"></button>
+            <button pButton pRipple type="button" icon="pi pi-play" class="videoWalkmanButton" [disabled]="isSaving" [ngClass]="isVideoWalkmanPlaying()?'p-button':'p-button-secondary'" (click)="onVideoWalkmanPlay()"></button>
+        </div>
+    </div>
 </div>

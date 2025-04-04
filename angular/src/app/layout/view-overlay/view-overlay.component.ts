@@ -54,16 +54,17 @@ export class ViewOverlayComponent {
           var loadLayoutService : LoadLayoutService = new LoadLayoutService();
           loadLayoutService.loadAllFromJson(layoutOverlay, (loadedLayout) =>
           {
-            if (loadedLayout.videoResources !== null)
+            if (loadedLayout.videos !== null)
             {
               var backing = document.getElementById('backing')!;
-              for (var videoResourceIndex in loadedLayout.videoResources)
+              for (var videoResourceIndex in loadedLayout.videos)
               {
-                var videoResource: LayoutVideoResource = loadedLayout.videoResources[videoResourceIndex];
+                var videoResource: LayoutVideoResource = loadedLayout.videos[videoResourceIndex];
                 backing.appendChild(videoResource.videoElement!);
                 videoResource.videoElement!.style.display = "none";
                 videoResource.videoElement!.addEventListener('ended', function() {
                   videoResource.videoElement!.style.display = "none";
+                  videoResource.videoElement!.currentTime = 0;
                   });
               }
             }
