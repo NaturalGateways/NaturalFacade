@@ -42,7 +42,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
         public Config2LayoutOverlayOutput CreateOutput()
         {
             // TEMP HACK: Until prop indexes are refactored, we force audio and video fields to have a string reference
-            foreach (ControlsFieldHandler controlField in m_controlsHandlerList.SelectMany(x => x.FieldHandlerList).Where(x => x.FieldModel.AudioWalkman != null && x.FieldModel.VideoWalkman != null))
+            foreach (ControlsFieldHandler controlField in m_controlsHandlerList.SelectMany(x => x.FieldHandlerList).Where(x => x.FieldModel.AudioWalkman != null))
             {
                 m_tracking.GetPropertyUsedIndex(controlField.PropName);
             }
@@ -133,6 +133,7 @@ namespace NaturalFacade.LayoutConfig.RawXml
                 fieldDef.Label = property.PropRef.Name;
             // Check there is at least one field
             if (fieldDef.AudioWalkman == null &&
+                fieldDef.VideoWalkman == null &&
                 fieldDef.TextField == null &&
                 fieldDef.Integer == null &&
                 fieldDef.Switch == null &&
