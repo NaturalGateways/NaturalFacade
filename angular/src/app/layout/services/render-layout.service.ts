@@ -1105,15 +1105,18 @@ export class RenderLayoutService {
   renderVideoElement(elementWithBounds: LayoutElementWithBounds)
   {
     var videoIndex: number = Number(elementWithBounds.element.res);
-    var videoResource: LayoutVideoResource = this.videoElementList[videoIndex];
-    var left : number = elementWithBounds.left;
-    var top : number = elementWithBounds.top;
-    var width : number = elementWithBounds.right - elementWithBounds.left;
-    var height : number = elementWithBounds.bottom - elementWithBounds.top;
-    videoResource.videoElement!.style.position = 'fixed';
-    videoResource.videoElement!.style.left = left + 'px';
-    videoResource.videoElement!.style.top = top + 'px';
-    videoResource.videoElement!.style.width = width + 'px';
-    videoResource.videoElement!.style.height = height + 'px';
+    if (videoIndex < this.videoElementList.length)
+    {
+      var videoResource: LayoutVideoResource = this.videoElementList[videoIndex];
+      var left : number = elementWithBounds.left;
+      var top : number = elementWithBounds.top;
+      var width : number = elementWithBounds.right - elementWithBounds.left;
+      var height : number = elementWithBounds.bottom - elementWithBounds.top;
+      videoResource.videoElement!.style.position = 'fixed';
+      videoResource.videoElement!.style.left = left + 'px';
+      videoResource.videoElement!.style.top = top + 'px';
+      videoResource.videoElement!.style.width = width + 'px';
+      videoResource.videoElement!.style.height = height + 'px';
+    }
   }
 }
