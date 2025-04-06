@@ -78,6 +78,9 @@ namespace NaturalFacade.LayoutConfig.RawXml
                     effect.PropIndex = m_tracking.GetPropertyUsedIndex(attributes.GetString("prop_name"));
                     effect.Value = attributes.GetString("value");
                     break;
+                case "PlayVideo":
+                    effect.PropIndex = m_tracking.GetPropertyUsedIndex(attributes.GetString("prop_name"));
+                    break;
                 default:
                     throw new Exception($"Unrecognised effect type: '{effect.Type}'");
             }

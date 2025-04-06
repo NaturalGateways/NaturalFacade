@@ -39,6 +39,9 @@ namespace NaturalFacade.Services
                 case "PropSet":
                     await ExecuteSetPropEffectAsync(dynamoService, layoutId, effect);
                     break;
+                case "PlayVideo":
+                    await ExecutePlayVideoEffectAsync(dynamoService, layoutId, effect);
+                    break;
                 default:
                     throw new Exception($"Unrecognised action type '{effect.Type}'.");
             }
@@ -56,6 +59,32 @@ namespace NaturalFacade.Services
                 m_propValueArray = await dynamoService.GetOverlayPropValuesAsync(layoutId);
             }
             m_propValueArray[effect.PropIndex.Value] = effect.Value;
+        }
+
+        /// <summary>Executes an effect.</summary>
+        private async Task ExecutePlayVideoEffectAsync(DynamoService dynamoService, string layoutId, LayoutConfig.Config2LayoutResultActionEffect effect)
+        {
+            if (effect.PropIndex.HasValue == false)
+            {
+                throw new Exception("Need a prop index when setting a property.");
+            }
+            if (m_propValueArray == null)
+            {
+                m_propValueArray = await dynamoService.GetOverlayPropValuesAsync(layoutId);
+            }
+            long playCount = 1;
+            object oldValue = m_propValueArray[effect.PropIndex.Value];
+            if (oldValue != null)
+            {
+                long? oldPlayCount = Natural.Json.JsonHelper.JsonFromObject(oldValue).GetDictionaryLong("PlayCount");
+                if (oldPlayCount.HasValue)
+                    playCount = oldPlayCount.Value + 1;
+            }
+            m_propValueArray[effect.PropIndex.Value] = new Dictionary<string, object>
+            {
+                { "State", "Playing" },
+                { "PlayCount", playCount }
+            };
         }
     }
 }
