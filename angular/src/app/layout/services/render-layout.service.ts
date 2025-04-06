@@ -25,6 +25,8 @@ export class RenderLayoutService {
   loadingMessage: string | null = null;
   loadingBackColour: string | null = null;
 
+  videoElementList: LayoutVideoResource[] = [];
+
   constructor(element: HTMLElement) {
     this.canvas = element as HTMLCanvasElement;
     this.context = this.canvas.getContext("2d")!;
@@ -891,6 +893,9 @@ export class RenderLayoutService {
       case "Transform":
         this.renderTransformElement(elementWithBounds);
         break;
+      case "Video":
+        this.renderVideoElement(elementWithBounds);
+        break;
     }
   }
 
@@ -1095,5 +1100,20 @@ export class RenderLayoutService {
     this.context.translate(pivotX, pivotY);
     this.context.rotate((step.deg_cw * Math.PI) / 180);
     this.context.translate(-pivotX, -pivotY);
+  }
+
+  renderVideoElement(elementWithBounds: LayoutElementWithBounds)
+  {
+    var videoIndex: number = Number(elementWithBounds.element.res);
+    var videoResource: LayoutVideoResource = this.videoElementList[videoIndex];
+    var left : number = elementWithBounds.left;
+    var top : number = elementWithBounds.top;
+    var width : number = elementWithBounds.right - elementWithBounds.left;
+    var height : number = elementWithBounds.bottom - elementWithBounds.top;
+    videoResource.videoElement!.style.position = 'fixed';
+    videoResource.videoElement!.style.left = left + 'px';
+    videoResource.videoElement!.style.top = top + 'px';
+    videoResource.videoElement!.style.width = width + 'px';
+    videoResource.videoElement!.style.height = height + 'px';
   }
 }

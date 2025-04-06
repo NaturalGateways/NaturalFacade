@@ -61,6 +61,7 @@ export class ViewOverlayComponent {
               {
                 var videoResource: LayoutVideoResource = loadedLayout.videos[videoResourceIndex];
                 backing.appendChild(videoResource.videoElement!);
+                this.layoutRender!.videoElementList.push(videoResource);
                 videoResource.videoElement!.style.display = "none";
                 videoResource.videoElement!.addEventListener('ended', function() {
                   videoResource.videoElement!.style.display = "none";
