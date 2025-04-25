@@ -217,7 +217,7 @@ export class RenderLayoutService {
     return value;
   }
 
-  getPropInteger(propDef: LayoutProperty, value: any) : any {
+  getPropInteger(propIndex: number, propDef: LayoutProperty, value: any) : any {
     if (propDef.type == "Timer")
     {
       var valueSecs : number = value.Secs;
@@ -236,6 +236,11 @@ export class RenderLayoutService {
           valueSecs = propDef.propDef.maxValue;
       }
       return valueSecs;
+    }
+    if (propDef.type == "Audio")
+    {
+      var audioConfig : LayoutAudioConfig = this.layoutData!.audioConfigs[propIndex];
+      return Math.floor(audioConfig.audioRes.audioElement?.currentTime!);
     }
     return value;
   }
@@ -300,7 +305,7 @@ export class RenderLayoutService {
     }
     if (integerObj.op === "Prop")
     {
-      return this.getPropInteger(this.layoutData!.properties[integerObj.index], this.propValues[integerObj.index]);
+      return this.getPropInteger(integerObj.index, this.layoutData!.properties[integerObj.index], this.propValues[integerObj.index]);
     }
     if (integerObj.op === "Add")
     {
